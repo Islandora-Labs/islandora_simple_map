@@ -4,10 +4,6 @@
 
 Islandora module that adds a Google map to an object's display if the object's MODS datastream contains cartographic coordinates.
 
-Here is a screenshot showing the parent metadata below the default object "Details":
-
-![With pparent metadata expanded](https://dl.dropboxusercontent.com/u/1015702/linked_to/islandora_compound_parent_metadata/compound_parent_metadata.png)
-
 ## Requirements
 
 * [Islandora](https://github.com/Islandora/islandora)
