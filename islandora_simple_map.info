@@ -1,0 +1,5 @@
+name = "Islandora Simple Map"
+description = "Proof of concept module that displays a Google map on an object if the object's MODS contains geocoordinates."
+version = 7.x-dev
+core = 7.x
+dependencies[] = islandora

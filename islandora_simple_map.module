@@ -1,0 +1,50 @@
+<?php
+
+/**
+ * @file
+ * The main Islandora Simple Map module file.
+ */
+
+/**
+ * Implements hook_theme().
+ */
+function islandora_simple_map_theme() {
+  return array(
+    'islandora_simple_map' => array(
+      'variables' => array(
+        'coords' => NULL,
+      ),
+      'path' => drupal_get_path('module', 'islandora_simple_map') . '/theme',
+      'template' => 'islandora_simple_map',
+    ),
+  );
+}
+
+/**
+ * Implements hook_islandora_view_object_alter().
+ */
+function islandora_simple_map_islandora_view_object_alter(&$object, &$rendered) {
+  if (isset($object['MODS'])) {
+    $mods_string = $object['MODS']->content;
+    $mods_doc = new DOMDocument();
+    $mods_doc->loadXML($mods_string);
+    if ($mods_doc) {
+      $xpath = '//mods:subject/mods:cartographics/mods:coordinates';
+      $mods_xpath = new DOMXPath($mods_doc);
+      $mods_xpath->registerNamespace('mods', "http://www.loc.gov/mods/v3");
+      $mods_carto_xpath = $mods_xpath->query($xpath);
+      if ($mods_carto_xpath->length) {
+        // Take the first element. What if there are more than one?
+        $mods_carto = $mods_carto_xpath->item(0);
+        $coords = $mods_carto->nodeValue;
+      }
+    }
+
+    if (isset($rendered[NULL])) {
+      if ($coords) {
+        $markup = theme('islandora_simple_map', array('coords' => urlencode($coords)));
+        $rendered[NULL]['#markup'] = $rendered[NULL]['#markup'] . $markup;
+      }
+    }
+  }
+}
