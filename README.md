@@ -1,6 +1,6 @@
 # Islandora Simple Map
 
-Islandora module that appends a Google map to an object's display if the object's MODS datastream contains geographic coordinate data. You can see it in action [here](http://digital.lib.sfu.ca/pfp-980/buffalo-stanley-park-vancouver-bc).
+Islandora module that appends a Google map to an object's display if its MODS datastream contains geographic coordinate data. You can see it in action [here](http://digital.lib.sfu.ca/pfp-980/buffalo-stanley-park-vancouver-bc).
 
 ## Overview
 
@@ -28,7 +28,7 @@ Dublin, Ireland
 Dublin, Ohio
 ```
 
-but a value of just `Dublin` results in a map showing the Irish city. Another example that illustrates Google Maps' behavior when it is given ambiguous data is a <`subject><geographic>` value of `City of Light`, which results in a map showing a church by that name in the US Northwest, not Paris, probably because when I wrote this I was closer to that location than to Paris, France. If Google Maps cannot disambiguate the location data to a single location to put on a map, it produces a map showing most of the world (depending on the default zoom level in effect) with no points on it.
+but a value of just `Dublin` results in a map showing the Irish city. Another example that illustrates Google Maps' behavior when it is given ambiguous data is a <`subject><geographic>` value of `City of Light`, which results in a map showing a church by that name in the US Northwest, not Paris, France, probably because when I wrote this I was closer to that location than to Paris (it would be cool if someone in Europe could test this). If Google Maps cannot disambiguate the location data to a single location to put on a map, it produces a map showing most of the world (depending on the default zoom level in effect) with no points on it.
 
 So, for best results, configure this module to use unambiguous cartographic coordinate data.
 
@@ -52,12 +52,12 @@ Once you enable the module, any object whose MODS file contains coordinates in t
 ## To do
 
 * Add support for non-Google maps.
-* Add support for using non-MODS datastreams for cartographic data.
+* Add support for using datastreams other than MODS for cartographic data.
 * Add a Drupal permission to "View Islandora Simple Map maps".
 
 ## Development and feedback
 
-Pull requests are welcome, as are use cases and suggestions. For example, if your coordinate data results in map with no points on thems, please suggest some ways that the data could be normalized.
+Pull requests are welcome, as are use cases and suggestions. For example, if your coordinate data results in maps with no points on them, please suggest some ways that the data could be normalized (and don't forget to include some sample data).
 
 ## License
 
