@@ -54,6 +54,12 @@ function islandora_simple_map_admin_settings() {
     '#default_value' => variable_get('islandora_simple_map_zoom', '10'),
     '#description' => t('The higher the number, the higher the zoom.'),
   );
+  $form['islandora_simple_map_attempt_cleanup'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Attempt to clean up coordinates.'),
+    '#default_value' => variable_get('islandora_simple_map_attempt_cleanup', 1),
+    '#description' => t('Check this option if you want to clean up the coordinate data before passing it off to Google Maps. Please consult the README file for more information'),
+  );
   return system_settings_form($form);
 }
 
@@ -92,6 +98,9 @@ function islandora_simple_map_islandora_view_object_alter(&$object, &$rendered) 
         // Take the first element found by the XPath.
         $mods_carto = $mods_carto_xpath->item(0);
         $coords = $mods_carto->nodeValue;
+        if (variable_get('islandora_simple_map_attempt_cleanup', 1)) {
+          $coords = islandora_simple_map_clean_coordinates($coords);
+        }
       }
     }
 
@@ -110,4 +119,18 @@ function islandora_simple_map_islandora_view_object_alter(&$object, &$rendered) 
       }
     }
   }
+}
+
+/**
+ * Applies some cleanup on data to make it more reliable for Google Maps.
+ *
+ * @param string $data
+ *    The coordinate data.
+ *
+ * @return string
+ *   The cleaned up data.
+ */
+function islandora_simple_map_clean_coordinates($data) {
+  $data = preg_replace('/;/', ',', $data);
+  return $data;
 }

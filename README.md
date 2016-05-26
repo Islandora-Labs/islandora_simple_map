@@ -13,9 +13,15 @@ Geographic coordinates must be in "decimal degrees" format with latitude listed 
 49.05444N121.985w
 ```
 
-By default, the MODS element that this module expects the coordintates to be in is `<subject><cartographics><coordinates>`, but that is configurable.
+Semicolons separating the latitude and longitude are not allowed, resulting in a map with no points on it:
 
-If you configure this module to use MODS elements that do not contain coordinate data, such as `<subject><geographic>`, Google Maps will attempt to generate a map based on the data it has been told to use. However, the results are not always predictable. For example, the following two values for `<subject><geographic>` produce accurate maps, presumably because they are unambiguous:
+```
++49.05444;-121.985
+```
+
+There is an admin option to "Attempt to clean up coordinates". If this is enabled (which it is by default), a semicolon in the data will be replaced with a comma before it is passed to Google Maps. Normally this option should be enabled, but if it interferes with your data in unexpected ways, it can be turned off.
+
+By default, the MODS element that this module expects the coordintates to be in is `<subject><cartographics><coordinates>`, but that is configurable. If you configure this module to use MODS elements that do not contain coordinate data, such as `<subject><geographic>`, Google Maps will attempt to generate a map based on the data it has been told to use. However, the results are not always predictable. For example, the following two values for `<subject><geographic>` produce accurate maps, presumably because they are unambiguous:
 
 ```
 Dublin, Ireland
@@ -35,7 +41,7 @@ Install as usual, see [this](https://drupal.org/documentation/install/modules-th
 
 ## Configuration
 
-Admin settings are available at `admin/islandora/tools/islandora_simple_map` for the XPath expression to the MODS element where your cartographic data is stored, and for the map's height, width, and default zoom level. No Google Maps API key is required.
+Admin settings are available at `admin/islandora/tools/islandora_simple_map` for the XPath expression to the MODS element where your cartographic data is stored, for the map's height, width, and default zoom level and for normalizing the cartographic data. No Google Maps API key is required.
 
 Once you enable the module, any object whose MODS file contains coordinates in the expected element will have a Google map appended to its display. If multiple elements contain coordinates, data from the first element found is used.
 
@@ -51,7 +57,7 @@ Once you enable the module, any object whose MODS file contains coordinates in t
 
 ## Development and feedback
 
-Pull requests are welcome, as are use cases and suggestions.
+Pull requests are welcome, as are use cases and suggestions. For example, if your coordinate data results in map with no points on thems, please suggest some ways that the data could be normalized.
 
 ## License
 
