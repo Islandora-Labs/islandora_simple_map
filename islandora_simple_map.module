@@ -84,12 +84,12 @@ function islandora_simple_map_islandora_view_object_alter(&$object, &$rendered) 
     $mods_doc = new DOMDocument();
     $mods_doc->loadXML($mods_string);
     if ($mods_doc) {
-      $xpath = trim(variable_get('islandora_simple_map_xpaths', '//mods:subject/mods:cartographics/mods:coordinates'));
+      $xpath = trim(variable_get('islandora_simple_map_xpath', '//mods:subject/mods:cartographics/mods:coordinates'));
       $mods_xpath = new DOMXPath($mods_doc);
       $mods_xpath->registerNamespace('mods', "http://www.loc.gov/mods/v3");
       $mods_carto_xpath = $mods_xpath->query($xpath);
       if ($mods_carto_xpath->length) {
-        // Take the first element. What if there are more than one?
+        // Take the first element found by the XPath.
         $mods_carto = $mods_carto_xpath->item(0);
         $coords = $mods_carto->nodeValue;
       }
