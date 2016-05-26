@@ -1,6 +1,6 @@
 # Islandora Simple Map
 
-Islandora module that adds a Google map to an object's display if the object's MODS datastream contains geographic coordinate data.
+Islandora module that appends a Google map to an object's display if the object's MODS datastream contains geographic coordinate data. You can see it in action [here](http://digital.lib.sfu.ca/pfp-980/buffalo-stanley-park-vancouver-bc).
 
 ## Overview
 
