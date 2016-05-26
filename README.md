@@ -1,10 +1,10 @@
 # Islandora Simple Map
 
-Islandora module that adds a Google map to an object's display if the object's MODS datastream contains geographic coordinates.
+Islandora module that adds a Google map to an object's display if the object's MODS datastream contains geographic coordinate data.
 
 ## Overview
 
-Geographic coordinates must be in "decimal degrees" format with latitude listed first, then longitude. Google Maps is remarkably forgiving of the specific formatting of the values. All of these work:
+Geographic coordinates must be in "decimal degrees" format with latitude listed first, then longitude. Google Maps is fairly forgiving of the specific formatting of the values. All of these work:
 
 ```
 +49.05444,-121.985
@@ -13,7 +13,7 @@ Geographic coordinates must be in "decimal degrees" format with latitude listed 
 49.05444N121.985w
 ```
 
-By default, the element that this module expects the coordintates to be in is `<subject><cartographics><coordinates>`, but that is configurable.
+By default, the MODS element that this module expects the coordintates to be in is `<subject><cartographics><coordinates>`, but that is configurable.
 
 If you configure this module to use MODS elements that do not contain coordinate data, such as `<subject><geographic>`, Google Maps will attempt to generate a map based on the data it has been told to use. However, the results are not always predictable. For example, the following two values for `<subject><geographic>` produce accurate maps, presumably because they are unambiguous:
 
@@ -37,7 +37,7 @@ Install as usual, see [this](https://drupal.org/documentation/install/modules-th
 
 Admin settings are available at `admin/islandora/tools/islandora_simple_map` for the XPath expression to the MODS element where your cartographic data is stored, and for the map's height, width, and default zoom level. No Google Maps API key is required.
 
-Once you enable the module, any object whose MODS file contains coordinates in the expected element will have a Google map appended to its display. If multiple elements contain coordinates, the first one is used.
+Once you enable the module, any object whose MODS file contains coordinates in the expected element will have a Google map appended to its display. If multiple elements contain coordinates, data from the first element found is used.
 
 ## Maintainer
 
@@ -46,7 +46,8 @@ Once you enable the module, any object whose MODS file contains coordinates in t
 ## To do
 
 * Add support for non-Google maps.
-* Add support for using alternative (non-MODS) datastreams for cartographic data.
+* Add support for using non-MODS datastreams for cartographic data.
+* Add a Drupal permission to "View Islandora Simple Map maps".
 
 ## Development and feedback
 
