@@ -4,7 +4,7 @@ Islandora module that adds a Google map to an object's display if the object's M
 
 ## Overview
 
-Geographic coordinates must be in "decimal degrees" format with latitude listed first, then longitude. Google Maps is remarkably forgiving of the specific formatting of the values, however. All of these work:
+Geographic coordinates must be in "decimal degrees" format with latitude listed first, then longitude. Google Maps is remarkably forgiving of the specific formatting of the values. All of these work:
 
 ```
 +49.05444,-121.985
@@ -15,14 +15,14 @@ Geographic coordinates must be in "decimal degrees" format with latitude listed 
 
 By default, the element that this module expects the coordintates to be in is `<subject><cartographics><coordinates>`, but that is configurable.
 
-If you configure this module to use MODS elements that do not contain coordinate data, such as `<subject><geographic>`, Google Maps will attempt to generate a map based on the data you give it. However, the results are not always predictable. For example, the following two values for `<subject><geographic>` produce accurate maps, presumably because they are unambiguous:
+If you configure this module to use MODS elements that do not contain coordinate data, such as `<subject><geographic>`, Google Maps will attempt to generate a map based on the data it has been told to use. However, the results are not always predictable. For example, the following two values for `<subject><geographic>` produce accurate maps, presumably because they are unambiguous:
 
 ```
 Dublin, Ireland
 Dublin, Ohio
 ```
 
-but a value of just `Dublin` results in a map showing the Irish city. Another example that illustrates Google Maps' behavior when it is given ambmiguous data is a <`subject><geographic>` value of "City of Light", which results in a map showing a church by that name in the US Northwest, not Paris. If Google Maps can't disambiguate the location data to a single location to put on a map, it produces a map of most of the world (depending on the default zoom level in effect) with no points on it.
+but a value of just `Dublin` results in a map showing the Irish city. Another example that illustrates Google Maps' behavior when it is given ambiguous data is a <`subject><geographic>` value of "City of Light", which results in a map showing a church by that name in the US Northwest, not Paris. If Google Maps can't disambiguate the location data to a single location to put on a map, it produces a map of most of the world (depending on the default zoom level in effect) with no points on it.
 
 So, for best results, configure this module to use unambiguous cartographic coordinate data.
 
