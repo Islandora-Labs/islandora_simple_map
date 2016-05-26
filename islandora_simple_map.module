@@ -6,6 +6,58 @@
  */
 
 /**
+ * Implements hook_menu().
+ */
+function islandora_simple_map_menu() {
+  $items = array();
+  $items['admin/islandora/tools/islandora_simple_map'] = array(
+    'title' => 'Islandora Simple Map',
+    'description' => 'Configure the Islandora Simple Map module.',
+    'page callback' => 'drupal_get_form',
+    'access arguments' => array('administer site configuration'),
+    'page arguments' => array('islandora_simple_map_admin_settings'),
+    'type' => MENU_NORMAL_ITEM,
+  );
+  return $items;
+}
+
+/**
+ * Admin settings form builder.
+ */
+function islandora_simple_map_admin_settings() {
+  $form = array();
+  $form['islandora_simple_map_xpath'] = array(
+    '#title' => t('XPath expression'),
+    '#type' => 'textfield',
+    '#size' => 100,
+    '#default_value' => variable_get('islandora_simple_map_xpath', '//mods:subject/mods:cartographics/mods:coordinates'),
+    '#description' => t('XPath expression to the MODS element containing the cartographic data to use in the map.'),
+  );
+  $form['islandora_simple_map_iframe_width'] = array(
+    '#title' => t('Map iframe width'),
+    '#type' => 'textfield',
+    '#size' => 10,
+    '#default_value' => variable_get('islandora_simple_map_iframe_width', '600'),
+    '#description' => t('The width, in pixels, of the iframe the map will appear in.'),
+  );
+  $form['islandora_simple_map_iframe_height'] = array(
+    '#title' => t('Map iframe height'),
+    '#type' => 'textfield',
+    '#size' => 10,
+    '#default_value' => variable_get('islandora_simple_map_iframe_height', '600'),
+    '#description' => t('The height, in pixels, of the iframe the map will appear in.'),
+  );
+  $form['islandora_simple_map_zoom'] = array(
+    '#title' => t('Default zoom level'),
+    '#type' => 'textfield',
+    '#size' => 10,
+    '#default_value' => variable_get('islandora_simple_map_zoom', '10'),
+    '#description' => t('The higher the number, the higher the zoom.'),
+  );
+  return system_settings_form($form);
+}
+
+/**
  * Implements hook_theme().
  */
 function islandora_simple_map_theme() {
@@ -13,6 +65,9 @@ function islandora_simple_map_theme() {
     'islandora_simple_map' => array(
       'variables' => array(
         'coords' => NULL,
+        'iframe_width' => NULL,
+        'iframe_height' => NULL,
+        'zoom' => NULL,
       ),
       'path' => drupal_get_path('module', 'islandora_simple_map') . '/theme',
       'template' => 'islandora_simple_map',
@@ -29,7 +84,7 @@ function islandora_simple_map_islandora_view_object_alter(&$object, &$rendered) 
     $mods_doc = new DOMDocument();
     $mods_doc->loadXML($mods_string);
     if ($mods_doc) {
-      $xpath = '//mods:subject/mods:cartographics/mods:coordinates';
+      $xpath = trim(variable_get('islandora_simple_map_xpaths', '//mods:subject/mods:cartographics/mods:coordinates'));
       $mods_xpath = new DOMXPath($mods_doc);
       $mods_xpath->registerNamespace('mods', "http://www.loc.gov/mods/v3");
       $mods_carto_xpath = $mods_xpath->query($xpath);
@@ -42,7 +97,15 @@ function islandora_simple_map_islandora_view_object_alter(&$object, &$rendered) 
 
     if (isset($rendered[NULL])) {
       if ($coords) {
-        $markup = theme('islandora_simple_map', array('coords' => urlencode($coords)));
+        $width = variable_get('islandora_simple_map_iframe_width', '600');
+        $height = variable_get('islandora_simple_map_iframe_height', '600');
+        $zoom = variable_get('islandora_simple_map_zoom', '10');
+        $markup = theme('islandora_simple_map', array(
+          'coords' => urlencode($coords),
+          'iframe_width' => $width,
+          'iframe_height' => $height,
+          'zoom' => $zoom,
+        ));
         $rendered[NULL]['#markup'] = $rendered[NULL]['#markup'] . $markup;
       }
     }

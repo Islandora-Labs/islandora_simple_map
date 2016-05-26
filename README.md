@@ -12,7 +12,7 @@ Install as usual, see [this](https://drupal.org/documentation/install/modules-th
 
 ## Configuration
 
-There are no admin settings for this module, but we can add some if people want. No Google Maps API key is required.
+Admin settings are available at `admin/islandora/tools/islandora_simple_map` for the XPath expression to the MODS element where your cartographic data is stored, and for the map's height, width, and default zoom level. No Google Maps API key is required.
 
 ## Maintainer
 
@@ -20,9 +20,8 @@ There are no admin settings for this module, but we can add some if people want.
 
 ## To do
 
-* Add admin options for map width and height, and other options.
 * Add support for non-Google maps.
-* Add support for using alternative metadata elements for place lookups.
+* Add support for using alternative (non-MODS) datastreams for cartographic data.
 
 ## Development and feedback
 
