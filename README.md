@@ -22,7 +22,7 @@ Dublin, Ireland
 Dublin, Ohio
 ```
 
-but a value of just `Dublin` results in a map showing the Irish city. Another example that illustrates Google Maps' behavior when it is given ambiguous data is a <`subject><geographic>` value of "City of Light", which results in a map showing a church by that name in the US Northwest, not Paris. If Google Maps can't disambiguate the location data to a single location to put on a map, it produces a map of most of the world (depending on the default zoom level in effect) with no points on it.
+but a value of just `Dublin` results in a map showing the Irish city. Another example that illustrates Google Maps' behavior when it is given ambiguous data is a <`subject><geographic>` value of `City of Light`, which results in a map showing a church by that name in the US Northwest, not Paris, probably because when I wrote this I was closer to that location than to Paris, France. If Google Maps cannot disambiguate the location data to a single location to put on a map, it produces a map showing most of the world (depending on the default zoom level in effect) with no points on it.
 
 So, for best results, configure this module to use unambiguous cartographic coordinate data.
 
