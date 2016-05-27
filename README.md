@@ -4,7 +4,7 @@ Islandora module that appends a Google map to an object's display if its MODS da
 
 ## Overview
 
-This module can use geographic coordinates and place names to populate an object's map. You can configure multiple MODS elements in a preferred order y entering XPath expressions in the admin setting's "XPath expressions to MODS elements containing map data" form field. Data from the first element to match one of the configured XPath expressions is used to render the map.
+This module can use geographic coordinates and place names in MODS elements to populate a Google map that is then appended to the object's display. Site admins ccan configure multiple MODS elements in a preferred order by entering XPath expressions in the admin setting's "XPath expressions to MODS elements containing map data" field. Data from the first element to match one of the configured XPath expressions is used to render the map. The module provide sensible default values that prefer `<subject><cartographics><coordinates>` over `<subject><geographic>`.
 
 ### Using geographic coordinates to create maps
 
@@ -27,14 +27,14 @@ There is an admin option to "Attempt to clean up map data". If this is enabled (
 
 ### Using place names and other non-coordinate data to create maps
 
-If you configure this module to use MODS elements that do not contain coordinate data, such as `<subject><geographic>`, Google Maps will attempt to generate a map based on the data it has been told to use. However, the results are not always predictable. For example, the following two values for `<subject><geographic>` produce accurate maps, presumably because they are unambiguous:
+If you configure this module to use MODS elements that do not contain coordinate data, such as `<subject><geographic>`, Google Maps will attempt to generate a map based on whatever data it finds in the configured element. However, the results of using non-cartographic coordinates are not always predictable. For example, the following two values for `<subject><geographic>` produce accurate maps, presumably because they are unambiguous:
 
 ```
 Dublin, Ireland
 Dublin, Ohio
 ```
 
-but a value of just `Dublin` results in a map showing the Irish city. Another example that illustrates Google Maps' behavior when it is given ambiguous data is a <`subject><geographic>` value of `City of Light`, which results in a map showing a church by that name in the US Northwest, not Paris, France, probably because when I wrote this I was closer to that location than to Paris (it would be cool if someone in Europe could test this). If Google Maps cannot disambiguate the location data to a single location to put on a map, it produces a map showing most of the world (depending on the default zoom level in effect) with no points on it.
+but a value of just `Dublin` results in a map showing the Irish city. Another example that illustrates Google Maps' behavior when it is given ambiguous data is a <`subject><geographic>` value of `City of Light`, which results in a map showing a church by that name in the US Northwest, not Paris, France, probably because when I wrote this I was closer to that location than to Paris (it would be cool if someone in Europe could test this). If Google Maps cannot disambiguate the data to a single location to put on a map, it produces a map showing most of the world (depending on the default zoom level in effect) with no points on it.
 
 The XPath expressions used to retrieve data are executed in the order they are listed in the admin settings. So, for best results, listing the expressions in decreasing likelihood they will contain reliable and unambiguous data is the best strategy. The defaults values do this.
 
