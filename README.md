@@ -34,9 +34,9 @@ Dublin, Ireland
 Dublin, Ohio
 ```
 
-but a value of just `Dublin` results in a map showing the Irish city. Another example that illustrates Google Maps' behavior when it is given ambiguous data is a <`subject><geographic>` value of `City of Light`, which results in a map showing a church by that name in the US Northwest, not Paris, France, probably because when I wrote this I was closer to that location than to Paris (it would be cool if someone in Europe could test this). If Google Maps cannot disambiguate the data to a single location to put on a map, it produces a map showing most of the world (depending on the default zoom level in effect) with no points on it.
+but a value of just `Dublin` results in a map showing the Irish city. Another example that illustrates Google Maps' behavior when it is given ambiguous data is a <`subject><geographic>` value of `City of Light`, which results in a map showing a church by that name in the US Northwest, not Paris, France, probably because when I wrote this I was closer to that location than to Paris (it would be cool if someone in Europe could test this). If Google Maps cannot disambiguate the data down to a single location to put on a map, it produces a map showing a large portion of the world (depending on the default zoom level in effect) with no points on it.
 
-The XPath expressions used to retrieve data are executed in the order they are listed in the admin settings. So, for best results, listing the expressions in decreasing likelihood they will contain reliable and unambiguous data is the best strategy. The defaults values do this.
+The XPath expressions used to retrieve map data are executed in the order they are listed in the admin settings. So, for best results, listing the expressions in decreasing likelihood they will contain reliable and unambiguous data is the best strategy. The defaults values do this.
 
 
 ## Requirements
@@ -47,13 +47,13 @@ Install as usual, see [this](https://drupal.org/documentation/install/modules-th
 
 ## Configuration
 
+Even though this module uses the Google Maps Embed API, no API key is required.
+
 Admin settings are available at `admin/islandora/tools/islandora_simple_map` for:
 
-* the XPath expression to the MODS element where your map data is stored
+* the XPath expressions to the MODS elements where your map data is stored
 * the map's height, width, default zoom level, and whether or not the map is collapsed or expanded by default, and
-* cleaning up the data before it is passed to Google Maps.
-
-Even though this module uses the Google Maps Embed API, no API key is required.
+* option to clean up the data before it is passed to Google Maps.
 
 Once you enable the module, any object whose MODS file contains coordinates in the expected element will have a Google map appended to its display.
 
@@ -64,7 +64,7 @@ Once you enable the module, any object whose MODS file contains coordinates in t
 ## To do
 
 * Add support for non-Google maps.
-* Add support for using datastreams other than MODS for cartographic data.
+* Add support for using datastreams other than MODS for map data.
 * Add a Drupal permission to "View Islandora Simple Map maps".
 
 ## Development and feedback
