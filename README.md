@@ -41,7 +41,13 @@ Install as usual, see [this](https://drupal.org/documentation/install/modules-th
 
 ## Configuration
 
-Admin settings are available at `admin/islandora/tools/islandora_simple_map` for the XPath expression to the MODS element where your cartographic data is stored, for the map's height, width, and default zoom level and for normalizing the cartographic data. No Google Maps API key is required.
+Admin settings are available at `admin/islandora/tools/islandora_simple_map` for:
+
+* the XPath expression to the MODS element where your cartographic data is stored
+* the map's height, width, default zoom level, and whether or not the map is collapsed or expanded by default, and
+* normalizing the cartographic data.
+
+Even though this module uses the Google Maps Embed API, no Google Maps API key is required.
 
 Once you enable the module, any object whose MODS file contains coordinates in the expected element will have a Google map appended to its display. If multiple elements contain coordinates, data from the first element found is used.
 
