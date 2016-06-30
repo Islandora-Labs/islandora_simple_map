@@ -71,6 +71,12 @@ function islandora_simple_map_admin_settings() {
     '#default_value' => variable_get('islandora_simple_map_attempt_cleanup', 1),
     '#description' => t('Check this option if you want to clean up data before passing it off to Google Maps. Please consult the README file for more information'),
   );
+  $form['islandora_simple_map_google_api_key'] = array(
+    '#title' => t('Google API Key'),
+    '#type' => 'textfield',
+    '#default_value' => variable_get('islandora_simple_map_google_api_key', ''),
+    '#description' => t('The Google API key to use for this site. You need a Google API key only if you are using the Maps JavaScript API.'),
+  );
   return system_settings_form($form);
 }
 
