@@ -15,6 +15,7 @@ function islandora_simple_map_uninstall() {
     'islandora_simple_map_iframe_height',
     'islandora_simple_map_zoom',
     'islandora_simple_map_collapsed',
+    'islandora_simple_map_use_google_maps_javascript_api',
     'islandora_simple_map_google_api_key',
   );
   array_walk($variables, 'variable_del');
