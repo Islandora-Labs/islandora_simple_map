@@ -4,7 +4,7 @@ Islandora module that appends a Google map to an object's display if its MODS da
 
 ## Overview
 
-This module can use geographic coordinates and place names in MODS elements to populate a Google map that is then appended to the object's display. Site admins ccan configure multiple MODS elements in a preferred order by entering XPath expressions in the admin setting's "XPath expressions to MODS elements containing map data" field. Data from the first element to match one of the configured XPath expressions is used to render the map. The module provide sensible default values that prefer `<subject><cartographics><coordinates>` over `<subject><geographic>`.
+This module can use geographic coordinates and place names in MODS elements to populate a Google map that is then appended to the object's display. Site admins can configure multiple MODS elements in a preferred order by entering XPath expressions in the admin setting's "XPath expressions to MODS elements containing map data" field. Data from the first element to match one of the configured XPath expressions is used to render the map. The module provide sensible default values that prefer `<subject><cartographics><coordinates>` over `<subject><geographic>`.
 
 ### Using geographic coordinates to create maps
 
@@ -64,6 +64,7 @@ Once you enable the module, any object whose MODS file contains coordinates in t
 ## To do
 
 * Add support for non-Google maps.
+* Add support for the Google Maps Javascript API ([issue](https://github.com/mjordan/islandora_simple_map/issues/7))
 * Add support for using datastreams other than MODS for map data.
 * Add a Drupal permission to "View Islandora Simple Map maps".
 
