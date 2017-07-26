@@ -1,0 +1,16 @@
+/*
+  Islandora Simple Map Base CSS
+ */
+
+.block-islandora-simple-map {
+  width: 200px;
+  height: 200px;
+  position: relative;
+}
+
+.block-islandora-simple-map .content,
+.islandora_simple_map_mapdiv {
+  height: 100%;
+  width: 100%;
+  position: relative;
+}
