@@ -36,7 +36,7 @@ function islandora_simple_map_block_view($delta = '') {
           if (count($found_coords) > 0) {
             $map_div_id = drupal_html_id('islandora_simple_map_block');
             $settings = [];
-            $settings['islandora_simple_map'] = [
+            $settings['islandora_simple_map'][$map_div_id] = [
               'map_markers' => $found_coords,
               'map_div_id' => $map_div_id,
               'map_zoom_level' => (int) variable_get('islandora_simple_map_zoom', '10'),
@@ -48,7 +48,7 @@ function islandora_simple_map_block_view($delta = '') {
                   '#type' => 'container',
                   '#attributes' => [
                     'id' => $map_div_id,
-                    'class' => ['islandora_simple_map_mapdiv'],
+                    'class' => ['islandora-simple-map-holder', 'islandora-simple-map-block'],
                   ],
                 ],
                 '#attached' => [
@@ -66,7 +66,7 @@ function islandora_simple_map_block_view($delta = '') {
                       'data' => url("https://maps.googleapis.com/maps/api/js", [
                         'query' => [
                           'key' => variable_get('islandora_simple_map_google_maps_api_key', ''),
-                          'callback' => 'Drupal.islandora_simple_map.initMap',
+                          'callback' => 'Drupal.islandora_simple_map.initialize',
                         ],
                       ]),
                       'defer' => TRUE,
@@ -82,8 +82,8 @@ function islandora_simple_map_block_view($delta = '') {
               ],
             ];
           }
+          return $block;
         }
-        return $block;
       }
     }
   }

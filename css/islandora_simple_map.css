@@ -9,7 +9,7 @@
 }
 
 .block-islandora-simple-map .content,
-.islandora_simple_map_mapdiv {
+.islandora-simple-map-holder.islandora-simple-map-block {
   height: 100%;
   width: 100%;
   position: relative;

@@ -64,7 +64,7 @@ function islandora_simple_map_islandora_view_object_alter(&$object, &$rendered) 
       $module_path = drupal_get_path('module', 'islandora_simple_map');
       if (variable_get('islandora_simple_map_use_gmaps_api', FALSE)) {
         $map_div_id = drupal_html_id('islandora_simple_map_page');
-        $settings['islandora_simple_map'] = [
+        $settings['islandora_simple_map'][$map_div_id] = [
           'map_markers' => $found_coords,
           'map_div_id' => $map_div_id,
           'map_zoom_level' => $zoom,
@@ -81,7 +81,7 @@ function islandora_simple_map_islandora_view_object_alter(&$object, &$rendered) 
               '#type' => 'container',
               '#attributes' => [
                 'id' => $map_div_id,
-                'class' => ['islandora_simple_map_pagediv'],
+                'class' => ['islandora-simple-map-holder', 'islandora-simple-map-page'],
               ],
             ],
             '#attached' => [
@@ -101,7 +101,7 @@ function islandora_simple_map_islandora_view_object_alter(&$object, &$rendered) 
                   'data' => url("https://maps.googleapis.com/maps/api/js", [
                     'query' => [
                       'key' => variable_get('islandora_simple_map_google_maps_api_key', ''),
-                      'callback' => 'Drupal.islandora_simple_map.initMap',
+                      'callback' => 'Drupal.islandora_simple_map.initialize',
                     ],
                   ]),
                   'defer' => TRUE,
