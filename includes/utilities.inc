@@ -20,45 +20,45 @@ function islandora_simple_map_parse_mods($mods) {
 
   $mods_doc = new DOMDocument();
   if ($mods_doc->loadXML($mods)) {
+    $mods_xpath = new DOMXPath($mods_doc);
+    $mods_xpath->registerNamespace('mods', "http://www.loc.gov/mods/v3");
     foreach ($xpaths as $xpath) {
       $xpath = trim($xpath);
       if (strlen($xpath)) {
-        $mods_xpath = new DOMXPath($mods_doc);
-        $mods_xpath->registerNamespace('mods', "http://www.loc.gov/mods/v3");
         $mods_carto_xpath = @$mods_xpath->query($xpath);
         if ($mods_carto_xpath && $mods_carto_xpath->length > 0) {
-          // Take the first element found by the current XPath.
-          $mods_carto = $mods_carto_xpath->item(0);
-          $node_value = $mods_carto->nodeValue;
-          if ((bool) variable_get('islandora_simple_map_attempt_cleanup', TRUE)) {
-            $node_value = islandora_simple_map_clean_coordinates($node_value);
-          }
-          if (strlen($node_value)) {
-            if (strlen(trim(variable_get('islandora_simple_map_coordinate_delimiter', ';'))) > 0) {
-              // Splitting on delimiter.
-              $coords = explode(trim(variable_get('islandora_simple_map_coordinate_delimiter', ';')), $node_value);
-              foreach ($coords as $coord) {
-                if (variable_get('islandora_simple_map_use_gmaps_api', FALSE)) {
-                  // Using Javascript API, filter out non-decimal coordinates.
-                  if (islandora_simple_map_is_valid_coordinates($coord)) {
+          foreach ($mods_carto_xpath as $mods_carto) {
+            $node_value = $mods_carto->nodeValue;
+            if ((bool) variable_get('islandora_simple_map_attempt_cleanup', TRUE)) {
+              $node_value = islandora_simple_map_clean_coordinates($node_value);
+            }
+            if (strlen($node_value)) {
+              if (strlen(trim(variable_get('islandora_simple_map_coordinate_delimiter', ';'))) > 0) {
+                // Splitting on delimiter.
+                $coords = explode(trim(variable_get('islandora_simple_map_coordinate_delimiter', ';')), $node_value);
+                foreach ($coords as $coord) {
+                  if (variable_get('islandora_simple_map_use_gmaps_api', FALSE)) {
+                    // Using Javascript API, filter out non-decimal coordinates.
+                    if (islandora_simple_map_is_valid_coordinates($coord)) {
+                      $found_coords[] = $coord;
+                    }
+                  }
+                  else {
+                    // Splitting but not using Javascript API.
                     $found_coords[] = $coord;
                   }
                 }
-                else {
-                  // Splitting but not using Javascript API.
-                  $found_coords[] = $coord;
+              }
+              elseif (variable_get('islandora_simple_map_use_gmaps_api', FALSE)) {
+                // Not splitting but using Javascript API.
+                if (islandora_simple_map_is_valid_coordinates($node_value)) {
+                  $found_coords[] = $node_value;
                 }
               }
-            }
-            elseif (variable_get('islandora_simple_map_use_gmaps_api', FALSE)) {
-              // Not splitting but using Javascript API.
-              if (islandora_simple_map_is_valid_coordinates($node_value)) {
+              else {
+                // Not splitting and not using Javascript API.
                 $found_coords[] = $node_value;
               }
-            }
-            else {
-              // Not splitting and not using Javascript API.
-              $found_coords[] = $node_value;
             }
           }
         }
