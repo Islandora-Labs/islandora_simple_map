@@ -26,8 +26,8 @@ function islandora_simple_map_parse_mods($mods) {
       if (strlen($xpath)) {
         $mods_xpath = new DOMXPath($mods_doc);
         $mods_xpath->registerNamespace('mods', "http://www.loc.gov/mods/v3");
-        $mods_carto_xpath = $mods_xpath->query($xpath);
-        if ($mods_carto_xpath->length) {
+        $mods_carto_xpath = @$mods_xpath->query($xpath);
+        if ($mods_carto_xpath && $mods_carto_xpath->length > 0) {
           // Take the first element found by the current XPath.
           $mods_carto = $mods_carto_xpath->item(0);
           $node_value = $mods_carto->nodeValue;
@@ -42,4 +42,19 @@ function islandora_simple_map_parse_mods($mods) {
     }
   }
   return $found_coords;
+}
+
+
+/**
+ * Applies some cleanup on data to make it more reliable for Google Maps.
+ *
+ * @param string $data
+ *   The coordinate data.
+ *
+ * @return string
+ *   The cleaned up data.
+ */
+function islandora_simple_map_clean_coordinates($data) {
+  $data = preg_replace('/;/', ',', $data);
+  return $data;
 }

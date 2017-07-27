@@ -157,20 +157,6 @@ function islandora_simple_map_islandora_view_object_alter(&$object, &$rendered) 
 }
 
 /**
- * Applies some cleanup on data to make it more reliable for Google Maps.
- *
- * @param string $data
- *   The coordinate data.
- *
- * @return string
- *   The cleaned up data.
- */
-function islandora_simple_map_clean_coordinates($data) {
-  $data = preg_replace('/;/', ',', $data);
-  return $data;
-}
-
-/**
  * Determines which member of the object's render array to append map to.
  *
  * @param array $models
