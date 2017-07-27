@@ -19,8 +19,7 @@ function islandora_simple_map_parse_mods($mods) {
   $found_coords = [];
 
   $mods_doc = new DOMDocument();
-  $mods_doc->loadXML($mods);
-  if ($mods_doc) {
+  if ($mods_doc->loadXML($mods)) {
     foreach ($xpaths as $xpath) {
       $xpath = trim($xpath);
       if (strlen($xpath)) {
