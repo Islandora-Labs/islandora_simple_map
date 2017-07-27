@@ -63,6 +63,9 @@ function islandora_simple_map_islandora_view_object_alter(&$object, &$rendered) 
       $collapsed = variable_get('islandora_simple_map_collapsed', 'collapsed');
       $module_path = drupal_get_path('module', 'islandora_simple_map');
       if (variable_get('islandora_simple_map_use_gmaps_api', FALSE)) {
+        if (variable_get('islandora_simple_maps_disable_page_display', FALSE)) {
+          return [];
+        }
         $map_div_id = drupal_html_id('islandora_simple_map_page');
         $settings['islandora_simple_map'][$map_div_id] = [
           'map_markers' => $found_coords,

@@ -48,6 +48,20 @@ function islandora_simple_map_admin_settings() {
         ],
       ],
     ],
+    'islandora_simple_maps_disable_page_display' => [
+      '#type' => 'checkbox',
+      '#title' => t('Disable page map.'),
+      '#description' => t('Using Google Maps API allows you to add a' .
+        ' block to display the map, this toggle allows you to turn off the' .
+        ' normal page map.'),
+      '#return_value' => TRUE,
+      '#default_value' => variable_get('islandora_simple_maps_disable_page_display', FALSE),
+      '#states' => [
+        'visible' => [
+          ':input[name="islandora_simple_map_use_gmaps_api"]' => ['checked' => TRUE],
+        ],
+      ],
+    ],
   ];
   $form['islandora_simple_map_xpath'] = array(
     '#title' => t('XPath expressions to MODS elements containing map data'),
