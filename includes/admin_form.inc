@@ -61,6 +61,12 @@ function islandora_simple_map_admin_settings() {
       ],
     ],
   ];
+  $form['islandora_simple_map_coordinate_delimiter'] = [
+    '#type' => 'textfield',
+    '#title' => t('Coordinate delimiter'),
+    '#description' => t('Character or string used to separate multiple coordinates inside the MODS element, leave blank to not split.'),
+    '#default_value' => variable_get('islandora_simple_map_coordinate_delimiter', ';'),
+  ];
   $form['islandora_simple_map_xpath'] = array(
     '#title' => t('XPath expressions to MODS elements containing map data'),
     '#type' => 'textarea',
@@ -96,12 +102,13 @@ function islandora_simple_map_admin_settings() {
     '#type' => 'textfield',
     '#size' => 10,
     '#default_value' => variable_get('islandora_simple_map_zoom', '10'),
-    '#description' => t('The higher the number, the higher the zoom.'),
+    '#description' => t('The higher the number, the higher the zoom. If you have multiple points on a map, the zoom level may be lowered to fit all points on the map.'),
   );
   $form['islandora_simple_map_attempt_cleanup'] = array(
     '#type' => 'checkbox',
     '#title' => t('Attempt to clean up map data.'),
-    '#default_value' => variable_get('islandora_simple_map_attempt_cleanup', 1),
+    '#return_value' => TRUE,
+    '#default_value' => variable_get('islandora_simple_map_attempt_cleanup', TRUE),
     '#description' => t('Check this option if you want to clean up data before passing it off to Google Maps. Please consult the README file for more information'),
   );
   $form['#validate'][] = 'islandora_simple_map_admin_settings_form_validate';
