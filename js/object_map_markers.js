@@ -23,6 +23,8 @@
             center: coords[0],
             scrollwheel: (!config.disable_scroll_zoom)
           });
+          map.defaultZoom = map.getZoom();
+          map.initialZoom = true;
           for (var f = 0; f < coords.length; f += 1) {
             bounds.extend(coords[f]);
             new google.maps.Marker({
@@ -40,12 +42,25 @@
               });
             }
           }
+          else {
+            Drupal.islandora_simple_map.redraw(map, bounds);
+          }
+          // On first zoom called from map.fitBounds ensure we don't zoom closer.
+          google.maps.event.addListener(map, 'zoom_changed', function() {
+            if (map.initialZoom) {
+              if (map.getZoom() > map.defaultZoom) {
+                map.setZoom(map.defaultZoom);
+              }
+              map.initialZoom = false;
+            }
+          });
           Drupal.islandora_simple_map.maps[mapId] = map;
         }
       }
     },
     redraw: function(map, bounds) {
       google.maps.event.trigger(map, 'resize');
+      map.fitBounds(bounds);
       map.panTo(bounds.getCenter());
     }
   }
