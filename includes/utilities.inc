@@ -33,7 +33,7 @@ function islandora_simple_map_parse_mods($mods) {
           if (variable_get('islandora_simple_map_attempt_cleanup', 1)) {
             $node_value = islandora_simple_map_clean_coordinates($node_value);
           }
-          if (strlen($node_value)) {
+          if (strlen($node_value) && islandora_simple_map_is_valid_coordinates($node_value)) {
             $found_coords[] = $node_value;
           }
         }
@@ -42,7 +42,6 @@ function islandora_simple_map_parse_mods($mods) {
   }
   return $found_coords;
 }
-
 
 /**
  * Applies some cleanup on data to make it more reliable for Google Maps.
@@ -56,4 +55,19 @@ function islandora_simple_map_parse_mods($mods) {
 function islandora_simple_map_clean_coordinates($data) {
   $data = preg_replace('/;/', ',', $data);
   return $data;
+}
+
+/**
+ * Validate a coordinate, so we don't add text locations.
+ *
+ * @param string $coordinates
+ *   Whatever was returned by the configured XPath.
+ *
+ * @return bool
+ *   If it is a valid coordinate.
+ */
+function islandora_simple_map_is_valid_coordinates($coordinates) {
+  $coordinates = trim($coordinates);
+  $val = ((bool) preg_match('/^[+\-]?\d+(\.\d+)?\s*,\s*[+\-]?\d+(\.\d+)?$/', $coordinates));
+  return $val;
 }
