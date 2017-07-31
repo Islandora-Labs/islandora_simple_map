@@ -33,7 +33,32 @@ function islandora_simple_map_get_coordinates(AbstractObject $object) {
  * Parse a MODS record looking for coordinates.
  */
 function islandora_simple_map_islandora_simple_map_get_coordinates(AbstractObject $object) {
+  $mods_results = islandora_simple_map_get_mods_results($object);
   $found_coords = [];
+  foreach ($mods_results as $node_value) {
+    if (strlen(trim(variable_get('islandora_simple_map_coordinate_delimiter', ';'))) > 0) {
+      $temp_array = explode(trim(variable_get('islandora_simple_map_coordinate_delimiter', ';')), $node_value);
+      foreach ($temp_array as $item) {
+        $found_coords[] = $item;
+      }
+    }
+    else {
+      $found_coords[] = $node_value;
+    }
+  }
+  return $found_coords;
+}
+
+/**
+ * Utility function to return the node values of the provided MODS.
+ *
+ * @param \AbstractObject $object
+ *   The Islandora object.
+ * @return array
+ *   The unaltered node values.
+ */
+function islandora_simple_map_get_mods_results(AbstractObject $object) {
+  $results = [];
   if (isset($object['MODS'])) {
     $mods = $object['MODS']->content;
     $xpaths = preg_split('/$\R?^/m', trim(variable_get('islandora_simple_map_xpath', ISLANDORA_SIMPLE_MAP_XPATHS)));
@@ -49,15 +74,7 @@ function islandora_simple_map_islandora_simple_map_get_coordinates(AbstractObjec
             foreach ($mods_carto_xpath as $mods_carto) {
               $node_value = $mods_carto->nodeValue;
               if (strlen($node_value)) {
-                if (strlen(trim(variable_get('islandora_simple_map_coordinate_delimiter', ';'))) > 0) {
-                  $temp_array = explode(trim(variable_get('islandora_simple_map_coordinate_delimiter', ';')), $node_value);
-                  foreach ($temp_array as $item) {
-                    $found_coords[] = $item;
-                  }
-                }
-                else {
-                  $found_coords[] = $node_value;
-                }
+                $results[] = $node_value;
               }
             }
           }
@@ -65,7 +82,7 @@ function islandora_simple_map_islandora_simple_map_get_coordinates(AbstractObjec
       }
     }
   }
-  return $found_coords;
+  return $results;
 }
 
 /**
