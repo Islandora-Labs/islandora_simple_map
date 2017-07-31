@@ -17,9 +17,9 @@
 function islandora_simple_map_get_coordinates(AbstractObject $object) {
   $coordinates = (array) module_invoke_all(ISLANDORA_SIMPLE_MAP_COORDINATE_HOOK, $object);
   if (count($coordinates) > 0) {
+    $coordinates = array_filter($coordinates, 'islandora_simple_map_is_valid_coordinates');
     array_walk($coordinates, 'islandora_simple_map_standardize_format');
     $coordinates = array_unique($coordinates);
-    $coordinates = array_filter($coordinates, 'islandora_simple_map_is_valid_coordinates');
     if (variable_get('islandora_simple_map_attempt_cleanup', 1)) {
       array_walk($coordinates, 'islandora_simple_map_clean_coordinates');
     }
