@@ -32,14 +32,15 @@ function islandora_simple_map_parse_mods($mods) {
             if ((bool) variable_get('islandora_simple_map_attempt_cleanup', TRUE)) {
               $node_value = islandora_simple_map_clean_coordinates($node_value);
             }
-            if (strlen($node_value) && islandora_simple_map_is_valid_coordinates($node_value)) {
+            if (strlen($node_value)) {
               if (strlen(trim(variable_get('islandora_simple_map_coordinate_delimiter', ';'))) > 0) {
                 $temp_array = explode(trim(variable_get('islandora_simple_map_coordinate_delimiter', ';')), $node_value);
+                $temp_array = array_filter($temp_array, 'islandora_simple_map_is_valid_coordinates');
                 foreach ($temp_array as $item) {
                   $found_coords[] = $item;
                 }
               }
-              else {
+              elseif (islandora_simple_map_is_valid_coordinates($node_value)) {
                 $found_coords[] = $node_value;
               }
             }
