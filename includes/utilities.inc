@@ -33,8 +33,16 @@ function islandora_simple_map_parse_mods($mods) {
           if (variable_get('islandora_simple_map_attempt_cleanup', 1)) {
             $node_value = islandora_simple_map_clean_coordinates($node_value);
           }
-          if (strlen($node_value) && islandora_simple_map_is_valid_coordinates($node_value)) {
-            $found_coords[] = $node_value;
+          if (strlen($node_value)) {
+            if (variable_get('islandora_simple_map_use_gmaps_api', FALSE)) {
+              if (islandora_simple_map_is_valid_coordinates($node_value)) {
+                // Filter non-coordinates if using the Javascript API.
+                $found_coords[] = $node_value;
+              }
+            }
+            else {
+              $found_coords[] = $node_value;
+            }
           }
         }
       }
