@@ -13,8 +13,14 @@ function islandora_simple_map_block_info() {
   if (variable_get('islandora_simple_map_use_gmaps_api', FALSE)) {
     $blocks['islandora_simple_map_object'] = [
       'info' => t('Islandora Simple Map Object Block'),
-      'cache' => DRUPAL_NO_CACHE,
+      'cache' => DRUPAL_CACHE_PER_USER,
     ];
+    if (variable_get('islandora_simple_map_collection_maps', FALSE)) {
+      $blocks['islandora_simple_map_collection'] = [
+        'info' => t('Islandora Simple Map Collection Block'),
+        'cache' => DRUPAL_CACHE_PER_USER,
+      ];
+    }
   }
   return $blocks;
 }
@@ -23,7 +29,7 @@ function islandora_simple_map_block_info() {
  * Implements hook_block_view().
  */
 function islandora_simple_map_block_view($delta = '') {
-  if ($delta == 'islandora_simple_map_object') {
+  if ($delta == 'islandora_simple_map_object' || $delta == 'islandora_simple_map_collection') {
     if (variable_get('islandora_simple_map_use_gmaps_api', FALSE)) {
       $object = menu_get_object('islandora_object', 2);
       if ($object) {
@@ -55,10 +61,7 @@ function islandora_simple_map_block_view($delta = '') {
                     'type' => 'setting',
                     'data' => $settings,
                   ],
-                  [
-                    'type' => 'file',
-                    'data' => "{$module_path}/js/object_map_markers.js",
-                  ],
+
                   [
                     'type' => 'external',
                     'data' => url("https://maps.googleapis.com/maps/api/js", [
@@ -79,6 +82,20 @@ function islandora_simple_map_block_view($delta = '') {
               ],
             ],
           ];
+          if ($do_collection) {
+            $block['content']['#attached']['js'][] =
+              [
+                'type' => 'file',
+                'data' => "{$module_path}/js/collection_map_markers.js",
+              ];
+          }
+          else {
+            $block['content']['#attached']['js'][] =
+              [
+                'type' => 'file',
+                'data' => "{$module_path}/js/object_map_markers.js",
+              ];
+          }
         }
         return $block;
       }

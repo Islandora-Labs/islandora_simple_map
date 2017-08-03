@@ -26,6 +26,25 @@ function islandora_simple_map_menu() {
     'type' => MENU_NORMAL_ITEM,
     'file' => 'includes/admin_form.inc',
   );
+  $items['admin/islandora/tools/islandora_simple_map/settings'] = array(
+    'title' => 'Settings',
+    'description' => 'Configure the Islandora Simple Map module.',
+    'page callback' => 'drupal_get_form',
+    'access arguments' => array('administer site configuration'),
+    'page arguments' => array('islandora_simple_map_admin_settings'),
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'file' => 'includes/admin_form.inc',
+    'weight' => -9,
+  );
+  $items['admin/islandora/tools/islandora_simple_map/collections'] = [
+    'title' => 'Collection Maps',
+    'description' => 'Collections displaying a map of all member points',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => ['islandora_simple_map_admin_collection_display'],
+    'access callback' => 'islandora_simple_maps_collection_access',
+    'type' => MENU_LOCAL_TASK,
+    'file' => 'includes/admin_form.inc',
+  ];
   return $items;
 }
 
@@ -46,6 +65,17 @@ function islandora_simple_map_theme() {
       'template' => 'islandora_simple_map',
     ),
   );
+}
+
+/**
+ * Access check for admin page of collections displaying maps.
+ *
+ * @return bool
+ *   Does user have privilege and are collections enabled.
+ */
+function islandora_simple_maps_collection_access() {
+  return (user_access('administer site configuration') &&
+    variable_get('islandora_simple_map_collection_maps', FALSE));
 }
 
 /**
@@ -191,4 +221,23 @@ function islandora_simple_map_get_rendered_member(array $models) {
       $member = '';
   }
   return $member;
+}
+
+/**
+ * Implements hook_islandora_basic_collection_build_manage_object().
+ */
+function islandora_simple_map_islandora_basic_collection_build_manage_object(array $form_state, AbstractObject $object) {
+  if (variable_get('islandora_simple_map_use_gmaps_api', FALSE) &&
+    variable_get('islandora_simple_map_collection_maps', FALSE)) {
+    module_load_include('inc', 'islandora_simple_map', 'includes/manage_collection_form');
+    $form_state['manage_collection_object']['manage_islandora_simple_maps'] = [
+      '#id' => 'manage-islandora-simple-maps',
+      '#group' => 'manage_collection_object',
+      '#access' => TRUE,
+      '#type' => 'fieldset',
+      '#title' => t('Manage Islandora Simple Maps'),
+      'form' => drupal_get_form('islandora_simple_map_collection_manage_form', $object),
+    ];
+    return $form_state;
+  }
 }

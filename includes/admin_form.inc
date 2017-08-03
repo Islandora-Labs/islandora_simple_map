@@ -60,6 +60,37 @@ function islandora_simple_map_admin_settings() {
         ],
       ],
     ],
+    'islandora_simple_map_collections' => [
+      '#type' => 'fieldset',
+      '#title' => t('Collection Maps'),
+      '#states' => [
+        'visible' => [
+          ':input[name="islandora_simple_map_use_gmaps_api"]' => ['checked' => TRUE],
+        ],
+      ],
+      'islandora_simple_map_collection_maps' => [
+        '#type' => 'checkbox',
+        '#title' => t('Enable collection level maps?'),
+        '#description' => t('Aggregate object markers inside a collection into a single map for the collection.'),
+        '#default_value' => variable_get('islandora_simple_map_collection_maps', FALSE),
+        '#return_value' => TRUE,
+      ],
+      'islandora_simple_map_collection_coord_solr_field' => [
+        '#type' => 'textfield',
+        '#title' => t('Coordinates Solr field.'),
+        '#description' => t('Solr field with the coordinates from a records, can be multivalued.'),
+        '#default_value' => variable_get('islandora_simple_map_collection_coord_solr_field', ''),
+        '#autocomplete_path' => 'islandora_solr/autocomplete_luke',
+        '#states' => [
+          'required' => [
+            ':input[name="islandora_simple_map_collection_maps"]' => ['checked' => TRUE],
+          ],
+          'visible' => [
+            ':input[name="islandora_simple_map_collection_maps"]' => ['checked' => TRUE],
+          ],
+        ],
+      ],
+    ],
   ];
   $form['islandora_simple_map_coordinate_delimiter'] = [
     '#type' => 'textfield',
@@ -129,4 +160,135 @@ function islandora_simple_map_admin_settings_form_validate(array $form, array &$
     form_set_error('islandora_simple_map_google_maps_api_key',
       'You must include a Google Maps API key or not use the Google Maps API.');
   }
+  if ($form_state['values']['islandora_simple_map_use_gmaps_api'] == TRUE &&
+    $form_state['values']['islandora_simple_map_collection_maps'] == TRUE &&
+    empty($form_state['values']['islandora_simple_map_collection_coord_solr_field'])) {
+    form_set_error('islandora_simple_map_collection_coord_solr_field',
+      'You must set a coordinate Solr field to enable Collections maps.');
+  }
+}
+
+/**
+ * Implements hook_form().
+ *
+ * Determines if we are displaying the collection list or a confirmation screen.
+ */
+function islandora_simple_map_admin_collection_display($form, &$form_state) {
+  if (isset($form_state['values']['collection_listing'])) {
+    $to_disable = array_filter($form_state['values']['collection_listing']);
+    if ($to_disable) {
+      return _islandora_simple_map_islandora_collection_delete_confirm($form_state);
+    }
+  }
+  return _islandora_simple_map_admin_collection_display_form($form_state);
+
+}
+
+/**
+ * Implements hook_form().
+ *
+ * Display all the collections that have maps enabled in a single location.
+ */
+function _islandora_simple_map_admin_collection_display_form(&$form_state) {
+  $header = array(
+    'title' => array('data' => t('Title'), 'field' => 'title', 'sort' => 'asc'),
+  );
+  $query = db_select('islandora_simple_map_collections_map', 'n');
+  $nids = $query
+    ->fields('n', array('pid', 'title'))
+    ->extend('PagerDefault')->limit(50)
+    ->execute();
+
+  $results = $nids->fetchAllAssoc('pid', PDO::FETCH_ASSOC);
+
+  $form = [
+    'islandora_simple_maps_collections' => [
+      '#type' => 'fieldset',
+      '#title' => t('Collections with maps.'),
+      '#description' => t('List of collections with maps enabled.'),
+      'map_warning' => [
+        '#type' => 'markup',
+        '#markup' => '<p><b>NOTE:</b> You can disable individual or multiple maps here, but you must add them at the individual collection manage pages.</p>',
+      ],
+      'collection_listing' => [
+        '#type' => 'tableselect',
+        '#title' => t('Collections'),
+        '#header' => $header,
+        '#options' => $results,
+        '#empty' => t('There are no collections with maps enabled'),
+      ],
+      'disable_map' => [
+        '#type' => 'submit',
+        '#value' => t('Disable checked'),
+      ],
+      'pager' => array('#markup' => theme('pager')),
+    ],
+  ];
+  return $form;
+}
+
+/**
+ * Implements hook_form().
+ *
+ * Presents a confirmation form with the selected collections.
+ */
+function _islandora_simple_map_islandora_collection_delete_confirm(&$form_state) {
+  $to_disable = array_filter($form_state['values']['collection_listing']);
+  if ($to_disable) {
+    array_walk($to_disable, function (&$item) {
+      $pid = $item;
+      $object = islandora_object_load($pid);
+      if ($object) {
+        $item = $object->label;
+      }
+    });
+  }
+
+  // Tell the submit handler to process the form.
+  $form['process'] = array('#type' => 'hidden', '#value' => 'true');
+  $markup_list = "";
+  foreach ($to_disable as $pid => $title) {
+    $markup_list .= "<li>" . check_plain($title) . "</li>";
+  }
+  $markup_list = "<ul>$markup_list</ul>";
+  return confirm_form(
+    $form,
+    t('Are you sure you want to disable maps on the following collections?'),
+    'admin/islandora/tools/islandora_simple_map/collections',
+    $markup_list,
+    t('Delete'));
+}
+
+/**
+ * Implements hook_form_submit().
+ *
+ * Handles the choose collection form and confirmation form.
+ */
+function islandora_simple_map_admin_collection_display_submit($form_id, &$form_state) {
+  if (isset($form_state['clicked_button']) &&
+    $form_state['clicked_button']['#value'] == 'Delete' &&
+    isset($form_state['values']['process'])) {
+    $delete_pids = $form_state['storage']['disable_pids'];
+    $deleted = db_delete('islandora_simple_map_collections_map')
+      ->condition('pid', $delete_pids, 'IN')
+      ->execute();
+    if ($deleted == count($delete_pids)) {
+      drupal_set_message(format_string("!num collections disabled.", ['!num' => $deleted]));
+    }
+    else {
+      drupal_set_message(format_string("Disabled !d collection maps, expected !e",
+        ['!d' => $deleted, '!e' => count($delete_pids)]
+      ));
+    }
+  }
+  elseif (isset($form_state['values']['collection_listing'])) {
+    $to_disable = array_filter($form_state['values']['collection_listing']);
+    if ($to_disable) {
+      $form_state['storage']['disable_pids'] = $to_disable;
+    }
+    else {
+      drupal_set_message("No collections selected.", "warning");
+    }
+  }
+  $form_state['rebuild'] = TRUE;
 }
