@@ -12,11 +12,11 @@ function islandora_simple_map_admin_settings() {
   $form = array();
   $form['google_api'] = [
     '#type' => 'fieldset',
-    '#title' => t('Google Maps API'),
+    '#title' => t('Google Maps Javascript API'),
     'islandora_simple_map_use_gmaps_api' => [
       '#type' => 'checkbox',
-      '#title' => t('Use Google Maps API'),
-      '#description' => t('Use the Google Maps API, this requires registering for an API key.'),
+      '#title' => t('Use Google Maps Javascript API'),
+      '#description' => t('Use the Google Maps Javascript API, this requires registering for an API key.'),
       '#return_value' => TRUE,
       '#default_value' => variable_get('islandora_simple_map_use_gmaps_api', FALSE),
     ],
