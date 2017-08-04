@@ -17,15 +17,15 @@
 function islandora_simple_map_get_coordinates(AbstractObject $object) {
   $coordinates = (array) module_invoke_all(ISLANDORA_SIMPLE_MAP_COORDINATE_HOOK, $object);
   if (count($coordinates) > 0) {
+    if (variable_get('islandora_simple_map_attempt_cleanup', TRUE)) {
+      array_walk($coordinates, 'islandora_simple_map_clean_coordinates');
+    }
     if (variable_get('islandora_simple_map_use_gmaps_api', FALSE)) {
       // Only filter and standardize coordinates if we are using Javascript API.
       $coordinates = array_filter($coordinates, 'islandora_simple_map_is_valid_coordinates');
       array_walk($coordinates, 'islandora_simple_map_standardize_format');
     }
     $coordinates = array_unique($coordinates);
-    if (variable_get('islandora_simple_map_attempt_cleanup', 1)) {
-      array_walk($coordinates, 'islandora_simple_map_clean_coordinates');
-    }
   }
   return $coordinates;
 }
