@@ -6,6 +6,7 @@
  */
 
 define('ISLANDORA_SIMPLE_MAP_XPATHS', "//mods:subject/mods:cartographics/mods:coordinates\n//mods:subject/mods:geographic");
+define('ISLANDORA_SIMPLE_MAP_COORDINATE_HOOK', 'islandora_simple_map_get_coordinates');
 
 // Includes blocks.
 require_once dirname(__FILE__) . '/includes/blocks.inc';
@@ -52,107 +53,103 @@ function islandora_simple_map_theme() {
 function islandora_simple_map_islandora_view_object_alter(&$object, &$rendered) {
   module_load_include('inc', 'islandora_simple_map', 'includes/utilities');
 
-  if (isset($object['MODS'])) {
-    $mods_string = $object['MODS']->content;
-    $found_coords = islandora_simple_map_parse_mods($mods_string);
-
-    if (count($found_coords)) {
-      $width = (int) variable_get('islandora_simple_map_iframe_width', '600');
-      $height = (int) variable_get('islandora_simple_map_iframe_height', '600');
-      $zoom = (int) variable_get('islandora_simple_map_zoom', '10');
-      $collapsed = variable_get('islandora_simple_map_collapsed', 'collapsed');
-      $module_path = drupal_get_path('module', 'islandora_simple_map');
-      if (variable_get('islandora_simple_map_use_gmaps_api', FALSE)) {
-        if (variable_get('islandora_simple_maps_disable_page_display', FALSE)) {
-          return [];
-        }
-        $map_div_id = drupal_html_id('islandora_simple_map_page');
-        $settings['islandora_simple_map'][$map_div_id] = [
-          'map_markers' => $found_coords,
-          'map_div_id' => $map_div_id,
-          'map_zoom_level' => $zoom,
-          'disable_scroll_zoom' => (bool) variable_get('islandora_simple_maps_disable_scroll', FALSE),
-        ];
-        $content = [
-          'islandora_simple_map' => [
-            '#type' => 'fieldset',
-            '#title' => t('Map'),
+  $found_coords = islandora_simple_map_get_coordinates($object);
+  if (count($found_coords)) {
+    $width = (int) variable_get('islandora_simple_map_iframe_width', '600');
+    $height = (int) variable_get('islandora_simple_map_iframe_height', '600');
+    $zoom = (int) variable_get('islandora_simple_map_zoom', '10');
+    $collapsed = variable_get('islandora_simple_map_collapsed', 'collapsed');
+    $module_path = drupal_get_path('module', 'islandora_simple_map');
+    if (variable_get('islandora_simple_map_use_gmaps_api', FALSE)) {
+      if (variable_get('islandora_simple_maps_disable_page_display', FALSE)) {
+        return [];
+      }
+      $map_div_id = drupal_html_id('islandora_simple_map_page');
+      $settings['islandora_simple_map'][$map_div_id] = [
+        'map_markers' => $found_coords,
+        'map_div_id' => $map_div_id,
+        'map_zoom_level' => $zoom,
+        'disable_scroll_zoom' => (bool) variable_get('islandora_simple_maps_disable_scroll', FALSE),
+      ];
+      $content = [
+        'islandora_simple_map' => [
+          '#type' => 'fieldset',
+          '#title' => t('Map'),
+          '#attributes' => [
+            'class' => ['collapsible', ($collapsed ? 'collapsed' : '')],
+          ],
+          'islandora_simple_map_div' => [
+            '#type' => 'container',
             '#attributes' => [
-              'class' => ['collapsible', ($collapsed ? 'collapsed' : '')],
+              'id' => $map_div_id,
+              'class' => ['islandora-simple-map-holder', 'islandora-simple-map-page'],
             ],
-            'islandora_simple_map_div' => [
-              '#type' => 'container',
-              '#attributes' => [
-                'id' => $map_div_id,
-                'class' => ['islandora-simple-map-holder', 'islandora-simple-map-page'],
+          ],
+          '#attached' => [
+            'js' => [
+              'misc/collapse.js',
+              'misc/form.js',
+              [
+                'type' => 'setting',
+                'data' => $settings,
+              ],
+              [
+                'type' => 'file',
+                'data' => "{$module_path}/js/object_map_markers.js",
+              ],
+              [
+                'type' => 'external',
+                'data' => url("https://maps.googleapis.com/maps/api/js", [
+                  'query' => [
+                    'key' => variable_get('islandora_simple_map_google_maps_api_key', ''),
+                    'callback' => 'Drupal.islandora_simple_map.initialize',
+                  ],
+                ]),
+                'defer' => TRUE,
               ],
             ],
-            '#attached' => [
-              'js' => [
-                'misc/collapse.js',
-                'misc/form.js',
-                [
-                  'type' => 'setting',
-                  'data' => $settings,
-                ],
-                [
-                  'type' => 'file',
-                  'data' => "{$module_path}/js/object_map_markers.js",
-                ],
-                [
-                  'type' => 'external',
-                  'data' => url("https://maps.googleapis.com/maps/api/js", [
-                    'query' => [
-                      'key' => variable_get('islandora_simple_map_google_maps_api_key', ''),
-                      'callback' => 'Drupal.islandora_simple_map.initialize',
-                    ],
-                  ]),
-                  'defer' => TRUE,
-                ],
+            'css' => [
+              [
+                'type' => 'file',
+                'data' => "{$module_path}/css/islandora_simple_map.css",
               ],
-              'css' => [
-                [
-                  'type' => 'file',
-                  'data' => "{$module_path}/css/islandora_simple_map.css",
-                ],
-                [
-                  'type' => 'inline',
-                  'data' => "#{$map_div_id} {\nheight: {$height}px;\nwidth: {$width}px;\n}",
-                ],
+              [
+                'type' => 'inline',
+                'data' => "#{$map_div_id} {\nheight: {$height}px;\nwidth: {$width}px;\n}",
               ],
             ],
           ],
-        ];
-        $markup = render($content);
-      }
-      else {
-
-        $width = variable_get('islandora_simple_map_iframe_width', '600');
-        $height = variable_get('islandora_simple_map_iframe_height', '600');
-        $zoom = variable_get('islandora_simple_map_zoom', '10');
-        $collapsed = variable_get('islandora_simple_map_collapsed', 'collapsed');
-        $markup = theme('islandora_simple_map', [
-          // We use the first set of coords if our XPaths found more than one.
-          'coords' => urlencode($found_coords[0]),
-          'iframe_width' => $width,
-          'iframe_height' => $height,
-          'zoom' => $zoom,
-          'collapsed' => $collapsed,
-        ]);
-      }
-      // Some Islandora render arrays have a single member, with a key of NULL.
-      if (isset($rendered[NULL])) {
-        $rendered[NULL]['#markup'] = $rendered[NULL]['#markup'] . $markup;
-      }
-      else {
-        // Others have several members, depending on the content model.
-        $member = islandora_simple_map_get_rendered_member($object->models);
-        if (isset($rendered[$member]['#markup'])) {
-          $rendered[$member]['#markup'] = $rendered[$member]['#markup'] . $markup;
-        }
-      }
-
+        ],
+      ];
+      $markup = render($content);
     }
+    else {
+
+      $width = variable_get('islandora_simple_map_iframe_width', '600');
+      $height = variable_get('islandora_simple_map_iframe_height', '600');
+      $zoom = variable_get('islandora_simple_map_zoom', '10');
+      $collapsed = variable_get('islandora_simple_map_collapsed', 'collapsed');
+      $markup = theme('islandora_simple_map', [
+        // We use the first set of coords if our XPaths found more than one.
+        'coords' => urlencode($found_coords[0]),
+        'iframe_width' => $width,
+        'iframe_height' => $height,
+        'zoom' => $zoom,
+        'collapsed' => $collapsed,
+      ]);
+    }
+    // Some Islandora render arrays have a single member, with a key of NULL.
+    if (isset($rendered[NULL])) {
+      $rendered[NULL]['#markup'] = $rendered[NULL]['#markup'] . $markup;
+    }
+    else {
+      // Others have several members, depending on the content model.
+      $member = islandora_simple_map_get_rendered_member($object->models);
+      if (isset($rendered[$member]['#markup'])) {
+        $rendered[$member]['#markup'] = $rendered[$member]['#markup'] . $markup;
+      }
+    }
+
   }
 }
 
