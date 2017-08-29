@@ -20,28 +20,38 @@ function islandora_simple_map_parse_mods($mods) {
 
   $mods_doc = new DOMDocument();
   if ($mods_doc->loadXML($mods)) {
+    $mods_xpath = new DOMXPath($mods_doc);
+    $mods_xpath->registerNamespace('mods', "http://www.loc.gov/mods/v3");
     foreach ($xpaths as $xpath) {
       $xpath = trim($xpath);
       if (strlen($xpath)) {
-        $mods_xpath = new DOMXPath($mods_doc);
-        $mods_xpath->registerNamespace('mods', "http://www.loc.gov/mods/v3");
         $mods_carto_xpath = @$mods_xpath->query($xpath);
         if ($mods_carto_xpath && $mods_carto_xpath->length > 0) {
-          // Take the first element found by the current XPath.
-          $mods_carto = $mods_carto_xpath->item(0);
-          $node_value = $mods_carto->nodeValue;
-          if (variable_get('islandora_simple_map_attempt_cleanup', 1)) {
-            $node_value = islandora_simple_map_clean_coordinates($node_value);
-          }
-          if (strlen($node_value)) {
-            if (variable_get('islandora_simple_map_use_gmaps_api', FALSE)) {
-              if (islandora_simple_map_is_valid_coordinates($node_value)) {
-                // Filter non-coordinates if using the Javascript API.
-                $found_coords[] = $node_value;
-              }
+          foreach ($mods_carto_xpath as $mods_carto) {
+            $node_value = $mods_carto->nodeValue;
+            if ((bool) variable_get('islandora_simple_map_attempt_cleanup', TRUE)) {
+              $node_value = islandora_simple_map_clean_coordinates($node_value);
             }
-            else {
-              $found_coords[] = $node_value;
+            if (strlen($node_value)) {
+              if (strlen(trim(variable_get('islandora_simple_map_coordinate_delimiter', ';'))) > 0) {
+                $temp_array = explode(trim(variable_get('islandora_simple_map_coordinate_delimiter', ';')), $node_value);
+                if (variable_get('islandora_simple_map_use_gmaps_api', FALSE)) {
+                  $temp_array = array_filter($temp_array, 'islandora_simple_map_is_valid_coordinates');
+                }
+                foreach ($temp_array as $item) {
+                  $found_coords[] = $item;
+                }
+              }
+              else {
+                if (variable_get('islandora_simple_map_use_gmaps_api', FALSE)) {
+                  if (islandora_simple_map_is_valid_coordinates($node_value)) {
+                    $found_coords[] = $node_value;
+                  }
+                }
+                else {
+                  $found_coords[] = $node_value;
+                }
+              }
             }
           }
         }
