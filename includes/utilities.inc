@@ -17,6 +17,10 @@
 function islandora_simple_map_get_coordinates(AbstractObject $object) {
   $coordinates = (array) module_invoke_all(ISLANDORA_SIMPLE_MAP_COORDINATE_HOOK, $object);
   if (count($coordinates) > 0) {
+    // Trim any whitespace.
+    array_walk($coordinates, function (&$o) {
+      $o = trim($o);
+    });
     if (variable_get('islandora_simple_map_attempt_cleanup', TRUE)) {
       array_walk($coordinates, 'islandora_simple_map_clean_coordinates');
     }
@@ -57,6 +61,7 @@ function islandora_simple_map_islandora_simple_map_get_coordinates(AbstractObjec
  *
  * @param \AbstractObject $object
  *   The Islandora object.
+ *
  * @return array
  *   The unaltered node values.
  */
@@ -93,13 +98,9 @@ function islandora_simple_map_get_mods_results(AbstractObject $object) {
  *
  * @param string $data
  *   The coordinate data.
- *
- * @return string
- *   The cleaned up data.
  */
-function islandora_simple_map_clean_coordinates($data) {
+function islandora_simple_map_clean_coordinates(&$data) {
   $data = preg_replace('/;/', ',', $data);
-  return $data;
 }
 
 /**
@@ -112,9 +113,7 @@ function islandora_simple_map_clean_coordinates($data) {
  *   If it is a valid coordinate.
  */
 function islandora_simple_map_is_valid_coordinates($coordinates) {
-  $coordinates = trim($coordinates);
-  $val = ((bool) preg_match('/^[+\-]?\d+(\.\d+)?\s*,\s*[+\-]?\d+(\.\d+)?$/', $coordinates));
-  return $val;
+  return ((bool) preg_match('/^[+\-]?\d+(\.\d+)?\s*,\s*[+\-]?\d+(\.\d+)?$/', $coordinates));
 }
 
 /**
@@ -122,12 +121,9 @@ function islandora_simple_map_is_valid_coordinates($coordinates) {
  *
  * @param string $coordinates
  *   A decimal coordinate.
- *
- * @return string
- *   A cleaned up decimal coordinate.
  */
-function islandora_simple_map_standardize_format($coordinates) {
+function islandora_simple_map_standardize_format(&$coordinates) {
   if (preg_match('/^\s*([+\-]?\d+(\.\d+)?)\s*,\s*([+\-]?\d+(\.\d+))?\s*$/', $coordinates, $matches)) {
-    return format_string("!lat,!lng", ['!lat' => $matches[1], '!lng' => $matches[2]]);
+    $coordinates = format_string("!lat,!lng", ['!lat' => $matches[1], '!lng' => $matches[3]]);
   }
 }

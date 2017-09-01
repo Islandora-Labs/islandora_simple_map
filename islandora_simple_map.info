@@ -3,3 +3,4 @@ description = "Proof of concept module that displays a Google map on an object i
 version = 7.x-dev
 core = 7.x
 dependencies[] = islandora
+files[] = tests/get_coordinates.test
