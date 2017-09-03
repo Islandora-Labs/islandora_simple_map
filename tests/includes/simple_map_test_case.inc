@@ -49,7 +49,6 @@ class IslandoraSimpleMapTestCase extends IslandoraWebTestCase {
   public function tearDown() {
     $this->purgeTestObjects();
     variable_set('islandora_simple_map_use_gmaps_api', $this->jsApiState);
-    unset($this->repository);
     parent::tearDown();
   }
 
