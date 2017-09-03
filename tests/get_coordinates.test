@@ -8,21 +8,18 @@
 /**
  * Get coordinates tests.
  */
-class IslandoraSimpleMapGetCoordinatesTestCase extends IslandoraWebTestCase {
+class IslandoraSimpleMapGetCoordinatesTestCase extends IslandoraSimpleMapTestCase {
 
   /**
-   * Location of test resources.
-   *
-   * @var string
+   * Test objects to be removed after the test.
+   * @var array
    */
-  private $resourcePath;
-
-  /**
-   * Existing Use Google Maps Javascript API setting.
-   *
-   * @var bool
-   */
-  private $jsApiState;
+  protected $testObjects = array(
+    'test:simpleMapSingleCoord',
+    'test:simpleMapMultipleInSingle',
+    'test:simpleMapMultipleInMulti',
+    'test:simpleMapSFUData',
+  );
 
   /**
    * Gets info to display to describe this test.
@@ -38,51 +35,11 @@ class IslandoraSimpleMapGetCoordinatesTestCase extends IslandoraWebTestCase {
   }
 
   /**
-   * Setup tests.
-   *
-   * @see \IslandoraUnitTestCase::setUp()
+   * {@inheritdoc}
    */
   public function setUp() {
-    parent::setUp('islandora_simple_map');
-    $this->repository = $this->admin->repository;
+    parent::setUp();
     module_load_include('inc', 'islandora_simple_map', 'includes/utilities');
-    $this->jsApiState = variable_get('islandora_simple_map_use_gmaps_api', FALSE);
-    $this->resourcePath = dirname(__FILE__) . "/resources";
-    $this->purgeTestObjects();
-  }
-
-  /**
-   * Free any objects/resources created for this test.
-   *
-   * @see IslandoraUnitTestCase::tearDown()
-   */
-  public function tearDown() {
-    $this->purgeTestObjects();
-    variable_set('islandora_simple_map_use_gmaps_api', $this->jsApiState);
-    unset($this->repository);
-    parent::tearDown();
-  }
-
-  /**
-   * Purge any objects created by the test's in this class.
-   */
-  public function purgeTestObjects() {
-    $objects = array(
-      'test:simpleMapSingleCoord',
-      'test:simpleMapMultipleInSingle',
-      'test:simpleMapMultipleInMulti',
-      'test:simpleMapSFUData',
-    );
-    foreach ($objects as $object) {
-      try {
-        $object = $this->repository->getObject($object);
-        $object->label = "Don't Block";
-        $this->repository->purgeObject($object->id);
-      }
-      catch (Exception $e) {
-        // Meh... Either it didn't exist or the purge failed.
-      }
-    }
   }
 
   /**
@@ -90,8 +47,8 @@ class IslandoraSimpleMapGetCoordinatesTestCase extends IslandoraWebTestCase {
    */
   public function testSingleCoord() {
     $expected = ['49.8833260,-97.1529213'];
-    $object = $this->repository->constructObject('test:simpleMapSingleCoord');
-    $this->repository->ingestObject($object);
+    $object = $this->admin->repository->constructObject('test:simpleMapSingleCoord');
+    $this->admin->repository->ingestObject($object);
     $mods = $object->constructDatastream('MODS');
     $object->ingestDatastream($mods);
 
@@ -116,8 +73,8 @@ class IslandoraSimpleMapGetCoordinatesTestCase extends IslandoraWebTestCase {
 
     $expected = ['+51.585,-124.71722', '+51.52333,-124.97861'];
 
-    $object = $this->repository->constructObject('test:simpleMapMultipleInSingle');
-    $this->repository->ingestObject($object);
+    $object = $this->admin->repository->constructObject('test:simpleMapMultipleInSingle');
+    $this->admin->repository->ingestObject($object);
     $mods = $object->constructDatastream('MODS');
     $object->ingestDatastream($mods);
 
@@ -139,8 +96,8 @@ class IslandoraSimpleMapGetCoordinatesTestCase extends IslandoraWebTestCase {
   public function testMultipleCoordsInMultipleElements() {
     $expected = ['+51.585,-124.71722', '+51.52333,-124.97861'];
 
-    $object = $this->repository->constructObject('test:simpleMapMultipleInMulti');
-    $this->repository->ingestObject($object);
+    $object = $this->admin->repository->constructObject('test:simpleMapMultipleInMulti');
+    $this->admin->repository->ingestObject($object);
     $mods = $object->constructDatastream('MODS');
     $object->ingestDatastream($mods);
 
@@ -159,8 +116,8 @@ class IslandoraSimpleMapGetCoordinatesTestCase extends IslandoraWebTestCase {
    * Test pulling from SFU example data.
    */
   public function testSfuData() {
-    $object = $this->repository->constructObject('test:simpleMapSFUData');
-    $this->repository->ingestObject($object);
+    $object = $this->admin->repository->constructObject('test:simpleMapSFUData');
+    $this->admin->repository->ingestObject($object);
     $mods = $object->constructDatastream('MODS');
     $object->ingestDatastream($mods);
 
@@ -169,20 +126,12 @@ class IslandoraSimpleMapGetCoordinatesTestCase extends IslandoraWebTestCase {
 
     $this->setJavascriptApi(FALSE);
     $coords = islandora_simple_map_get_coordinates($object);
-    $this->assertEqual(['+49.28889,-123.17361', 'English Bay, BC'], $coords, "Got wrong coordinates from SFU sample data with Embed API.");
+    $this->assertEqual([
+      '+49.28889,-123.17361',
+      'English Bay, BC'
+    ], $coords, "Got wrong coordinates from SFU sample data with Embed API.");
     $this->setJavascriptApi(TRUE);
     $coords = islandora_simple_map_get_coordinates($object);
     $this->assertEqual(['+49.28889,-123.17361'], $coords, "Got wrong coordinates from SFU sample data with Javascript API.");
   }
-
-  /**
-   * Enable/disable the javascript api setting for some tests.
-   *
-   * @param bool $val
-   *   Value for the use javascript api variable.
-   */
-  private function setJavascriptApi($val = FALSE) {
-    variable_set('islandora_simple_map_use_gmaps_api', $val);
-  }
-
 }
