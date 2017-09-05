@@ -17,6 +17,7 @@ env:
     - FEDORA_VERSION="3.7.0"
     - FEDORA_VERSION="3.8.1"
 before_install:
+  - cd $HOME
   - git clone -b 7.x git://github.com/Islandora/islandora.git
   - export ISLANDORA_DIR=$HOME/islandora
   - $ISLANDORA_DIR/tests/scripts/travis_setup.sh
@@ -29,6 +30,6 @@ before_script:
 
 script:
   - $TRAVIS_BUILD_DIR/tests/scripts/line_endings.sh sites/all/modules/islandora_simple_map
-  - drush coder-review --reviews=production,security,style,i18n,potx,sniffer islandora
+  - drush coder-review --reviews=production,security,style,i18n,potx,sniffer islandora_simple_map
   - phpcpd --names *.module,*.inc,*.test sites/all/modules/islandora_simple_map
   - php scripts/run-tests.sh --php `phpenv which php` --url http://localhost:8081 --verbose "Islandora Simple Map"
