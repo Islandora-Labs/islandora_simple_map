@@ -28,7 +28,7 @@ function islandora_simple_map_block_view($delta = '') {
       $object = menu_get_object('islandora_object', 2);
       if ($object) {
         module_load_include('inc', 'islandora_simple_map', 'includes/utilities');
-        $found_coords = islandora_simple_map_get_coordinates($object);
+        $found_coords = islandora_simple_map_process_coordinates($object);
         $block = [];
         if (count($found_coords) > 0) {
           $module_path = drupal_get_path('module', 'islandora_simple_map');

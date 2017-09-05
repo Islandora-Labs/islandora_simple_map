@@ -17,6 +17,7 @@
 function islandora_simple_map_process_coordinates(AbstractObject $object) {
   $coordinates = islandora_simple_map_get_coordinates($object);
   if (count($coordinates) > 0) {
+    $coordinates = islandora_simple_map_parse_coordinates($coordinates);
     if (variable_get('islandora_simple_map_attempt_cleanup', TRUE)) {
       array_walk($coordinates, 'islandora_simple_map_clean_coordinates');
     }
