@@ -1,9 +1,13 @@
 <?php
+
 /**
  * @file
- * Simple Map Test Case
+ * Simple Map Test Base Class.
  */
 
+/**
+ * Class IslandoraSimpleMapTestCase.
+ */
 class IslandoraSimpleMapTestCase extends IslandoraWebTestCase {
   /**
    * Location of test resources.
@@ -77,4 +81,5 @@ class IslandoraSimpleMapTestCase extends IslandoraWebTestCase {
   protected function setJavascriptApi($val = FALSE) {
     variable_set('islandora_simple_map_use_gmaps_api', $val);
   }
+
 }

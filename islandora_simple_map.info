@@ -5,3 +5,4 @@ core = 7.x
 dependencies[] = islandora
 files[] = tests/includes/simple_map_test_case.inc
 files[] = tests/get_coordinates.test
+files[] = tests/hooks.test

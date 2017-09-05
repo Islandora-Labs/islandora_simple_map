@@ -12,6 +12,7 @@ class IslandoraSimpleMapGetCoordinatesTestCase extends IslandoraSimpleMapTestCas
 
   /**
    * Test objects to be removed after the test.
+   *
    * @var array
    */
   protected $testObjects = array(
@@ -28,8 +29,8 @@ class IslandoraSimpleMapGetCoordinatesTestCase extends IslandoraSimpleMapTestCas
    */
   public static function getInfo() {
     return [
-      'name' => 'Islandora Simple Map - Hooks',
-      'description' => 'Ensure that the hooks for coordinate retrieval are called.',
+      'name' => 'Islandora Simple Map - Get Coordinates',
+      'description' => 'Ensure that the function for coordinate retrieval are called.',
       'group' => 'Islandora Simple Map',
     ];
   }
@@ -116,6 +117,8 @@ class IslandoraSimpleMapGetCoordinatesTestCase extends IslandoraSimpleMapTestCas
    * Test pulling from SFU example data.
    */
   public function testSfuData() {
+    $expected = ['+49.28889,-123.17361', 'English Bay, BC'];
+
     $object = $this->admin->repository->constructObject('test:simpleMapSFUData');
     $this->admin->repository->ingestObject($object);
     $mods = $object->constructDatastream('MODS');
@@ -126,12 +129,10 @@ class IslandoraSimpleMapGetCoordinatesTestCase extends IslandoraSimpleMapTestCas
 
     $this->setJavascriptApi(FALSE);
     $coords = islandora_simple_map_get_coordinates($object);
-    $this->assertEqual([
-      '+49.28889,-123.17361',
-      'English Bay, BC'
-    ], $coords, "Got wrong coordinates from SFU sample data with Embed API.");
+    $this->assertEqual($expected, $coords, "Got wrong coordinates from SFU sample data with Embed API.");
     $this->setJavascriptApi(TRUE);
     $coords = islandora_simple_map_get_coordinates($object);
-    $this->assertEqual(['+49.28889,-123.17361'], $coords, "Got wrong coordinates from SFU sample data with Javascript API.");
+    $this->assertEqual($expected, $coords, "Got wrong coordinates from SFU sample data with Javascript API.");
   }
+
 }

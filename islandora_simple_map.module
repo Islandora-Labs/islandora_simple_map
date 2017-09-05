@@ -7,6 +7,7 @@
 
 define('ISLANDORA_SIMPLE_MAP_XPATHS', "//mods:subject/mods:cartographics/mods:coordinates\n//mods:subject/mods:geographic");
 define('ISLANDORA_SIMPLE_MAP_COORDINATE_HOOK', 'islandora_simple_map_get_coordinates');
+define('ISLANDORA_SIMPLE_MAP_PARSE_HOOK', 'islandora_simple_map_parse_coordinates_callback');
 
 // Includes blocks.
 require_once dirname(__FILE__) . '/includes/blocks.inc';
@@ -53,7 +54,7 @@ function islandora_simple_map_theme() {
 function islandora_simple_map_islandora_view_object_alter(&$object, &$rendered) {
   module_load_include('inc', 'islandora_simple_map', 'includes/utilities');
 
-  $found_coords = islandora_simple_map_get_coordinates($object);
+  $found_coords = islandora_simple_map_process_coordinates($object);
   if (count($found_coords)) {
     $width = (int) variable_get('islandora_simple_map_iframe_width', '600');
     $height = (int) variable_get('islandora_simple_map_iframe_height', '600');

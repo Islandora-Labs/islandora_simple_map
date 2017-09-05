@@ -6,13 +6,13 @@
  */
 
 /**
- * Get alternate coordinate types and return them as decimal coordinates.
+ * Get coordinates from places other than MODS and return them.
  *
  * @param AbstractObject $object
  *   The Islandora object.
  *
  * @return array
- *   Array of coordinates in decimal format.
+ *   Array of coordinates.
  */
 function hook_islandora_simple_map_get_coordinates(AbstractObject $object) {
   if (isset($object['coordinates'])) {
@@ -24,4 +24,30 @@ function hook_islandora_simple_map_get_coordinates(AbstractObject $object) {
     }
     return $coordinates;
   }
+}
+
+/**
+ * Register a function to parse a type of coordinate.
+ *
+ * @return array
+ *   Associative array with the format below.
+ *   array(
+ *     'function_name' => 'name of function to call',
+ *     'file' => 'path to file to include for accessing above function.',
+ *     'weight' => 'positive integer for setting an order',
+ *   );
+ *
+ *   The callable 'function_name' takes an array of coordinates and returns an
+ *   associative array where the key is the original coordinate and the value is
+ *   the parsed version.
+ */
+function hook_islandora_simple_map_parse_coordinates_callback() {
+  return array(
+    'my_module_implementation' => array(
+      'function_name' => 'islandora_test_parse_coordinates',
+      'file' => drupal_get_path('module', 'islandora_simple_map') .
+      'includes/test_functions.inc',
+      'weight' => 100,
+    ),
+  );
 }

@@ -6,21 +6,17 @@
  */
 
 /**
- * Calls the hook_islandora_simple_map_get_coordinates() impls.
+ * Calls the hooks to retrieve coordinates and parse them.
  *
- * @param AbstractObject $object
+ * @param \AbstractObject $object
  *   The object being viewed.
  *
  * @return array
- *   Array of unique decimal lat/lng points.
+ *   An array of unique coordinates.
  */
-function islandora_simple_map_get_coordinates(AbstractObject $object) {
-  $coordinates = (array) module_invoke_all(ISLANDORA_SIMPLE_MAP_COORDINATE_HOOK, $object);
+function islandora_simple_map_process_coordinates(AbstractObject $object) {
+  $coordinates = islandora_simple_map_get_coordinates($object);
   if (count($coordinates) > 0) {
-    // Trim any whitespace.
-    array_walk($coordinates, function (&$o) {
-      $o = trim($o);
-    });
     if (variable_get('islandora_simple_map_attempt_cleanup', TRUE)) {
       array_walk($coordinates, 'islandora_simple_map_clean_coordinates');
     }
@@ -32,6 +28,66 @@ function islandora_simple_map_get_coordinates(AbstractObject $object) {
     $coordinates = array_unique($coordinates);
   }
   return $coordinates;
+}
+
+/**
+ * Calls the hook_islandora_simple_map_get_coordinates() impls.
+ *
+ * @param AbstractObject $object
+ *   The object being viewed.
+ *
+ * @return array
+ *   Array of coordinates.
+ */
+function islandora_simple_map_get_coordinates(AbstractObject $object) {
+  $coordinates = (array) module_invoke_all(ISLANDORA_SIMPLE_MAP_COORDINATE_HOOK, $object);
+  if (count($coordinates) > 0) {
+    // Trim any whitespace.
+    array_walk($coordinates, function (&$o) {
+      $o = trim($o);
+    });
+  }
+  return $coordinates;
+}
+
+/**
+ * Calls hook_islandora_simple_map_parse_coordinates() impl with coordinates.
+ *
+ * @param array $coordinates
+ *   Coordinates to be parsed to a usable format.
+ *
+ * @return array
+ *   The array of altered coordinates.
+ */
+function islandora_simple_map_parse_coordinates(array $coordinates) {
+  $hooks = (array) module_invoke_all(ISLANDORA_SIMPLE_MAP_PARSE_HOOK);
+  uasort($hooks, function ($a, $b) {
+    if (abs($a['weight']) <= abs($b['weight'])) {
+      return -1;
+    }
+    else {
+      return 1;
+    }
+  });
+  // Don't need to parse coordinates already in decimal notation.
+  $processed = array_filter($coordinates, 'islandora_simple_map_is_valid_coordinates');
+  $coordinates = array_diff($coordinates, $processed);
+  $to_process = array_combine($coordinates, $coordinates);
+  foreach ($hooks as $hook) {
+    if (isset($hook['file'])) {
+      require_once $hook['file'];
+    }
+    if (function_exists($hook['function_name'])) {
+      $return_coords = call_user_func($hook['function_name'], array_values($to_process));
+      $to_process = array_diff_key($to_process, $return_coords);
+      $processed = array_merge($processed, array_values($return_coords));
+    }
+    if (count($to_process) == 0) {
+      // No more to process so stop hitting hooks.
+      break;
+    }
+  }
+  return $processed;
 }
 
 /**
