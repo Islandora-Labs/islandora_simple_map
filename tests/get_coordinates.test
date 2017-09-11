@@ -36,14 +36,6 @@ class IslandoraSimpleMapGetCoordinatesTestCase extends IslandoraSimpleMapTestCas
   }
 
   /**
-   * {@inheritdoc}
-   */
-  public function setUp() {
-    parent::setUp();
-    module_load_include('inc', 'islandora_simple_map', 'includes/utilities');
-  }
-
-  /**
    * Test pulling a single coordinate from a MODS.
    */
   public function testSingleCoord() {

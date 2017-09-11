@@ -256,7 +256,7 @@ function _islandora_simple_map_islandora_collection_delete_confirm(&$form_state)
     t('Are you sure you want to disable maps on the following collections?'),
     'admin/islandora/tools/islandora_simple_map/collections',
     $markup_list,
-    t('Delete'));
+    t('Disable'));
 }
 
 /**
@@ -265,8 +265,9 @@ function _islandora_simple_map_islandora_collection_delete_confirm(&$form_state)
  * Handles the choose collection form and confirmation form.
  */
 function islandora_simple_map_admin_collection_display_submit($form_id, &$form_state) {
+
   if (isset($form_state['clicked_button']) &&
-    $form_state['clicked_button']['#value'] == 'Delete' &&
+    $form_state['clicked_button']['#value'] == 'Disable' &&
     isset($form_state['values']['process'])) {
     $delete_pids = $form_state['storage']['disable_pids'];
     $deleted = db_delete('islandora_simple_map_collections_map')

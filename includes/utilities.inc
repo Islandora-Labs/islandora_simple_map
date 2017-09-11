@@ -186,3 +186,69 @@ function islandora_simple_map_standardize_format(&$coordinates) {
     $coordinates = format_string("!lat,!lng", ['!lat' => $matches[1], '!lng' => $matches[3]]);
   }
 }
+
+/**
+ * Do we display the map for this collection?
+ *
+ * @param string $pid
+ *   The object pid.
+ *
+ * @return bool
+ *   Whether the collection is set to display a map.
+ */
+function _islandora_simple_map_display_collection_map($pid) {
+  $results = db_query('SELECT pid from {islandora_simple_map_collections_map} WHERE pid = :pid',
+    [':pid' => $pid]);
+  foreach ($results as $r) {
+    if ($r->pid == $pid) {
+      return TRUE;
+    }
+  }
+  return FALSE;
+}
+
+/**
+ * Utility function check if we can/should display collection maps .
+ *
+ * @return bool
+ *   If collection maps can operate.
+ */
+function _islandora_simple_map_collection_map_enabled() {
+  return (variable_get('islandora_simple_map_use_gmaps_api', FALSE)
+    && variable_get('islandora_simple_map_collection_maps', FALSE)
+    && module_exists('islandora_basic_collection'));
+}
+
+/**
+ * Get all the collection points from a collection.
+ *
+ * @param \AbstractObject $object
+ *   The collection object.
+ *
+ * @return array
+ *   The collection points (un-parsed).
+ */
+function _islandora_simple_map_get_collection_points(AbstractObject $object) {
+  $points = array();
+  if (module_exists('islandora_basic_collection')) {
+    $page_num = 0;
+    $page_size = 20;
+    $count = null;
+    $members = array();
+    while (is_null($count) || ($count > ($page_num * $page_size) + $page_size)) {
+      list($count, $new_members) = islandora_basic_collection_get_member_objects($object, $page_num, $page_size);
+      $members = array_merge($members, $new_members);
+      $page_num += 1;
+    }
+    if (count($members) > 0) {
+      foreach ($members as $member) {
+        $pid = $member['object']['value'];
+        $object = islandora_object_load($pid);
+        if ($object) {
+          $points = array_merge($points, islandora_simple_map_get_coordinates($object));
+        }
+      }
+    }
+  }
+  return $points;
+}

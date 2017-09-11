@@ -33,7 +33,6 @@ function islandora_simple_map_block_view($delta = '') {
     if (variable_get('islandora_simple_map_use_gmaps_api', FALSE)) {
       $object = menu_get_object('islandora_object', 2);
       if ($object) {
-        module_load_include('inc', 'islandora_simple_map', 'includes/utilities');
         $found_coords = islandora_simple_map_process_coordinates($object);
         $block = [];
         if (count($found_coords) > 0) {
@@ -82,20 +81,11 @@ function islandora_simple_map_block_view($delta = '') {
               ],
             ],
           ];
-          if ($do_collection) {
-            $block['content']['#attached']['js'][] =
-              [
-                'type' => 'file',
-                'data' => "{$module_path}/js/collection_map_markers.js",
-              ];
-          }
-          else {
-            $block['content']['#attached']['js'][] =
-              [
-                'type' => 'file',
-                'data' => "{$module_path}/js/object_map_markers.js",
-              ];
-          }
+          $block['content']['#attached']['js'][] =
+            [
+              'type' => 'file',
+              'data' => "{$module_path}/js/object_map_markers.js",
+            ];
         }
         return $block;
       }
