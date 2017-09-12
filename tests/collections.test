@@ -47,7 +47,7 @@ class IslandoraSimpleMapCollectionTest extends IslandoraSimpleMapTestCase {
     $pid = 'test:collectionObject';
     $object = $this->admin->repository->constructObject($pid);
 
-    $object->models = array_merge((array)$object->models, array('islandora:collectionCModel'));
+    $object->models = array_merge((array) $object->models, array('islandora:collectionCModel'));
     $object->label = "Test Collection Object";
 
     $this->admin->repository->ingestObject($object);

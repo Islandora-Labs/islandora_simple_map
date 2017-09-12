@@ -15,12 +15,6 @@ function islandora_simple_map_block_info() {
       'info' => t('Islandora Simple Map Object Block'),
       'cache' => DRUPAL_CACHE_PER_USER,
     ];
-    if (variable_get('islandora_simple_map_collection_maps', FALSE)) {
-      $blocks['islandora_simple_map_collection'] = [
-        'info' => t('Islandora Simple Map Collection Block'),
-        'cache' => DRUPAL_CACHE_PER_USER,
-      ];
-    }
   }
   return $blocks;
 }
@@ -36,7 +30,6 @@ function islandora_simple_map_block_view($delta = '') {
         $found_coords = islandora_simple_map_process_coordinates($object);
         $block = [];
         if (count($found_coords) > 0) {
-          $module_path = drupal_get_path('module', 'islandora_simple_map');
           $map_div_id = drupal_html_id('islandora_simple_map_block');
           $settings = [];
           $settings['islandora_simple_map'][$map_div_id] = [
@@ -54,38 +47,9 @@ function islandora_simple_map_block_view($delta = '') {
                   'class' => ['islandora-simple-map-holder', 'islandora-simple-map-block'],
                 ],
               ],
-              '#attached' => [
-                'js' => [
-                  [
-                    'type' => 'setting',
-                    'data' => $settings,
-                  ],
-
-                  [
-                    'type' => 'external',
-                    'data' => url("https://maps.googleapis.com/maps/api/js", [
-                      'query' => [
-                        'key' => variable_get('islandora_simple_map_google_maps_api_key', ''),
-                        'callback' => 'Drupal.islandora_simple_map.initialize',
-                      ],
-                    ]),
-                    'defer' => TRUE,
-                  ],
-                ],
-                'css' => [
-                  [
-                    'type' => 'file',
-                    'data' => "{$module_path}/css/islandora_simple_map.css",
-                  ],
-                ],
-              ],
+              '#attached' => _islandora_simple_map_generate_js_code($settings),
             ],
           ];
-          $block['content']['#attached']['js'][] =
-            [
-              'type' => 'file',
-              'data' => "{$module_path}/js/object_map_markers.js",
-            ];
         }
         return $block;
       }

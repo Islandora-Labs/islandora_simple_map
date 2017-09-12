@@ -235,13 +235,15 @@ function _islandora_simple_map_admin_collection_display_form(&$form_state) {
 function _islandora_simple_map_islandora_collection_delete_confirm(&$form_state) {
   $to_disable = array_filter($form_state['values']['collection_listing']);
   if ($to_disable) {
-    array_walk($to_disable, function (&$item) {
+    array_walk($to_disable,
+      function (&$item) {
       $pid = $item;
       $object = islandora_object_load($pid);
-      if ($object) {
-        $item = $object->label;
+        if ($object) {
+          $item = $object->label;
+        }
       }
-    });
+    );
   }
 
   // Tell the submit handler to process the form.
@@ -274,11 +276,14 @@ function islandora_simple_map_admin_collection_display_submit($form_id, &$form_s
       ->condition('pid', $delete_pids, 'IN')
       ->execute();
     if ($deleted == count($delete_pids)) {
-      drupal_set_message(format_string("!num collections disabled.", ['!num' => $deleted]));
+      drupal_set_message(t(
+        "@num collections disabled.",
+        array('@num' => $deleted)));
     }
     else {
-      drupal_set_message(format_string("Disabled !d collection maps, expected !e",
-        ['!d' => $deleted, '!e' => count($delete_pids)]
+      drupal_set_message(t(
+        "Disabled @d collection maps, expected @e",
+        array('@d' => $deleted, '@e' => count($delete_pids))
       ));
     }
   }
@@ -288,7 +293,7 @@ function islandora_simple_map_admin_collection_display_submit($form_id, &$form_s
       $form_state['storage']['disable_pids'] = $to_disable;
     }
     else {
-      drupal_set_message("No collections selected.", "warning");
+      drupal_set_message(t("No collections selected."), "warning");
     }
   }
   $form_state['rebuild'] = TRUE;

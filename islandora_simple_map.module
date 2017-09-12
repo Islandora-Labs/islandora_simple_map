@@ -84,16 +84,19 @@ function islandora_simple_map_theme() {
  * @return bool
  *   Does user have privilege and are collections enabled.
  */
-function islandora_simple_map_collection_admin_access(AbstractObject $object) {
+function islandora_simple_map_collection_admin_access() {
   return (user_access('administer site configuration') &&
     _islandora_simple_map_collection_map_enabled());
 }
 
 /**
- * Access check for
+ * Access check for collection map tab.
+ *
  * @param \AbstractObject $object
+ *   The object being viewed.
  *
  * @return bool
+ *   Does user have privilege to see/access the tab.
  */
 function islandora_simple_map_collection_tab_access(AbstractObject $object) {
   return (islandora_user_access($object, array(ISLANDORA_VIEW_OBJECTS)) &&
@@ -111,7 +114,6 @@ function islandora_simple_map_islandora_view_object_alter(&$object, &$rendered) 
     $height = (int) variable_get('islandora_simple_map_iframe_height', '600');
     $zoom = (int) variable_get('islandora_simple_map_zoom', '10');
     $collapsed = variable_get('islandora_simple_map_collapsed', 'collapsed');
-    $module_path = drupal_get_path('module', 'islandora_simple_map');
     if (variable_get('islandora_simple_map_use_gmaps_api', FALSE)) {
       if (variable_get('islandora_simple_maps_disable_page_display', FALSE)) {
         return [];
@@ -137,42 +139,13 @@ function islandora_simple_map_islandora_view_object_alter(&$object, &$rendered) 
               'class' => ['islandora-simple-map-holder', 'islandora-simple-map-page'],
             ],
           ],
-          '#attached' => [
-            'js' => [
-              'misc/collapse.js',
-              'misc/form.js',
-              [
-                'type' => 'setting',
-                'data' => $settings,
-              ],
-              [
-                'type' => 'file',
-                'data' => "{$module_path}/js/object_map_markers.js",
-              ],
-              [
-                'type' => 'external',
-                'data' => url("https://maps.googleapis.com/maps/api/js", [
-                  'query' => [
-                    'key' => variable_get('islandora_simple_map_google_maps_api_key', ''),
-                    'callback' => 'Drupal.islandora_simple_map.initialize',
-                  ],
-                ]),
-                'defer' => TRUE,
-              ],
-            ],
-            'css' => [
-              [
-                'type' => 'file',
-                'data' => "{$module_path}/css/islandora_simple_map.css",
-              ],
-              [
-                'type' => 'inline',
-                'data' => "#{$map_div_id} {\nheight: {$height}px;\nwidth: {$width}px;\n}",
-              ],
-            ],
-          ],
+          '#attached' => _islandora_simple_map_generate_js_code($settings),
         ],
       ];
+      $content['islandora_simple_map']['#attached']['css'][] = array(
+        'type' => 'inline',
+        'data' => "#{$map_div_id} {\nheight: {$height}px;\nwidth: {$width}px;\n}",
+      );
       $markup = render($content);
     }
     else {
@@ -283,7 +256,6 @@ function islandora_simple_map_collection_map_view(AbstractObject $object) {
     }
     $coordinates = array_unique($coordinates);
     $zoom = (int) variable_get('islandora_simple_map_zoom', '10');
-    $module_path = drupal_get_path('module', 'islandora_simple_map');
     $map_div_id = drupal_html_id('islandora_simple_map_collection_page');
     $settings['islandora_simple_map'][$map_div_id] = [
       'map_markers' => $coordinates,
@@ -291,56 +263,22 @@ function islandora_simple_map_collection_map_view(AbstractObject $object) {
       'map_zoom_level' => $zoom,
       'disable_scroll_zoom' => (bool) variable_get('islandora_simple_maps_disable_scroll', FALSE),
     ];
-    $content = [
-      'islandora_simple_map_div' => [
-        '#type' => 'container',
-        '#attributes' => [
-          'id' => $map_div_id,
-          'class' => ['islandora-simple-map-holder', 'islandora-simple-map-collection-page'],
-        ],
-        '#attached' => [
-          'js' => [
-            'misc/collapse.js',
-            'misc/form.js',
-            [
-              'type' => 'setting',
-              'data' => $settings,
-            ],
-            [
-              'type' => 'file',
-              'data' => "{$module_path}/js/object_map_markers.js",
-            ],
-            [
-              'type' => 'external',
-              'data' => url("https://maps.googleapis.com/maps/api/js", [
-                'query' => [
-                  'key' => variable_get('islandora_simple_map_google_maps_api_key', ''),
-                  'callback' => 'Drupal.islandora_simple_map.initialize',
-                ],
-              ]),
-              'defer' => TRUE,
-            ],
-          ],
-          'css' => [
-            [
-              'type' => 'file',
-              'data' => "{$module_path}/css/islandora_simple_map.css",
-            ],
-            [
-              'type' => 'inline',
-              'data' => "#{$map_div_id} { width: 600px; height: 600px; }",
-            ],
-          ],
-        ],
-      ],
-    ];
-
+    $content = array(
+      'islandora_simple_map' => array(
+        'islandora_simple_map_div' => array(
+          '#type' => 'container',
+          '#attributes' => array(
+            'id' => $map_div_id,
+            'class' => array('islandora-simple-map-holder', 'islandora-simple-map-collection-page'),
+          ),
+          '#attached' => _islandora_simple_map_generate_js_code($settings),
+        ),
+      ),
+    );
   }
   else {
     $content = array(
       'islandora_simple_map' => array(
-        '#type' => 'fieldset',
-        '#title' => t('Collection Map'),
         'islandora_simple_map_div' => array(
           '#type' => 'markup',
           '#markup' => 'Collection has no points to display',

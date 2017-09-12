@@ -14,3 +14,9 @@
   width: 100%;
   position: relative;
 }
+
+.islandora-simple-map-holder.islandora-simple-map-collection-page {
+  height: 600px;
+  width: 600px;
+  position: relative;
+}

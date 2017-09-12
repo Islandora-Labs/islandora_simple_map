@@ -176,7 +176,7 @@ function islandora_simple_map_is_valid_coordinates($coordinates) {
 }
 
 /**
- * Standardize coordinates to account for whitespace differences,.
+ * Standardize coordinates to account for whitespace differences.
  *
  * @param string $coordinates
  *   A decimal coordinate.
@@ -188,7 +188,7 @@ function islandora_simple_map_standardize_format(&$coordinates) {
 }
 
 /**
- * Do we display the map for this collection?
+ * Utility to check if we display the map for this collection.
  *
  * @param string $pid
  *   The object pid.
@@ -208,7 +208,7 @@ function _islandora_simple_map_display_collection_map($pid) {
 }
 
 /**
- * Utility function check if we can/should display collection maps .
+ * Utility function check if we can/should display collection maps.
  *
  * @return bool
  *   If collection maps can operate.
@@ -233,7 +233,7 @@ function _islandora_simple_map_get_collection_points(AbstractObject $object) {
   if (module_exists('islandora_basic_collection')) {
     $page_num = 0;
     $page_size = 20;
-    $count = null;
+    $count = NULL;
     $members = array();
     while (is_null($count) || ($count > ($page_num * $page_size) + $page_size)) {
       list($count, $new_members) = islandora_basic_collection_get_member_objects($object, $page_num, $page_size);
@@ -251,4 +251,47 @@ function _islandora_simple_map_get_collection_points(AbstractObject $object) {
     }
   }
   return $points;
+}
+
+/**
+ * Utility function to centralize Google Maps javascript code array.
+ *
+ * @param array $settings
+ *   The array of Google Maps settings.
+ *
+ * @return array
+ *   The #attached array.
+ */
+function _islandora_simple_map_generate_js_code(array $settings) {
+  $module_path = drupal_get_path('module', 'islandora_simple_map');
+  return array(
+    'js' => array(
+      'misc/collapse.js',
+      'misc/form.js',
+      array(
+        'type' => 'setting',
+        'data' => $settings,
+      ),
+      array(
+        'type' => 'file',
+        'data' => "{$module_path}/js/object_map_markers.js",
+      ),
+      array(
+        'type' => 'external',
+        'data' => url("https://maps.googleapis.com/maps/api/js", array(
+          'query' => array(
+            'key' => variable_get('islandora_simple_map_google_maps_api_key', ''),
+            'callback' => 'Drupal.islandora_simple_map.initialize',
+          ),
+        )),
+        'defer' => TRUE,
+      ),
+    ),
+    'css' => array(
+      array(
+        'type' => 'file',
+        'data' => "{$module_path}/css/islandora_simple_map.css",
+      ),
+    ),
+  );
 }

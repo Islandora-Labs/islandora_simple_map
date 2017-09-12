@@ -50,7 +50,7 @@ function islandora_simple_map_collection_manage_form_submit($form, &$form_state)
         form_set_error('islandora_simple_map_display', 'Problem unsetting collection map.');
       }
       else {
-        drupal_set_message("Collection map display disabled.");
+        drupal_set_message(t("Collection map display disabled."));
       }
     }
     elseif ((bool) $form_state['values']['islandora_simple_map_display'] == TRUE &&
@@ -61,10 +61,8 @@ function islandora_simple_map_collection_manage_form_submit($form, &$form_state)
           'pid' => $pid,
           'title' => check_plain($object->label),
         ])->execute();
-        drupal_set_message("Collection map display enabled.");
+        drupal_set_message(t("Collection map display enabled."));
       }
     }
   }
 }
-
-
