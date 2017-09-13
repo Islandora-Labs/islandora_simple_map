@@ -20,3 +20,11 @@
   width: 600px;
   position: relative;
 }
+
+/*
+ Google Maps InfoWindow allows any size img, we want small ones.
+ */
+.gm-style img.islandora-simple-map-infowindow-thumbnail-img {
+  max-width: 100px;
+  max-height: 100px;
+}

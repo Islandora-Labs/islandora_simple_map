@@ -263,7 +263,7 @@ function islandora_simple_map_collection_map_view(AbstractObject $object) {
       'map_markers' => $coordinates,
       'map_div_id' => $map_div_id,
       'map_zoom_level' => $zoom,
-      'disable_scroll_zoom' => (bool) variable_get('islandora_simple_maps_disable_scroll', FALSE),
+      'disable_scroll_zoom' => FALSE,
     ];
     $content = array(
       'islandora_simple_map' => array(
@@ -311,7 +311,7 @@ function _islandora_simple_map_marker_info(AbstractObject $object) {
   );
 
   if (isset($object['TN']) && islandora_datastream_access(ISLANDORA_VIEW_OBJECTS, $object['TN'])) {
-    $output['thumbnail_uri'] = url("islandora/object/{$pid}/datastreams/TN/view");
+    $output['thumbnail_uri'] = url("islandora/object/{$pid}/datastream/TN/view");
   }
   drupal_json_output($output);
 }

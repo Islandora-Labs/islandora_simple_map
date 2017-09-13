@@ -31,9 +31,14 @@
             });
             // Only do infoWindows when there are multiple objects.
             Drupal.islandora_simple_map.markers.forEach(function(marker) {
-              google.maps.event.addListener(marker, 'click', function () {
+              google.maps.event.addListener(marker, 'click', function() {
                 Drupal.islandora_simple_map.markerClick(map, this);
               });
+            });
+            google.maps.event.addListener(map, 'click', function() {
+              if (typeof(Drupal.islandora_simple_map.mapInfoWindow) != 'undefined'){
+                Drupal.islandora_simple_map.mapInfoWindow.close();
+              }
             });
           } else {
             var pid = config.map_markers.pid;
@@ -44,7 +49,7 @@
           fieldsets = jQuery(map_div).closest('.collapsible.collapsed')
           if (fieldsets.length > 0) {
             for (var f = 0; f < fieldsets.length; f += 1) {
-              jQuery(fieldsets[f]).one('collapsed', function () {
+              jQuery(fieldsets[f]).one('collapsed', function() {
                 window.setTimeout(function () {
                   Drupal.islandora_simple_map.redraw(map, bounds);
                 }, 200);
@@ -85,6 +90,35 @@
     },
     markerClick: function(map, marker) {
       var pid = marker.pid;
+      jQuery.ajax('/islandora_simple_map/marker/' + encodeURI(pid),{
+        "dataType" : "json",
+        "success" : function(data) {
+          Drupal.islandora_simple_map.openInfoWindow(map, marker, data);
+        }
+      })
     },
+    openInfoWindow: function(map, marker, objectData) {
+      var content = '<div id="islandora-simple-map-infowindow" class="islandora-simple-map-infowindow-content">' +
+          '<div class="islandora-simple-map-infowindow-title">' +
+          '<a href="' + objectData.uri +'">' +
+          objectData.label +
+          '</a>' +
+          '</div>';
+      if (typeof(objectData.thumbnail_uri) != 'none') {
+        content += '<div class="islandora-simple-map-infowindow-thumbnail">' +
+            '<a href="' + objectData.uri +'">' +
+            '<img src="' + objectData.thumbnail_uri + '"' +
+            'class="islandora-simple-map-infowindow-thumbnail-img"/>' +
+            '</a>' +
+            '</div>';
+      }
+      content += '</div>';
+      if (typeof(Drupal.islandora_simple_map.mapInfoWindow) == 'undefined') {
+        Drupal.islandora_simple_map.mapInfoWindow = new google.maps.InfoWindow();
+      }
+      Drupal.islandora_simple_map.mapInfoWindow.close();
+      Drupal.islandora_simple_map.mapInfoWindow.setContent(content);
+      Drupal.islandora_simple_map.mapInfoWindow.open(map, marker);
+    }
   }
 })(jQuery);
