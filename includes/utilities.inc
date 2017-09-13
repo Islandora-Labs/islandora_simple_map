@@ -28,7 +28,7 @@ function islandora_simple_map_process_coordinates(AbstractObject $object) {
     }
     $coordinates = array_unique($coordinates);
   }
-  return $coordinates;
+  return array('pid' => $object->id, 'coordinates' => $coordinates);
 }
 
 /**
@@ -245,7 +245,10 @@ function _islandora_simple_map_get_collection_points(AbstractObject $object) {
         $pid = $member['object']['value'];
         $object = islandora_object_load($pid);
         if ($object) {
-          $points = array_merge($points, islandora_simple_map_get_coordinates($object));
+          $coords = islandora_simple_map_process_coordinates($object);
+          if (isset($coords['coordinates']) && count($coords['coordinates']) > 0) {
+            $points[] = $coords;
+          }
         }
       }
     }

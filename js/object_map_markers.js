@@ -1,6 +1,7 @@
 (function (jQuery) {
   Drupal.islandora_simple_map = {
     maps: {},
+    markers: [],
     initialize: function() {
       jQuery('.islandora-simple-map-holder').once('islandora-simple-map', function(){
         Drupal.islandora_simple_map.initMap(this.id);
@@ -11,13 +12,9 @@
         if (typeof(Drupal.settings.islandora_simple_map[mapId]) != 'undefined') {
           var config = Drupal.settings.islandora_simple_map[mapId];
           var map_div = jQuery('#' + mapId).get(0);
-          var coords = [];
-          for (var f = 0; f < config.map_markers.length; f += 1) {
-            var item = config.map_markers[f];
-            var c = item.split(',');
-            coords.push(new google.maps.LatLng(parseFloat(c[0].trim()), parseFloat(c[1].trim())));
-          }
+          var multiple_objects = (Object.prototype.toString.call(config.map_markers) === '[object Array]' ? true : false);
           var bounds = new google.maps.LatLngBounds();
+          var coords = [];
           var map = new google.maps.Map(map_div, {
             zoom: parseInt(config.map_zoom_level),
             center: coords[0],
@@ -25,11 +22,23 @@
           });
           map.defaultZoom = map.getZoom();
           map.initialZoom = true;
-          for (var f = 0; f < coords.length; f += 1) {
-            bounds.extend(coords[f]);
-            new google.maps.Marker({
-              position: coords[f],
-              map: map
+          if (multiple_objects) {
+            config.map_markers.forEach(function (objVal) {
+              var pid = objVal.pid;
+              objVal.coordinates.forEach(function (coordVal) {
+                Drupal.islandora_simple_map.makePoint(map, bounds, pid, coordVal);
+              });
+            });
+            // Only do infoWindows when there are multiple objects.
+            Drupal.islandora_simple_map.markers.forEach(function(marker) {
+              google.maps.event.addListener(marker, 'click', function () {
+                Drupal.islandora_simple_map.markerClick(map, this);
+              });
+            });
+          } else {
+            var pid = config.map_markers.pid;
+            config.map_markers.coordinates.forEach(function(coordVal) {
+              Drupal.islandora_simple_map.makePoint(map, bounds, pid, coordVal);
             });
           }
           fieldsets = jQuery(map_div).closest('.collapsible.collapsed')
@@ -58,10 +67,24 @@
         }
       }
     },
+    makePoint: function(map, bounds, pid, coordinate) {
+      var c = coordinate.split(',');
+      var lPoint = new google.maps.LatLng(parseFloat(c[0].trim()), parseFloat(c[1].trim()));
+      bounds.extend(lPoint);
+      var marker = new google.maps.Marker({
+        position: lPoint,
+        map: map
+      });
+      marker.pid = pid;
+      Drupal.islandora_simple_map.markers.push(marker);
+    },
     redraw: function(map, bounds) {
       google.maps.event.trigger(map, 'resize');
       map.fitBounds(bounds);
       map.panTo(bounds.getCenter());
-    }
+    },
+    markerClick: function(map, marker) {
+      var pid = marker.pid;
+    },
   }
 })(jQuery);

@@ -56,6 +56,15 @@ function islandora_simple_map_menu() {
     'access arguments' => array(2),
     'type' => MENU_LOCAL_TASK,
   );
+  $items['islandora_simple_map/marker/%islandora_object'] = array(
+    'title' => 'Map marker',
+    'description' => 'Ajax call to get object information for the map marker',
+    'page callback' => '_islandora_simple_map_marker_info',
+    'page arguments' => array(2),
+    'access callback' => 'islandora_object_access',
+    'access arguments' => array(ISLANDORA_VIEW_OBJECTS, 2),
+    'type' => MENU_CALLBACK,
+  );
   return $items;
 }
 
@@ -246,15 +255,8 @@ function islandora_simple_map_islandora_basic_collection_build_manage_object(arr
  *   Render array to display.
  */
 function islandora_simple_map_collection_map_view(AbstractObject $object) {
-  $points = _islandora_simple_map_get_collection_points($object);
-  if (count($points) > 0) {
-    $coordinates = islandora_simple_map_parse_coordinates($points);
-    if (variable_get('islandora_simple_map_use_gmaps_api', FALSE)) {
-      // Only filter and standardize coordinates if we are using Javascript API.
-      $coordinates = array_filter($coordinates, 'islandora_simple_map_is_valid_coordinates');
-      array_walk($coordinates, 'islandora_simple_map_standardize_format');
-    }
-    $coordinates = array_unique($coordinates);
+  $coordinates = _islandora_simple_map_get_collection_points($object);
+  if (count($coordinates) > 0) {
     $zoom = (int) variable_get('islandora_simple_map_zoom', '10');
     $map_div_id = drupal_html_id('islandora_simple_map_collection_page');
     $settings['islandora_simple_map'][$map_div_id] = [
@@ -289,4 +291,27 @@ function islandora_simple_map_collection_map_view(AbstractObject $object) {
     );
   }
   return $content;
+}
+
+/**
+ * Return information for marker infowindow in json.
+ *
+ * @param \AbstractObject $object
+ *   The object being asked about.
+ *
+ * @return string
+ *   Json encoded information.
+ */
+function _islandora_simple_map_marker_info(AbstractObject $object) {
+  $pid = $object->id;
+  $output = array(
+    'pid' => check_plain($object->id),
+    'label' => check_plain($object->label),
+    'uri' => url("islandora/object/{$pid}"),
+  );
+
+  if (isset($object['TN']) && islandora_datastream_access(ISLANDORA_VIEW_OBJECTS, $object['TN'])) {
+    $output['thumbnail_uri'] = url("islandora/object/{$pid}/datastreams/TN/view");
+  }
+  drupal_json_output($output);
 }
