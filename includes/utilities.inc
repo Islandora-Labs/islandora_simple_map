@@ -63,13 +63,15 @@ function islandora_simple_map_get_coordinates(AbstractObject $object) {
 function islandora_simple_map_parse_coordinates(array $coordinates) {
   $hooks = (array) module_invoke_all(ISLANDORA_SIMPLE_MAP_PARSE_HOOK);
   uasort($hooks, function ($a, $b) {
-    if (abs($a['weight']) <= abs($b['weight'])) {
-      return -1;
-    }
-    else {
-      return 1;
-    }
+                   if (!isset($a['weight'])) {
+                     $a['weight'] = 100;
+                   }
+                   if (!isset($b['weight'])) {
+                     $b['weight'] = 100;
+                   }
+    return (abs($a['weight']) <= abs($b['weight']));
   });
+
   // Don't need to parse coordinates already in decimal notation.
   $processed = array_filter($coordinates, 'islandora_simple_map_is_valid_coordinates');
   $coordinates = array_diff($coordinates, $processed);

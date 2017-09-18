@@ -1,0 +1,54 @@
+<?php
+/**
+ * @file
+ * One of two modules for testing the parse ordering.
+ */
+
+
+/**
+ * Implements hook_islandora_simple_map_parse_coordinates_callback().
+ */
+function islandora_simple_map_hooks_order_test_1_islandora_simple_map_parse_coordinates_callback() {
+  return array(
+    'islandora_simple_map_hooks_test order 1' => array(
+      'function_name' => 'islandora_simple_map_hooks_order_test_1_parse_coordinates',
+      'weight' => 50,
+    ),
+  );
+}
+
+
+/**
+ * Example function that replaces negative integers with the word "ZERO".
+ */
+function islandora_simple_map_hooks_order_test_1_parse_coordinates(array $coordinates) {
+  $output = array();
+  foreach ($coordinates as $coordinate) {
+    $modified = FALSE;
+    if (strpos($coordinate, ',') > 0) {
+      list($lat, $lng) = explode(',', $coordinate);
+      $lat = trim($lat);
+      $lng = trim($lng);
+      if ($lat == 'TEST') {
+        $lat = "ZERO";
+        $modified = TRUE;
+      }
+      elseif (strpos($lat, 'N') > 0 || strpos($lat, 'W') > 0) {
+        $lat = "DSM";
+        $modified = TRUE;
+      }
+      if ($lng == 'TEST') {
+        $lng = "ZERO";
+        $modified = TRUE;
+      }
+      elseif (strpos($lng, 'N') > 0 || strpos($lng, 'W') > 0) {
+        $lng = "DSM";
+        $modified = TRUE;
+      }
+      if ($modified) {
+        $output[$coordinate] = format_string("@lat, @lng", array('@lat' => $lat, "@lng" => $lng));
+      }
+    }
+  }
+  return $output;
+}
