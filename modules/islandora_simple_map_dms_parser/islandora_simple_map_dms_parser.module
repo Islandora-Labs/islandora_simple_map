@@ -1,0 +1,79 @@
+<?php
+
+/**
+ * @file
+ * All the stuff.
+ */
+
+/**
+ * Implements hook_islandora_simple_map_parse_coordinates_callback().
+ */
+function islandora_simple_map_dms_parser_islandora_simple_map_parse_coordinates_callback() {
+  return array(
+    'islandora_simple_map DSM parser' => array(
+      'function_name' => 'islandora_simple_map_dms_parser_parse_dms',
+      'weight' => 50,
+    ),
+  );
+}
+
+/**
+ * Implements hook_islandora_simple_map_get_coordinates().
+ */
+function islandora_simple_map_dms_parser_parse_dms(array $coordinates) {
+  $found_coords = array();
+  foreach ($coordinates as $item) {
+    if (preg_match_all("/([\d\.]+)(?>°|\s)(?>\s*([\d\.]+)(?>['′]|\s))?(?>\s*([\d\.]+)(?>[\"″]|\s))?\s*([NSEW])\s*,?/u", trim($item), $matches, PREG_SET_ORDER, 0)) {
+      foreach ($matches as $match) {
+        $decimal = islandora_simple_map_dms_parser_convert_to_decimal($match);
+        if ($match[count($match) - 1] == 'N' || $match[count($match) - 1] == 'S') {
+          $lat = $decimal;
+        }
+        else {
+          $long = $decimal;
+        }
+      }
+      if (isset($lat) && isset($long)) {
+        $found_coords[$item] = format_string('!lat,!long',
+          [
+            '!lat' => $lat,
+            '!long' => $long,
+          ]
+        );
+      }
+    }
+  }
+  return $found_coords;
+}
+
+/**
+ * Does the actual calculation of DMS to decimal.
+ *
+ * @param array $coord
+ *   Array of regexp match.
+ *
+ * @return string
+ *   lat,lng decimal format.
+ */
+function islandora_simple_map_dms_parser_convert_to_decimal(array $coord) {
+  $decimal = 0;
+  $is_positive = FALSE;
+  $clean = function ($c) {
+    return preg_replace('/"″\'′/', '', trim($c));
+  };
+  for ($bar = count($coord) - 1; $bar > 1; $bar -= 1) {
+    if (preg_match('/^[NSEW]?$/', $coord[$bar])) {
+      $is_positive = ($coord[$bar] == 'N' || $coord[$bar] == 'E');
+    }
+    else {
+      $num = $clean($coord[$bar]);
+      if (is_numeric($num)) {
+        $decimal += $num;
+        $decimal = $decimal / 60;
+      }
+    }
+  }
+  $decimal += $clean($coord[1]);
+  $decimal *= ($is_positive ? 1 : -1);
+  return $decimal;
+}
