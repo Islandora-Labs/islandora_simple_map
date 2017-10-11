@@ -118,7 +118,7 @@ function islandora_simple_map_collection_tab_access(AbstractObject $object) {
  */
 function islandora_simple_map_islandora_view_object_alter(&$object, &$rendered) {
   $found_coords = islandora_simple_map_process_coordinates($object);
-  if (count($found_coords)) {
+  if (isset($found_coords['coordinates']) && count($found_coords['coordinates']) > 0) {
     $width = (int) variable_get('islandora_simple_map_iframe_width', '600');
     $height = (int) variable_get('islandora_simple_map_iframe_height', '600');
     $zoom = (int) variable_get('islandora_simple_map_zoom', '10');
@@ -165,7 +165,7 @@ function islandora_simple_map_islandora_view_object_alter(&$object, &$rendered) 
       $collapsed = variable_get('islandora_simple_map_collapsed', 'collapsed');
       $markup = theme('islandora_simple_map', [
         // We use the first set of coords if our XPaths found more than one.
-        'coords' => urlencode($found_coords[0]),
+        'coords' => urlencode($found_coords['coordinates'][0]),
         'iframe_width' => $width,
         'iframe_height' => $height,
         'zoom' => $zoom,
