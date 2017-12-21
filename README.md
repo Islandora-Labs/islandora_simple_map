@@ -144,8 +144,8 @@ Implementations of this hook should return an array of the format.
 Where
 * `function_name` is a function that accepts an array of coordinates of various formats and returns an associative 
 array of coordinates that it could parse where the key is the original value and value is the parsed value.
-* `file` is the file to include to access this function.
-* `weight` is an optional value to order the hooks. Default is 100. 
+* `file` is the file to include to access this function. (Optional)
+* `weight` is to order the hooks. Default is 100. (Optional) 
 ## Maintainer
 
 * [Mark Jordan](https://github.com/mjordan)
