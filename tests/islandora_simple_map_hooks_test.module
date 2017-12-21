@@ -1,0 +1,90 @@
+<?php
+
+/**
+ * @file
+ * Test module for calling hooks.
+ */
+
+/**
+ * Implements hook_islandora_simple_map_get_coordinates().
+ */
+function islandora_simple_map_hooks_test_islandora_simple_map_get_coordinates(AbstractObject $object) {
+  $coordinates = array();
+  if (isset($object['COORDS'])) {
+    $content = $object['COORDS']->content;
+    $coordinates = explode(PHP_EOL, $content);
+  }
+  return $coordinates;
+}
+
+/**
+ * Implements hook_islandora_simple_map_parse_coordinates_callback().
+ */
+function islandora_simple_map_hooks_test_islandora_simple_map_parse_coordinates_callback() {
+  return array(
+    'islandora_simple_map_hooks_test impl' => array(
+      'function_name' => 'islandora_simple_map_hooks_test_parse_coordinates',
+      'weight' => 50,
+    ),
+  );
+}
+
+/**
+ * Implements hook_islandora_simple_map_parse_coordinates().
+ */
+function islandora_simple_map_hooks_test_parse_coordinates(array $coordinates) {
+  $parsed_coordinates = array();
+  foreach ($coordinates as $coordinate) {
+    if (preg_match_all("/([\d\.]+)°?(\s+[\d\.]+'?)?(\s+[\d\.]+\"?)?\s*([NSEW])\s*,?/u", trim($coordinate), $matches, PREG_SET_ORDER, 0)) {
+      foreach ($matches as $match) {
+        if ($match[count($match) - 1] == 'N' || $match[count($match) - 1] == 'S') {
+          $lat = _islandora_simple_map_hooks_test_convert_to_decimal($match);
+        }
+        else {
+          $long = _islandora_simple_map_hooks_test_convert_to_decimal($match);
+        }
+      }
+      if (isset($lat) && isset($long)) {
+        $parsed_coordinates[$coordinate] = format_string('!lat, !long',
+          [
+            '!lat' => $lat,
+            '!long' => $long,
+          ]
+        );
+      }
+    }
+  }
+  return $parsed_coordinates;
+}
+
+/**
+ * Does the actual calculation of DMS to decimal.
+ *
+ * @param array $coord
+ *   Array of regexp match.
+ *
+ * @return string
+ *   lat,lng decimal format.
+ */
+function _islandora_simple_map_hooks_test_convert_to_decimal(array $coord) {
+  $decimal = 0;
+  $pos_neg = FALSE;
+  $clean = function ($c) {
+    return str_replace('"', '', str_replace('\'', '', trim($c)));
+  };
+  for ($bar = count($coord) - 1; $bar > 1; $bar -= 1) {
+    if (preg_match('/^[NSEW]?$/', $coord[$bar])) {
+      $pos_neg = ($coord[$bar] == 'N' || $coord[$bar] == 'E');
+    }
+    else {
+      $num = $clean($coord[$bar]);
+      if (is_numeric($num)) {
+        $decimal += $num;
+      }
+    }
+    $decimal = $decimal / 60;
+  }
+  $decimal += $clean($coord[1]);
+  $decimal *= ($pos_neg ? 1 : -1);
+  return $decimal;
+}

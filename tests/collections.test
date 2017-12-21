@@ -1,0 +1,86 @@
+<?php
+/**
+ * @file
+ * Collection map tests.
+ */
+
+class IslandoraSimpleMapCollectionTest extends IslandoraSimpleMapTestCase {
+
+  /**
+   * Test objects to be removed after the test.
+   *
+   * @var array
+   */
+  protected $testObjects = array(
+    'test:collectionObject',
+  );
+
+  /**
+   * Gets info to display to describe this test.
+   *
+   * @see IslandoraUnitTestCase::getInfo()
+   */
+  public static function getInfo() {
+    return [
+      'name' => 'Islandora Simple Map - Collections',
+      'description' => 'Ensure that the collection map management works.',
+      'group' => 'Islandora Simple Map',
+    ];
+  }
+
+  /**
+   * {@inheritdoc}
+   *
+   * Enable basic collection as this tests maps on collections.
+   */
+  public function setUp() {
+    parent::setUp('islandora_basic_collection');
+    $this->setJavascriptApi(TRUE);
+    // Enable collection maps.
+    variable_set('islandora_simple_map_collection_maps', TRUE);
+  }
+
+  /**
+   * Tests enabling/disabling collection maps interface.
+   */
+  public function testManageCollectionMap() {
+    $pid = 'test:collectionObject';
+    $object = $this->admin->repository->constructObject($pid);
+
+    $object->models = array_merge((array) $object->models, array('islandora:collectionCModel'));
+    $object->label = "Test Collection Object";
+
+    $this->admin->repository->ingestObject($object);
+
+    $this->drupalLogin($this->admin);
+
+    $this->drupalGet("islandora/object/{$pid}/manage/collection");
+
+    $this->assertResponse(200, 'User is allowed to edit the content.');
+
+    $this->assertFalse(_islandora_simple_map_display_collection_map($pid), "Should not be displaying collection map yet.");
+    $edit = array(
+      'islandora_simple_map_display' => TRUE,
+      'islandora_simple_map_collection_pid' => $pid,
+    );
+    $this->drupalPost("islandora/object/{$pid}/manage/collection", $edit, t('Save'));
+    $this->assertText('Collection map display enabled.', 'Collection map was enabled.');
+    $this->assertTrue(_islandora_simple_map_display_collection_map($pid), "Collection should have map enabled.");
+
+    $this->drupalGet('admin/islandora/tools/islandora_simple_map/collections');
+    $this->assertResponse(200, 'User can see listing of collections with maps.');
+    $this->assertText('Test Collection Object', 'Collection is displayed in full listing.');
+
+    $edit = array(
+      "collection_listing[{$pid}]" => TRUE,
+    );
+    $this->drupalPost('admin/islandora/tools/islandora_simple_map/collections', $edit, t('Disable checked'));
+    $this->assertText('Test Collection Object', 'Collection is displayed in full listing.');
+
+    $this->drupalPost(NULL, array(), t('Disable'));
+    $this->assertText('1 collections disabled.', 'Collection was disabled.');
+    $this->assertNoText('Test Collection Object', 'Collection is no longer displaying maps.');
+
+    $this->assertFalse(_islandora_simple_map_display_collection_map($pid), "Should not be displaying collection map yet.");
+  }
+}

@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<mods xmlns="http://www.loc.gov/mods/v3" xmlns:mods="http://www.loc.gov/mods/v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <titleInfo>
+        <title>Place name only</title>
+        <subTitle/>
+    </titleInfo>
+    <name type="personal">
+        <namePart/>
+        <role>
+            <roleTerm authority="marcrelator" type="text"/>
+        </role>
+    </name>
+    <typeOfResource>still image</typeOfResource>
+    <genre authority="lctgm"/>
+    <originInfo>
+        <dateIssued/>
+        <publisher/>
+        <place>
+            <placeTerm authority="marccountry" type="code"/>
+        </place>
+        <place>
+            <placeTerm type="text"/>
+        </place>
+    </originInfo>
+    <language>
+        <languageTerm authority="iso639-2b" type="code"/>
+    </language>
+    <abstract/>
+    <identifier type="local"/>
+    <physicalDescription>
+        <form authority="marcform">nonprojected graphic</form>
+        <extent/>
+    </physicalDescription>
+    <note/>
+    <subject>
+        <topic/>
+        <geographic/>
+        <temporal/>
+        <hierarchicalGeographic>
+            <continent/>
+            <country/>
+            <province/>
+            <region/>
+            <county/>
+            <city/>
+            <citySection/>
+        </hierarchicalGeographic>
+        <cartographics>
+            <coordinates>Tucson, AZ</coordinates>
+        </cartographics>
+    </subject>
+</mods>

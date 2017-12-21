@@ -1,0 +1,130 @@
+<?php
+
+/**
+ * @file
+ * Hook tests.
+ */
+
+/**
+ * Get coordinates tests.
+ */
+class IslandoraSimpleMapGetCoordinatesTestCase extends IslandoraSimpleMapTestCase {
+
+  /**
+   * Test objects to be removed after the test.
+   *
+   * @var array
+   */
+  protected $testObjects = array(
+    'test:simpleMapSingleCoord',
+    'test:simpleMapMultipleInSingle',
+    'test:simpleMapMultipleInMulti',
+    'test:simpleMapSFUData',
+  );
+
+  /**
+   * Gets info to display to describe this test.
+   *
+   * @see IslandoraUnitTestCase::getInfo()
+   */
+  public static function getInfo() {
+    return [
+      'name' => 'Islandora Simple Map - Get Coordinates',
+      'description' => 'Ensure that the function for coordinate retrieval are called.',
+      'group' => 'Islandora Simple Map',
+    ];
+  }
+
+  /**
+   * Test pulling a single coordinate from a MODS.
+   */
+  public function testSingleCoord() {
+    $expected = ['49.8833260,-97.1529213'];
+    $object = $this->admin->repository->constructObject('test:simpleMapSingleCoord');
+    $this->admin->repository->ingestObject($object);
+    $mods = $object->constructDatastream('MODS');
+    $object->ingestDatastream($mods);
+
+    $object['MODS']->content = file_get_contents("{$this->resourcePath}/mods_single_coordinate.xml");
+    $object['MODS']->mimetype = 'application/xml';
+
+    $this->setJavascriptApi(FALSE);
+    $coords = islandora_simple_map_get_coordinates($object);
+    $this->assertEqual($expected, $coords, "Got wrong coordinates from single element with Embed API.");
+    $this->setJavascriptApi(TRUE);
+    $coords = islandora_simple_map_get_coordinates($object);
+    $this->assertEqual($expected, $coords, "Got wrong coordinates from single element with Javascript API.");
+
+  }
+
+  /**
+   * Test pulling multiple coordinates and split on delimiter.
+   */
+  public function testMultipleCoordsInSingleElement() {
+    $old_delimiter = variable_get('islandora_simple_map_coordinate_delimiter', ';');
+    variable_set('islandora_simple_map_coordinate_delimiter', ';');
+
+    $expected = ['+51.585,-124.71722', '+51.52333,-124.97861'];
+
+    $object = $this->admin->repository->constructObject('test:simpleMapMultipleInSingle');
+    $this->admin->repository->ingestObject($object);
+    $mods = $object->constructDatastream('MODS');
+    $object->ingestDatastream($mods);
+
+    $object['MODS']->content = file_get_contents("{$this->resourcePath}/mods_multiple_coordinates_single_element.xml");
+    $object['MODS']->mimetype = 'application/xml';
+
+    $this->setJavascriptApi(FALSE);
+    $coords = islandora_simple_map_get_coordinates($object);
+    $this->assertEqual($expected, $coords, "Got wrong results multiple coordinates splitting on ; with Embed API");
+    $this->setJavascriptApi(TRUE);
+    $coords = islandora_simple_map_get_coordinates($object);
+    $this->assertEqual($expected, $coords, "Got wrong results multiple coordinates splitting on ; with Javascript API");
+    variable_set('islandora_simple_map_coordinate_delimiter', $old_delimiter);
+  }
+
+  /**
+   * Test pulling multiple coordinates from multiple elements.
+   */
+  public function testMultipleCoordsInMultipleElements() {
+    $expected = ['+51.585,-124.71722', '+51.52333,-124.97861'];
+
+    $object = $this->admin->repository->constructObject('test:simpleMapMultipleInMulti');
+    $this->admin->repository->ingestObject($object);
+    $mods = $object->constructDatastream('MODS');
+    $object->ingestDatastream($mods);
+
+    $object['MODS']->content = file_get_contents("{$this->resourcePath}/mods_multiple_coordinates_separate_elements.xml");
+    $object['MODS']->mimetype = 'application/xml';
+
+    $this->setJavascriptApi(FALSE);
+    $coords = islandora_simple_map_get_coordinates($object);
+    $this->assertEqual($expected, $coords, "Got wrong coordinates pulling from multiple elements with Embed API.");
+    $this->setJavascriptApi(TRUE);
+    $coords = islandora_simple_map_get_coordinates($object);
+    $this->assertEqual($expected, $coords, "Got wrong coordinates pulling from multiple elements with Javascript API.");
+  }
+
+  /**
+   * Test pulling from SFU example data.
+   */
+  public function testSfuData() {
+    $expected = ['+49.28889,-123.17361', 'English Bay, BC'];
+
+    $object = $this->admin->repository->constructObject('test:simpleMapSFUData');
+    $this->admin->repository->ingestObject($object);
+    $mods = $object->constructDatastream('MODS');
+    $object->ingestDatastream($mods);
+
+    $object['MODS']->content = file_get_contents("{$this->resourcePath}/mods_sample_sfu_data.xml");
+    $object['MODS']->mimetype = 'application/xml';
+
+    $this->setJavascriptApi(FALSE);
+    $coords = islandora_simple_map_get_coordinates($object);
+    $this->assertEqual($expected, $coords, "Got wrong coordinates from SFU sample data with Embed API.");
+    $this->setJavascriptApi(TRUE);
+    $coords = islandora_simple_map_get_coordinates($object);
+    $this->assertEqual($expected, $coords, "Got wrong coordinates from SFU sample data with Javascript API.");
+  }
+
+}

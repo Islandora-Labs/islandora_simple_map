@@ -1,0 +1,6 @@
+name = "Islandora Simple Map - Degrees Coordinate Parser"
+description = "Uses Islandora Simple Map hook to handle coordinates in degrees, minutes, seconds format"
+core = 7.x
+package = "Islandora Viewers"
+dependencies[] = islandora_simple_map
+files[] = tests/parser.test

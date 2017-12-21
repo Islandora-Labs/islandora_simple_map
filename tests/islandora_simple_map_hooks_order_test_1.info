@@ -1,0 +1,6 @@
+name = Islandora Simple Map Hook Order 1 Tests
+description = Tests for simple map hooks. Do not enable.
+core = 7.x
+package = Testing
+hidden = TRUE
+dependencies[] = islandora_simple_map

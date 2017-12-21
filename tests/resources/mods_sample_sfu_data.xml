@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<mods xmlns="http://www.loc.gov/mods/v3" xmlns:mods="http://www.loc.gov/mods/v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <titleInfo>
+        <title>English Bay, Vancouver, B.C.</title>
+    </titleInfo>
+    <name>
+        <namePart/>
+        <role>
+            <roleTerm type="text" authority="marcrelator">photographer</roleTerm>
+            <roleTerm type="code" authority="marcrelator">pht</roleTerm>
+        </role>
+    </name>
+    <language>
+        <languageTerm type="text">English</languageTerm>
+    </language>
+    <genre authority="gmgpc">Postcards</genre>
+    <identifier type="local">MSC130-5913</identifier>
+    <physicalDescription>
+        <extent>1 postcard : b&amp;w ; 9 x 14 cm.</extent>
+    </physicalDescription>
+    <abstract>English Bay in Vancouver, B.C. Some people are shown on the shore and in the water.</abstract>
+    <accessCondition type="use and reproduction">Images from the British Columbia Postcards Collection have been made available by Simon Fraser University Library   under a Creative Commons attribution, non-commercial license at http://creativecommons.org/licenses/by-nc/3.0/. A   full legal outline of the license can be viewed at: http://creativecommons.org/licenses/by-nc/3.0/legalcode &lt;BR&gt;&lt;BR&gt;We encourage the appropriate open use of images from this collection for educational and other not-for-profit   purposes. Attribution/citation should be provided as follows:  Image [insert image number here, eg. MSC130-2144-01]   courtesy of the British Columbia Postcards Collection, a digital initiative of Simon Fraser University Library.   [Please include the website url when images are used in an offline or print-based context]. &lt;BR&gt;&lt;BR&gt;Parties interested in using high-resolution versions of the images from the British Columbia Postcards   Collection for commercial purposes should contact Special Collections and Rare Books, SFU Library.</accessCondition>
+    <typeOfResource>still image</typeOfResource>
+    <identifier type="uuid">41997afa-d187-435f-a00b-789702513299</identifier>
+    <identifier type="uri" invalid="yes" displayLabel="Migrated From">http://content.lib.sfu.ca/cdm/ref/collection/bcp/id/17650</identifier>
+    <originInfo>
+        <publisher/>
+        <dateIssued encoding="w3cdtf" keyDate="yes"/>
+    </originInfo>
+    <originInfo eventType="manufacture">
+        <publisher/>
+    </originInfo>
+    <originInfo eventType="publication">
+        <dateIssued encoding="w3cdtf">1910</dateIssued>
+    </originInfo>
+    <subject>
+        <topic>Views</topic>
+        <topic>Beaches</topic>
+        <topic>Bays (Bodies of water)</topic>
+        <topic>Swimming</topic>
+        <topic>Boats</topic>
+        <geographic>English Bay, BC</geographic>
+        <cartographics>
+            <coordinates>+49.28889,-123.17361</coordinates>
+        </cartographics>
+    </subject>
+    <extension>
+        <CONTENTdmData>
+            <alias>bcp</alias>
+            <pointer>17650</pointer>
+            <dmGetItemInfo timestamp="2016-04-18 00:23:23" mimetype="application/json" source="http://content.lib.sfu.ca:81/dmwebservices/index.php?q=dmGetItemInfo/bcp/17650/json"><![CDATA[{"title":"English Bay, Vancouver, B.C.","subjec":{},"creato":{},"descri":{},"publis":"1910","contri":{},"date":{},"langua":"English","type":"Image","format":"image\/jpeg","identi":"MSC130-5913","source":"1 postcard : b&w ; 9 x 14 cm.","relati":"English Bay in Vancouver, B.C. Some people are shown on the shore and in the water.","covera":{},"bookle":{},"rights":"Images from the British Columbia Postcards Collection have been made available by Simon Fraser University Library   under a Creative Commons attribution, non-commercial license at http:\/\/creativecommons.org\/licenses\/by-nc\/3.0\/. A   full legal outline of the license can be viewed at: http:\/\/creativecommons.org\/licenses\/by-nc\/3.0\/legalcode <BR><BR>We encourage the appropriate open use of images from this collection for educational and other not-for-profit   purposes. Attribution\/citation should be provided as follows:  Image [insert image number here, eg. MSC130-2144-01]   courtesy of the British Columbia Postcards Collection, a digital initiative of Simon Fraser University Library.   [Please include the website url when images are used in an offline or print-based context]. <BR><BR>Parties interested in using high-resolution versions of the images from the British Columbia Postcards   Collection for commercial purposes should contact Special Collections and Rare Books, SFU Library.","audien":"[Front] Sept. \/'10; English Bay, Vancouver, B.C. [Back] Post Card; Correspondence; [illegible]; Name And Address; Place Postage Stamp Here","from":{},"to":{},"subjea":"Views; Beaches; Bays (Bodies of water); Swimming; Boats","place":"English Bay, BC","geo":"+49.28889,-123.17361","fullrs":{},"find":"17651.cpd","dmaccess":{},"dmimage":{},"dmcreated":"2013-03-13","dmmodified":"2013-03-13","dmoclcno":{},"dmrecord":"17650","restrictionCode":"1","cdmfilesize":"343","cdmfilesizeformatted":"0.00 MB","cdmprintpdf":"0","cdmhasocr":"0","cdmisnewspaper":"0"}]]></dmGetItemInfo>
+            <dmGetCompoundObjectInfo timestamp="2016-04-18 00:23:23" mimetype="text/xml" source="http://content.lib.sfu.ca:81/dmwebservices/index.php?q=dmGetCompoundObjectInfo/bcp/17650/xml"><![CDATA[﻿<?xml version="1.0" encoding="utf-8"?>
+<cpd>
+  <type>Document</type>
+  <page>
+    <pagetitle>MSC130-5913-01</pagetitle>
+    <pagefile>17649.jp2</pagefile>
+    <pageptr>17648</pageptr>
+  </page>
+  <page>
+    <pagetitle>MSC130-5913-02</pagetitle>
+    <pagefile>17650.jp2</pagefile>
+    <pageptr>17649</pageptr>
+  </page>
+</cpd>
+]]></dmGetCompoundObjectInfo>
+        </CONTENTdmData>
+        <to type="SFU custom metadata for the British Columbia Postcards Collection"/>
+        <from type="SFU custom metadata for the British Columbia Postcards Collection"/>
+        <on_front_and_back type="SFU custom metadata for the British Columbia Postcards Collection">[Front] Sept. /'10; English Bay, Vancouver, B.C. [Back] Post Card; Correspondence; [illegible]; Name And Address; Place Postage Stamp Here</on_front_and_back>
+        <handwritten_date type="SFU custom metadata for the British Columbia Postcards Collection"/>
+        <postmark type="SFU custom metadata for the British Columbia Postcards Collection"/>
+        <booklet_information type="SFU custom metadata for the British Columbia Postcards Collection"/>
+    </extension>
+</mods>

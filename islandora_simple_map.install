@@ -23,3 +23,38 @@ function islandora_simple_map_uninstall() {
   );
   array_walk($variables, 'variable_del');
 }
+
+/**
+ * Implements hook_schema().
+ */
+function islandora_simple_map_schema() {
+  $schema['islandora_simple_map_collections_map'] = [
+    'description' => 'Collections displaying a map',
+    'fields' => [
+      'pid' => [
+        'description' => 'The object PID to use',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ],
+      'title' => [
+        'description' => 'Collection title for reference',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ],
+    ],
+    'primary key' => ['pid'],
+  ];
+  return $schema;
+}
+
+/**
+ * Install new database table for collection maps.
+ */
+function islandora_simple_map_update_7100() {
+  if (!db_table_exists('islandora_simple_map_collections_map')) {
+    $schema = islandora_simple_map_schema();
+    db_create_table('islandora_simple_map_collections_map', $schema['islandora_simple_map_collections_map']);
+  }
+}
