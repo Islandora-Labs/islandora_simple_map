@@ -156,7 +156,6 @@ function islandora_simple_map_islandora_view_object_alter(&$object, &$rendered) 
         'type' => 'inline',
         'data' => "#{$map_div_id} {\nheight: {$height}px;\nwidth: {$width}px;\n}",
       );
-      $markup = render($content);
     }
     else {
 
@@ -175,19 +174,32 @@ function islandora_simple_map_islandora_view_object_alter(&$object, &$rendered) 
     }
     // Some Islandora render arrays have a single member, with a key of NULL.
     if (isset($rendered[NULL])) {
-      $rendered[NULL]['#markup'] = $rendered[NULL]['#markup'] . $markup;
+      if (isset($rendered[NULL]['#markup'])) {
+        if (isset($content) && !isset($markup)) {
+          // Don't render unless/until we need to.
+          $markup = render($content);
+        }
+        $rendered[NULL]['#markup'] = $rendered[NULL]['#markup'] . $markup;
+      }
+      elseif (is_array($rendered[NULL])) {
+        $rendered[NULL]['islandora_simple_map'] = $content['islandora_simple_map'];
+      }
     }
     else {
       // Others have several members, depending on the content model.
       $member = islandora_simple_map_get_rendered_member($object->models);
       if (isset($rendered[$member]['#markup'])) {
+        if (isset($content) && !isset($markup)) {
+          // Don't render unless/until we need to.
+          $markup = render($content);
+        }
         $rendered[$member]['#markup'] = $rendered[$member]['#markup'] . $markup;
       }
       elseif (isset($rendered[$member]) && is_array($rendered[$member])) {
         // These are render arrays.
         if (isset($content)) {
           // We have a render array to add it to the bottom.
-          $rendered[$member][] = $content;
+          $rendered[$member]['islandora_simple_map'] = $content['islandora_simple_map'];
         }
         else {
           // Add JS needed and make a markup render array element.
