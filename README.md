@@ -8,13 +8,13 @@ This module can use geographic coordinates and place names in MODS elements to p
 
 This module allows use of Google Map's [Embed API](https://developers.google.com/maps/documentation/embed/) or, for more functionality, the [Javascript API](https://developers.google.com/maps/documentation/javascript/):
 
-| Feature | Embed | JavaScript
-| ------------- | ------------------------------------------------------------
-| API key | not required | required
-| blocks | no supported | supported
-| multivalued coordinates | not supported (first coordinate/place name only) | supported
-| place names | supported | not supported
-| collection maps | not supported | supported
+Feature | Embed API | JavaScript API
+--- | --- | ---
+API key | not required | required
+blocks | no supported | supported
+multivalued coordinates | not supported (first coordinate/place name only) | supported
+place names | supported | not supported
+collection maps | not supported | supported
 
 This module exposes a [hook](#api) to allow developers to write their own function to extract information and return coordinates for display on the map.
 
