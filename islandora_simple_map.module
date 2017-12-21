@@ -138,6 +138,7 @@ function islandora_simple_map_islandora_view_object_alter(&$object, &$rendered) 
         'islandora_simple_map' => array(
           '#type' => 'fieldset',
           '#title' => t('Map'),
+          '#weight' => 100,
           '#attributes' => array(
             'class' => array('collapsible', ($collapsed ? 'collapsed' : '')),
           ),
@@ -181,6 +182,23 @@ function islandora_simple_map_islandora_view_object_alter(&$object, &$rendered) 
       $member = islandora_simple_map_get_rendered_member($object->models);
       if (isset($rendered[$member]['#markup'])) {
         $rendered[$member]['#markup'] = $rendered[$member]['#markup'] . $markup;
+      }
+      elseif (isset($rendered[$member]) && is_array($rendered[$member])) {
+        // These are render arrays.
+        if (isset($content)) {
+          // We have a render array to add it to the bottom.
+          $rendered[$member][] = $content;
+        }
+        else {
+          // Add JS needed and make a markup render array element.
+          drupal_add_js('misc/form.js');
+          drupal_add_js('misc/collapse.js');
+          $rendered[$member]['islandora_simple_map'] = array(
+            '#type' => 'markup',
+            '#markup' => $markup,
+            '#weight' => 100,
+          );
+        }
       }
     }
 
