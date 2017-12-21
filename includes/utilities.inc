@@ -69,7 +69,7 @@ function islandora_simple_map_parse_coordinates(array $coordinates) {
                    if (!isset($b['weight'])) {
                      $b['weight'] = 100;
                    }
-    return (abs($a['weight']) <= abs($b['weight']));
+    return (abs($a['weight']) <= abs($b['weight']) ? -1 : 1);
   });
 
   // Don't need to parse coordinates already in decimal notation.
@@ -100,7 +100,7 @@ function islandora_simple_map_parse_coordinates(array $coordinates) {
  */
 function islandora_simple_map_islandora_simple_map_get_coordinates(AbstractObject $object) {
   $mods_results = islandora_simple_map_get_mods_results($object);
-  $found_coords = [];
+  $found_coords = array();
   foreach ($mods_results as $node_value) {
     if (strlen(trim(variable_get('islandora_simple_map_coordinate_delimiter', ';'))) > 0) {
       $temp_array = explode(trim(variable_get('islandora_simple_map_coordinate_delimiter', ';')), $node_value);
@@ -125,7 +125,7 @@ function islandora_simple_map_islandora_simple_map_get_coordinates(AbstractObjec
  *   The unaltered node values.
  */
 function islandora_simple_map_get_mods_results(AbstractObject $object) {
-  $results = [];
+  $results = array();
   if (isset($object['MODS'])) {
     $mods = $object['MODS']->content;
     $xpaths = preg_split('/$\R?^/m', trim(variable_get('islandora_simple_map_xpath', ISLANDORA_SIMPLE_MAP_XPATHS)));
@@ -183,7 +183,7 @@ function islandora_simple_map_is_valid_coordinates($coordinates) {
  */
 function islandora_simple_map_standardize_format(&$coordinates) {
   if (preg_match('/^\s*([+\-]?\d+(\.\d+)?)\s*,\s*([+\-]?\d+(\.\d+))?\s*$/', $coordinates, $matches)) {
-    $coordinates = format_string("!lat,!lng", ['!lat' => $matches[1], '!lng' => $matches[3]]);
+    $coordinates = format_string("!lat,!lng", array('!lat' => $matches[1], '!lng' => $matches[3]));
   }
 }
 
@@ -198,7 +198,7 @@ function islandora_simple_map_standardize_format(&$coordinates) {
  */
 function _islandora_simple_map_display_collection_map($pid) {
   $results = db_query('SELECT pid from {islandora_simple_map_collections_map} WHERE pid = :pid',
-    [':pid' => $pid]);
+    array(':pid' => $pid));
   foreach ($results as $r) {
     if ($r->pid == $pid) {
       return TRUE;

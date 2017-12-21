@@ -28,18 +28,18 @@ class IslandoraSimpleMapGetCoordinatesTestCase extends IslandoraSimpleMapTestCas
    * @see IslandoraUnitTestCase::getInfo()
    */
   public static function getInfo() {
-    return [
+    return array(
       'name' => 'Islandora Simple Map - Get Coordinates',
       'description' => 'Ensure that the function for coordinate retrieval are called.',
       'group' => 'Islandora Simple Map',
-    ];
+    );
   }
 
   /**
    * Test pulling a single coordinate from a MODS.
    */
   public function testSingleCoord() {
-    $expected = ['49.8833260,-97.1529213'];
+    $expected = array('49.8833260,-97.1529213');
     $object = $this->admin->repository->constructObject('test:simpleMapSingleCoord');
     $this->admin->repository->ingestObject($object);
     $mods = $object->constructDatastream('MODS');
@@ -64,7 +64,7 @@ class IslandoraSimpleMapGetCoordinatesTestCase extends IslandoraSimpleMapTestCas
     $old_delimiter = variable_get('islandora_simple_map_coordinate_delimiter', ';');
     variable_set('islandora_simple_map_coordinate_delimiter', ';');
 
-    $expected = ['+51.585,-124.71722', '+51.52333,-124.97861'];
+    $expected = array('+51.585,-124.71722', '+51.52333,-124.97861');
 
     $object = $this->admin->repository->constructObject('test:simpleMapMultipleInSingle');
     $this->admin->repository->ingestObject($object);
@@ -87,7 +87,7 @@ class IslandoraSimpleMapGetCoordinatesTestCase extends IslandoraSimpleMapTestCas
    * Test pulling multiple coordinates from multiple elements.
    */
   public function testMultipleCoordsInMultipleElements() {
-    $expected = ['+51.585,-124.71722', '+51.52333,-124.97861'];
+    $expected = array('+51.585,-124.71722', '+51.52333,-124.97861');
 
     $object = $this->admin->repository->constructObject('test:simpleMapMultipleInMulti');
     $this->admin->repository->ingestObject($object);
@@ -109,7 +109,7 @@ class IslandoraSimpleMapGetCoordinatesTestCase extends IslandoraSimpleMapTestCas
    * Test pulling from SFU example data.
    */
   public function testSfuData() {
-    $expected = ['+49.28889,-123.17361', 'English Bay, BC'];
+    $expected = array('+49.28889,-123.17361', 'English Bay, BC');
 
     $object = $this->admin->repository->constructObject('test:simpleMapSFUData');
     $this->admin->repository->ingestObject($object);

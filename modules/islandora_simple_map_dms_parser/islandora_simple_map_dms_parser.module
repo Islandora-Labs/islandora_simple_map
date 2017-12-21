@@ -35,10 +35,10 @@ function islandora_simple_map_dms_parser_parse_dms(array $coordinates) {
       }
       if (isset($lat) && isset($long)) {
         $found_coords[$item] = format_string('!lat,!long',
-          [
+          array(
             '!lat' => $lat,
             '!long' => $long,
-          ]
+          )
         );
       }
     }
