@@ -1,4 +1,4 @@
-# Islandora Simple Map [![Build Status](https://travis-ci.org/mjordan/islandora_datastream_crud.png?branch=7.x)](https://travis-ci.org/mjordan/islandora_simple_map.svg?branch=7.x)
+# Islandora Simple Map [![Build Status](https://travis-ci.org/mjordan/islandora_datastream_crud.png?branch=7.x)](https://travis-ci.org/mjordan/islandora_simple_map.png?branch=7.x)
 
 Islandora module that appends a Google map to an object's display if its MODS datastream contains the required data. You can see it in action [here](http://digital.lib.sfu.ca/pfp-980/buffalo-stanley-park-vancouver-bc).
 
@@ -6,10 +6,15 @@ Islandora module that appends a Google map to an object's display if its MODS da
 
 This module can use geographic coordinates and place names in MODS elements to populate a Google map that is then appended to the object's display.
 
-This module allows use of Google Map's [Embed API](https://developers.google.com/maps/documentation/embed/) 
-or [Javascript API](https://developers.google.com/maps/documentation/javascript/) 
+This module allows use of Google Map's [Embed API](https://developers.google.com/maps/documentation/embed/) or, for more functionality, the [Javascript API](https://developers.google.com/maps/documentation/javascript/):
 
-If using the Javascript Map API option, a new map block is available.
+| Feature | Embed | JavaScript |
+| ------------- | ------------------------------------------------------------ |
+| API key | not required | required
+| blocks | no supported | supported
+| multivalued coordinates | not supported (first coordinate/place name only) | supported
+| place names | supported | not supported
+| collection maps | not supported | supported
 
 This module exposes a [hook](#api) to allow developers to write their own function to extract information and return coordinates for display on the map.
 
@@ -23,7 +28,7 @@ Install as usual, see [this](https://drupal.org/documentation/install/modules-th
 
 ## Configuration
 
-If you choose to use the Javascript API you will need to [get an API Key](https://developers.google.com/maps/documentation/javascript/get-api-key).
+If you choose to use the Javascript API you will need to [get an API Key](https://developers.google.com/maps/documentation/javascript/get-api-key). If you choose to use the Embed API, you do not need an API key.
 
 Admin settings are available at `admin/islandora/tools/islandora_simple_map`:
 
@@ -41,8 +46,11 @@ Common configuration options are:
 * the XPath expressions to the MODS elements where your map data is stored
 * the map's height, width, default zoom level, and whether or not the map is collapsed or expanded by default, and
 * option to clean up the data before it is passed to Google Maps.
+* option to enable maps on collections.
 
 Once you enable the module, any object whose MODS file contains coordinates in the expected element will have a Google map appended to its display.
+
+If you have checked the "Enable collection level maps?" option, you can then enable a map for each collection within the collection's Manage subtabs.
 
 ### Extract from MODS using XPath
 
