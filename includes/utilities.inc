@@ -183,7 +183,7 @@ function islandora_simple_map_is_valid_coordinates($coordinates) {
  */
 function islandora_simple_map_standardize_format(&$coordinates) {
   if (preg_match('/^\s*([+\-]?\d+(\.\d+)?)\s*,\s*([+\-]?\d+(\.\d+))?\s*$/', $coordinates, $matches)) {
-    $coordinates = format_string("!lat,!lng", ['!lat' => $matches[1], '!lng' => $matches[3]]);
+    $coordinates = format_string("!lat,!lng", array('!lat' => $matches[1], '!lng' => $matches[3]));
   }
 }
 
