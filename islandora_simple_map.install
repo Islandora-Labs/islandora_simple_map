@@ -28,24 +28,24 @@ function islandora_simple_map_uninstall() {
  * Implements hook_schema().
  */
 function islandora_simple_map_schema() {
-  $schema['islandora_simple_map_collections_map'] = [
+  $schema['islandora_simple_map_collections_map'] = array(
     'description' => 'Collections displaying a map',
-    'fields' => [
-      'pid' => [
+    'fields' => array(
+      'pid' => array(
         'description' => 'The object PID to use',
         'type' => 'varchar',
         'length' => 255,
         'not null' => TRUE,
-      ],
-      'title' => [
+      ),
+      'title' => array(
         'description' => 'Collection title for reference',
         'type' => 'varchar',
         'length' => 255,
         'not null' => TRUE,
-      ],
-    ],
+      ),
+    ),
     'primary key' => ['pid'],
-  ];
+  );
   return $schema;
 }
 

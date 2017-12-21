@@ -46,10 +46,10 @@ function islandora_simple_map_hooks_test_parse_coordinates(array $coordinates) {
       }
       if (isset($lat) && isset($long)) {
         $parsed_coordinates[$coordinate] = format_string('!lat, !long',
-          [
+          array(
             '!lat' => $lat,
             '!long' => $long,
-          ]
+          )
         );
       }
     }

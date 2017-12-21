@@ -21,11 +21,11 @@ class IslandoraSimpleMapCollectionTest extends IslandoraSimpleMapTestCase {
    * @see IslandoraUnitTestCase::getInfo()
    */
   public static function getInfo() {
-    return [
+    return array(
       'name' => 'Islandora Simple Map - Collections',
       'description' => 'Ensure that the collection map management works.',
       'group' => 'Islandora Simple Map',
-    ];
+    );
   }
 
   /**

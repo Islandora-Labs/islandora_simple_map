@@ -10,94 +10,94 @@
  */
 function islandora_simple_map_admin_settings() {
   $form = array();
-  $form['google_api'] = [
+  $form['google_api'] = array(
     '#type' => 'fieldset',
     '#title' => t('Google Maps Javascript API'),
-    'islandora_simple_map_use_gmaps_api' => [
+    'islandora_simple_map_use_gmaps_api' => array(
       '#type' => 'checkbox',
       '#title' => t('Use Google Maps Javascript API'),
       '#description' => t('Use the Google Maps Javascript API, this requires registering for an API key.'),
       '#return_value' => TRUE,
       '#default_value' => variable_get('islandora_simple_map_use_gmaps_api', FALSE),
-    ],
-    'islandora_simple_map_google_maps_api_key' => [
+    ),
+    'islandora_simple_map_google_maps_api_key' => array(
       '#type' => 'textfield',
       '#title' => t('Google Maps API key'),
       '#description' => format_string('A Google Maps API key, register for one <a href="@url">here</a>',
-        ['@url' => 'https://developers.google.com/maps/documentation/javascript/get-api-key']),
+        array('@url' => 'https://developers.google.com/maps/documentation/javascript/get-api-key')),
       '#length' => 30,
       '#maxlength' => 255,
       '#default_value' => variable_get('islandora_simple_map_google_maps_api_key', ''),
-      '#states' => [
-        'required' => [
-          ':input[name="islandora_simple_map_use_gmaps_api"]' => ['checked' => TRUE],
-        ],
-        'visible' => [
-          ':input[name="islandora_simple_map_use_gmaps_api"]' => ['checked' => TRUE],
-        ],
-      ],
-    ],
-    'islandora_simple_maps_disable_scroll' => [
+      '#states' => array(
+        'required' => array(
+          ':input[name="islandora_simple_map_use_gmaps_api"]' => array('checked' => TRUE),
+        ),
+        'visible' => array(
+          ':input[name="islandora_simple_map_use_gmaps_api"]' => array('checked' => TRUE),
+        ),
+      ),
+    ),
+    'islandora_simple_maps_disable_scroll' => array(
       '#type' => 'checkbox',
       '#title' => t('Disable mouse wheel scroll?'),
       '#return_value' => TRUE,
       '#default_value' => variable_get('islandora_simple_maps_disable_scroll', FALSE),
-      '#states' => [
-        'visible' => [
-          ':input[name="islandora_simple_map_use_gmaps_api"]' => ['checked' => TRUE],
-        ],
-      ],
-    ],
-    'islandora_simple_maps_disable_page_display' => [
+      '#states' => array(
+        'visible' => array(
+          ':input[name="islandora_simple_map_use_gmaps_api"]' => array('checked' => TRUE),
+        ),
+      ),
+    ),
+    'islandora_simple_maps_disable_page_display' => array(
       '#type' => 'checkbox',
       '#title' => t('Disable collapsible div map.'),
       '#description' => t('Using the Google Map API you can display the map in a block. This turns off the collapsible div map embed in the page.'),
       '#return_value' => TRUE,
       '#default_value' => variable_get('islandora_simple_maps_disable_page_display', FALSE),
-      '#states' => [
-        'visible' => [
-          ':input[name="islandora_simple_map_use_gmaps_api"]' => ['checked' => TRUE],
-        ],
-      ],
-    ],
-    'islandora_simple_map_collections' => [
+      '#states' => array(
+        'visible' => array(
+          ':input[name="islandora_simple_map_use_gmaps_api"]' => array('checked' => TRUE),
+        ),
+      ),
+    ),
+    'islandora_simple_map_collections' => array(
       '#type' => 'fieldset',
       '#title' => t('Collection Maps'),
-      '#states' => [
-        'visible' => [
-          ':input[name="islandora_simple_map_use_gmaps_api"]' => ['checked' => TRUE],
-        ],
-      ],
-      'islandora_simple_map_collection_maps' => [
+      '#states' => array(
+        'visible' => array(
+          ':input[name="islandora_simple_map_use_gmaps_api"]' => array('checked' => TRUE),
+        ),
+      ),
+      'islandora_simple_map_collection_maps' => array(
         '#type' => 'checkbox',
         '#title' => t('Enable collection level maps?'),
         '#description' => t('Aggregate object markers inside a collection into a single map for the collection.'),
         '#default_value' => variable_get('islandora_simple_map_collection_maps', FALSE),
         '#return_value' => TRUE,
-      ],
-      'islandora_simple_map_collection_coord_solr_field' => [
+      ),
+      'islandora_simple_map_collection_coord_solr_field' => array(
         '#type' => 'textfield',
         '#title' => t('Coordinates Solr field.'),
         '#description' => t('Solr field with the coordinates from a records, can be multivalued.'),
         '#default_value' => variable_get('islandora_simple_map_collection_coord_solr_field', ''),
         '#autocomplete_path' => 'islandora_solr/autocomplete_luke',
-        '#states' => [
-          'required' => [
-            ':input[name="islandora_simple_map_collection_maps"]' => ['checked' => TRUE],
-          ],
-          'visible' => [
-            ':input[name="islandora_simple_map_collection_maps"]' => ['checked' => TRUE],
-          ],
-        ],
-      ],
-    ],
-  ];
-  $form['islandora_simple_map_coordinate_delimiter'] = [
+        '#states' => array(
+          'required' => array(
+            ':input[name="islandora_simple_map_collection_maps"]' => array('checked' => TRUE),
+          ),
+          'visible' => array(
+            ':input[name="islandora_simple_map_collection_maps"]' => array('checked' => TRUE),
+          ),
+        ),
+      ),
+    ),
+  );
+  $form['islandora_simple_map_coordinate_delimiter'] = array(
     '#type' => 'textfield',
     '#title' => t('Coordinate delimiter'),
     '#description' => t('Character or string used to separate multiple coordinates inside the MODS element, leave blank to not split.'),
     '#default_value' => variable_get('islandora_simple_map_coordinate_delimiter', ';'),
-  ];
+  );
   $form['islandora_simple_map_xpath'] = array(
     '#title' => t('XPath expressions to MODS elements containing map data'),
     '#type' => 'textarea',
@@ -201,29 +201,29 @@ function _islandora_simple_map_admin_collection_display_form(&$form_state) {
 
   $results = $nids->fetchAllAssoc('pid', PDO::FETCH_ASSOC);
 
-  $form = [
-    'islandora_simple_maps_collections' => [
+  $form = array(
+    'islandora_simple_maps_collections' => array(
       '#type' => 'fieldset',
       '#title' => t('Collections with maps.'),
       '#description' => t('List of collections with maps enabled.'),
-      'map_warning' => [
+      'map_warning' => array(
         '#type' => 'markup',
         '#markup' => '<p><b>NOTE:</b> You can disable individual or multiple maps here, but you must add them at the individual collection manage pages.</p>',
-      ],
-      'collection_listing' => [
+      ),
+      'collection_listing' => array(
         '#type' => 'tableselect',
         '#title' => t('Collections'),
         '#header' => $header,
         '#options' => $results,
         '#empty' => t('There are no collections with maps enabled'),
-      ],
-      'disable_map' => [
+      ),
+      'disable_map' => array(
         '#type' => 'submit',
         '#value' => t('Disable checked'),
-      ],
+      ),
       'pager' => array('#markup' => theme('pager')),
-    ],
-  ];
+    ),
+  );
   return $form;
 }
 

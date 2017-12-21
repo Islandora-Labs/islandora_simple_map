@@ -69,7 +69,7 @@ function islandora_simple_map_parse_coordinates(array $coordinates) {
                    if (!isset($b['weight'])) {
                      $b['weight'] = 100;
                    }
-    return (abs($a['weight']) <= abs($b['weight']));
+    return (abs($a['weight']) <= abs($b['weight']) ? -1 : 1);
   });
 
   // Don't need to parse coordinates already in decimal notation.

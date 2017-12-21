@@ -12,24 +12,24 @@
  */
 function islandora_simple_map_collection_manage_form($form, &$form_state, $object) {
   $has_collection_map = _islandora_simple_map_display_collection_map($object->id);
-  $form = [
+  $form = array(
     '#action' => request_uri() . '#manage-islandora-simple-maps',
-    'islandora_simple_map_display' => [
+    'islandora_simple_map_display' => array(
       '#type' => 'checkbox',
       '#title' => t('Display map of resources in this collection.'),
       '#description' => t('Display a map of the resources in this collection, using the Solr field configured in the Admin -> Islandora -> Islandora Utility -> Islandora Simple Maps'),
       '#return_value' => TRUE,
       '#default_value' => $has_collection_map,
-    ],
-    'islandora_simple_map_collection_pid' => [
+    ),
+    'islandora_simple_map_collection_pid' => array(
       '#type' => 'hidden',
       '#value' => check_plain($object->id),
-    ],
-    'islandora_simple_map_collection_submit' => [
+    ),
+    'islandora_simple_map_collection_submit' => array(
       '#type' => 'submit',
       '#value' => t('Save'),
-    ],
-  ];
+    ),
+  );
   return $form;
 }
 
@@ -57,10 +57,10 @@ function islandora_simple_map_collection_manage_form_submit($form, &$form_state)
       !$has_collection_map) {
       $object = islandora_object_load($pid);
       if ($object) {
-        db_insert('islandora_simple_map_collections_map')->fields([
+        db_insert('islandora_simple_map_collections_map')->fields(array(
           'pid' => $pid,
           'title' => check_plain($object->label),
-        ])->execute();
+        ))->execute();
         drupal_set_message(t("Collection map display enabled."));
       }
     }

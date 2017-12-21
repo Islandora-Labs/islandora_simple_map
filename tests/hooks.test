@@ -25,11 +25,11 @@ class IslandoraSimpleMapHookTestCase extends IslandoraSimpleMapTestCase {
    * @see IslandoraUnitTestCase::getInfo()
    */
   public static function getInfo() {
-    return [
+    return array(
       'name' => 'Islandora Simple Map - Hooks',
       'description' => 'Ensure that the hooks for coordinate retrieval/parsing are called.',
       'group' => 'Islandora Simple Map',
-    ];
+    );
   }
 
   /**
@@ -44,7 +44,7 @@ class IslandoraSimpleMapHookTestCase extends IslandoraSimpleMapTestCase {
    * Test hook_islandora_simple_map_get_coordinates().
    */
   public function testGetCoordinatesHook() {
-    module_enable(['islandora_simple_map_hooks_test']);
+    module_enable(array('islandora_simple_map_hooks_test'));
     $object = $this->admin->repository->constructObject('test:simpleMapDecimalObject');
     $this->admin->repository->ingestObject($object);
     $mods = $object->constructDatastream('MODS');
@@ -73,20 +73,20 @@ class IslandoraSimpleMapHookTestCase extends IslandoraSimpleMapTestCase {
    * Test hook_islandora_simple_map_parse_coordinates().
    */
   public function testParseCoordinates() {
-    module_enable(['islandora_simple_map_hooks_test']);
-    $coordinates = [
+    module_enable(array('islandora_simple_map_hooks_test'));
+    $coordinates = array(
       '45.4215, -75.6972',
       '43.6532, -79.3832',
       '45.5017, -73.5673',
       '32° 42\' 56.6496" N, 117° 9\' 39.9132" W',
-    ];
+    );
 
-    $expected = [
+    $expected = array(
       '45.4215, -75.6972',
       '43.6532, -79.3832',
       '45.5017, -73.5673',
       '32.715736, -117.161087',
-    ];
+    );
 
     $new_coords = islandora_simple_map_parse_coordinates($coordinates);
     $this->assertEqual($expected, $new_coords, 'Hook parse coordinates did not return expected results.');
@@ -96,19 +96,19 @@ class IslandoraSimpleMapHookTestCase extends IslandoraSimpleMapTestCase {
    * Ensure hooks are executed according to the weight argument.
    */
   public function testParseCoordinatesOrdering() {
-    module_enable(['islandora_simple_map_hooks_order_test_1', 'islandora_simple_map_hooks_order_test_2']);
-    $coordinates = [
+    module_enable(array('islandora_simple_map_hooks_order_test_1', 'islandora_simple_map_hooks_order_test_2'));
+    $coordinates = array(
       'TEST, -75.6972',
       '43.6532, -79.3832',
       '45.5017, TEST',
       '32° 42\' 56.6496" N, 117° 9\' 39.9132" W',
-    ];
-    $expected = [
+    );
+    $expected = array(
       '43.6532, -79.3832',
       'WINNING, -75.6972',
       '45.5017, WINNING',
       'DSM, DSM',
-    ];
+    );
     $new_coords = islandora_simple_map_parse_coordinates($coordinates);
     $this->assertEqual($expected, $new_coords, 'Executes hooks in weight order');
   }
