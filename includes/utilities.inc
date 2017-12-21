@@ -198,7 +198,7 @@ function islandora_simple_map_standardize_format(&$coordinates) {
  */
 function _islandora_simple_map_display_collection_map($pid) {
   $results = db_query('SELECT pid from {islandora_simple_map_collections_map} WHERE pid = :pid',
-    [':pid' => $pid]);
+    array(':pid' => $pid));
   foreach ($results as $r) {
     if ($r->pid == $pid) {
       return TRUE;
