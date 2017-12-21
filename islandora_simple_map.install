@@ -44,7 +44,7 @@ function islandora_simple_map_schema() {
         'not null' => TRUE,
       ),
     ),
-    'primary key' => ['pid'],
+    'primary key' => array('pid'),
   );
   return $schema;
 }
