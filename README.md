@@ -1,4 +1,4 @@
-# Islandora Simple Map
+# Islandora Simple Map [![Build Status](https://travis-ci.org/mjordan/islandora_datastream_crud.png?branch=7.x)](https://travis-ci.org/mjordan/islandora_simple_map.svg?branch=7.x)
 
 Islandora module that appends a Google map to an object's display if its MODS datastream contains the required data. You can see it in action [here](http://digital.lib.sfu.ca/pfp-980/buffalo-stanley-park-vancouver-bc).
 
