@@ -100,7 +100,7 @@ function islandora_simple_map_parse_coordinates(array $coordinates) {
  */
 function islandora_simple_map_islandora_simple_map_get_coordinates(AbstractObject $object) {
   $mods_results = islandora_simple_map_get_mods_results($object);
-  $found_coords = [];
+  $found_coords = array();
   foreach ($mods_results as $node_value) {
     if (strlen(trim(variable_get('islandora_simple_map_coordinate_delimiter', ';'))) > 0) {
       $temp_array = explode(trim(variable_get('islandora_simple_map_coordinate_delimiter', ';')), $node_value);
@@ -125,7 +125,7 @@ function islandora_simple_map_islandora_simple_map_get_coordinates(AbstractObjec
  *   The unaltered node values.
  */
 function islandora_simple_map_get_mods_results(AbstractObject $object) {
-  $results = [];
+  $results = array();
   if (isset($object['MODS'])) {
     $mods = $object['MODS']->content;
     $xpaths = preg_split('/$\R?^/m', trim(variable_get('islandora_simple_map_xpath', ISLANDORA_SIMPLE_MAP_XPATHS)));

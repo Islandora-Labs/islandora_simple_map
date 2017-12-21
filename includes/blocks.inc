@@ -31,7 +31,7 @@ function islandora_simple_map_block_view($delta = '') {
         $block = array();
         if (count($found_coords['coordinates']) > 0) {
           $map_div_id = drupal_html_id('islandora_simple_map_block');
-          $settings = [];
+          $settings = array();
           $settings['islandora_simple_map'][$map_div_id] = array(
             'map_markers' => $found_coords,
             'map_div_id' => $map_div_id,
