@@ -62,7 +62,7 @@ function islandora_simple_map_dms_parser_convert_to_decimal(array $coord) {
     return preg_replace('/"″\'′/', '', trim($c));
   };
   for ($bar = count($coord) - 1; $bar > 1; $bar -= 1) {
-    if (preg_match('/^[NSEW]?$/', $coord[$bar])) {
+    if (preg_match('/^[NSEW]$/', $coord[$bar])) {
       $is_positive = ($coord[$bar] == 'N' || $coord[$bar] == 'E');
     }
     else {
