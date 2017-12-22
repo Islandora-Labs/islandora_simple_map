@@ -36,7 +36,7 @@ function islandora_simple_map_block_view($delta = '') {
             'map_markers' => $found_coords,
             'map_div_id' => $map_div_id,
             'map_zoom_level' => (int) variable_get('islandora_simple_map_zoom', '10'),
-            'disable_scroll_zoom' => (bool) variable_get('islandora_simple_maps_disable_scroll', FALSE),
+            'disable_scroll_zoom' => (bool) variable_get('islandora_simple_map_disable_scroll', FALSE),
           );
           $block = array(
             'content' => array(

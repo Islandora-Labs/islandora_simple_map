@@ -38,11 +38,13 @@ class IslandoraSimpleMapCollectionTest extends IslandoraWebTestCase {
       "48° 51' 52.9776\" N, 2° 20' 56.4504\" E",
       "45°24 40 N, 75°41 53 W",
       "19.699575, -155.080872",
+      "36.1699° N, 115.1398° W",
     );
     $expected = array(
       "45°24′40″ N, 75°41′53″ W" => "45.411111111111,-75.698055555556",
       "48° 51' 52.9776\" N, 2° 20' 56.4504\" E" => "48.864716,2.349014",
       "45°24 40 N, 75°41 53 W" => "45.411111111111,-75.698055555556",
+      "36.1699° N, 115.1398° W" => "36.1699,-115.1398",
     );
     $parsed = islandora_simple_map_dms_parser_parse_dms($input);
     $this->assertEqual($expected, $parsed, "DMS coordinates parsed");

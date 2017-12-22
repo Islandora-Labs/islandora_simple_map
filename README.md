@@ -11,12 +11,13 @@ This module allows use of Google Map's [Embed API](https://developers.google.com
 Feature | Embed API | JavaScript API
 --- | --- | ---
 API key | not required | required
-blocks | no supported | supported
+blocks | not supported | supported
 multivalued coordinates | not supported (first coordinate/place name only) | supported
 place names | supported | not supported
 collection maps | not supported | supported
 
-This module exposes a [hook](#api) to allow developers to write their own function to extract information and return coordinates for display on the map.
+This module exposes two [hooks](#api) to allow developers to write their own function to extract information and return coordinates for display on the map
+and to parse coordinates provided in various formats to decimal format for display.
 
 See [Configuration](#configuration) for instructions.
 
@@ -127,6 +128,24 @@ These are merged with all other implementations.
 If you are using the Javascript API, they are then validated/filtered to ensure they are decimal coordinates.
 Lastly (using either API) they are de-duplicated to determine the points to show on the map.
 
+`hook_islandora_simple_map_parse_coordinates_callback()`
+
+Implementations of this hook should return an array of the format.
+```
+  array(
+    'my_module_implementation' => array(
+      'function_name' => 'islandora_test_parse_coordinates',
+      'file' => drupal_get_path('module', 'islandora_simple_map') .
+      'includes/test_functions.inc',
+      'weight' => 100,
+    ),
+  );
+```
+Where
+* `function_name` is a function that accepts an array of coordinates of various formats and returns an associative 
+array of coordinates that it could parse where the key is the original value and value is the parsed value.
+* `file` is the file to include to access this function. (Optional)
+* `weight` is to order the hooks. Default is 100. (Optional) 
 ## Maintainer
 
 * [Mark Jordan](https://github.com/mjordan)

@@ -124,7 +124,7 @@ function islandora_simple_map_islandora_view_object_alter(&$object, &$rendered) 
     $zoom = (int) variable_get('islandora_simple_map_zoom', '10');
     $collapsed = variable_get('islandora_simple_map_collapsed', 'collapsed');
     if (variable_get('islandora_simple_map_use_gmaps_api', FALSE)) {
-      if (variable_get('islandora_simple_maps_disable_page_display', FALSE)) {
+      if (variable_get('islandora_simple_map_disable_page_display', FALSE)) {
         return array();
       }
       $map_div_id = drupal_html_id('islandora_simple_map_page');
@@ -132,12 +132,13 @@ function islandora_simple_map_islandora_view_object_alter(&$object, &$rendered) 
         'map_markers' => $found_coords,
         'map_div_id' => $map_div_id,
         'map_zoom_level' => $zoom,
-        'disable_scroll_zoom' => (bool) variable_get('islandora_simple_maps_disable_scroll', FALSE),
+        'disable_scroll_zoom' => (bool) variable_get('islandora_simple_map_disable_scroll', FALSE),
       );
       $content = array(
         'islandora_simple_map' => array(
           '#type' => 'fieldset',
           '#title' => t('Map'),
+          '#weight' => 100,
           '#attributes' => array(
             'class' => array('collapsible', ($collapsed ? 'collapsed' : '')),
           ),
@@ -155,7 +156,6 @@ function islandora_simple_map_islandora_view_object_alter(&$object, &$rendered) 
         'type' => 'inline',
         'data' => "#{$map_div_id} {\nheight: {$height}px;\nwidth: {$width}px;\n}",
       );
-      $markup = render($content);
     }
     else {
 
@@ -174,13 +174,43 @@ function islandora_simple_map_islandora_view_object_alter(&$object, &$rendered) 
     }
     // Some Islandora render arrays have a single member, with a key of NULL.
     if (isset($rendered[NULL])) {
-      $rendered[NULL]['#markup'] = $rendered[NULL]['#markup'] . $markup;
+      if (isset($rendered[NULL]['#markup'])) {
+        if (isset($content) && !isset($markup)) {
+          // Don't render unless/until we need to.
+          $markup = render($content);
+        }
+        $rendered[NULL]['#markup'] = $rendered[NULL]['#markup'] . $markup;
+      }
+      elseif (is_array($rendered[NULL])) {
+        $rendered[NULL]['islandora_simple_map'] = $content['islandora_simple_map'];
+      }
     }
     else {
       // Others have several members, depending on the content model.
       $member = islandora_simple_map_get_rendered_member($object->models);
       if (isset($rendered[$member]['#markup'])) {
+        if (isset($content) && !isset($markup)) {
+          // Don't render unless/until we need to.
+          $markup = render($content);
+        }
         $rendered[$member]['#markup'] = $rendered[$member]['#markup'] . $markup;
+      }
+      elseif (isset($rendered[$member]) && is_array($rendered[$member])) {
+        // These are render arrays.
+        if (isset($content)) {
+          // We have a render array to add it to the bottom.
+          $rendered[$member]['islandora_simple_map'] = $content['islandora_simple_map'];
+        }
+        else {
+          // Add JS needed and make a markup render array element.
+          drupal_add_js('misc/form.js');
+          drupal_add_js('misc/collapse.js');
+          $rendered[$member]['islandora_simple_map'] = array(
+            '#type' => 'markup',
+            '#markup' => $markup,
+            '#weight' => 100,
+          );
+        }
       }
     }
 
