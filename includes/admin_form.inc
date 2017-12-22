@@ -37,23 +37,23 @@ function islandora_simple_map_admin_settings() {
         ),
       ),
     ),
-    'islandora_simple_maps_disable_scroll' => array(
+    'islandora_simple_map_disable_scroll' => array(
       '#type' => 'checkbox',
       '#title' => t('Disable mouse wheel scroll?'),
       '#return_value' => TRUE,
-      '#default_value' => variable_get('islandora_simple_maps_disable_scroll', FALSE),
+      '#default_value' => variable_get('islandora_simple_map_disable_scroll', FALSE),
       '#states' => array(
         'visible' => array(
           ':input[name="islandora_simple_map_use_gmaps_api"]' => array('checked' => TRUE),
         ),
       ),
     ),
-    'islandora_simple_maps_disable_page_display' => array(
+    'islandora_simple_map_disable_page_display' => array(
       '#type' => 'checkbox',
       '#title' => t('Disable collapsible div map.'),
       '#description' => t('Using the Google Map API you can display the map in a block. This turns off the collapsible div map embed in the page.'),
       '#return_value' => TRUE,
-      '#default_value' => variable_get('islandora_simple_maps_disable_page_display', FALSE),
+      '#default_value' => variable_get('islandora_simple_map_disable_page_display', FALSE),
       '#states' => array(
         'visible' => array(
           ':input[name="islandora_simple_map_use_gmaps_api"]' => array('checked' => TRUE),
