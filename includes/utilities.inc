@@ -292,16 +292,16 @@ function _islandora_simple_map_get_collection_points_solr(AbstractObject $object
   $count = NULL;
   $members = array();
   $solr_build = new IslandoraSolrQueryProcessor();
-  $params = [
+  $params = array(
     'rows' => $page_size,
     'start' => $page_num,
     'fl' => "PID,{$coord_field}",
-  ];
+  );
   $solr_query = format_string("!member:\"!pid\" OR !member:\"info:fedora/!pid\"",
-    [
+    array(
       '!member' => $member_field,
       '!pid' => $object->id,
-    ]
+    )
   );
   while (is_null($count) || ($count > ($page_num * $page_size) + $page_size)) {
     try {
