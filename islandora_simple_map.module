@@ -117,6 +117,10 @@ function islandora_simple_map_collection_tab_access(AbstractObject $object) {
  * Implements hook_islandora_view_object_alter().
  */
 function islandora_simple_map_islandora_view_object_alter(&$object, &$rendered) {
+  if (in_array('islandora:compoundCModel', $object->models) &&
+    variable_get('islandora_simple_map_omit_compound_display', TRUE)) {
+    return array();
+  }
   $found_coords = islandora_simple_map_process_coordinates($object);
   if (isset($found_coords['coordinates']) && count($found_coords['coordinates']) > 0) {
     $width = (int) variable_get('islandora_simple_map_iframe_width', '600');
