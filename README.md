@@ -53,6 +53,9 @@ Once you enable the module, any object whose MODS file contains coordinates in t
 
 If you have checked the "Enable collection level maps?" option, you can then enable a map for each collection within the collection's Manage subtabs.
 
+There is also the __Coordinates Solr field__ option if you index your object's coordinates. If you fill this in, then a
+Solr query will be done to retrieve the collections coordinates instead of parsing each collection member's MODS record.
+
 ### Extract from MODS using XPath
 
 Site admins can configure multiple MODS elements in a preferred order by entering XPath expressions in the admin setting's "XPath expressions to MODS elements containing map data" field. Data from the first element to match one of the configured XPath expressions is used to render the map. The module provide sensible default values that prefer `<subject><cartographics><coordinates>` over `<subject><geographic>`.
