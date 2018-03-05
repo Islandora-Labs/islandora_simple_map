@@ -307,6 +307,7 @@ function islandora_simple_map_collection_map_view(AbstractObject $object) {
         ),
       ),
     );
+    dsm($content);
   }
   else {
     $content = array(

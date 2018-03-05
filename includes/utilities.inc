@@ -233,7 +233,7 @@ function _islandora_simple_map_get_collection_points(AbstractObject $object) {
   if (module_exists('islandora_solr') && variable_get('islandora_simple_map_collection_coord_solr_field', '') !== '') {
     $points = _islandora_simple_map_get_collection_points_solr($object);
   }
-  else if (module_exists('islandora_basic_collection')) {
+  elseif (module_exists('islandora_basic_collection')) {
     $points = _islandora_simple_map_get_collection_points_load($object);
   }
   return $points;
@@ -310,8 +310,9 @@ function _islandora_simple_map_get_collection_points_solr(AbstractObject $object
       $count = $results['response']['numFound'];
       $members = array_merge($members, $results['response']['objects']);
       $page_num += 1;
-    } catch (Exception $e) {
-      drupal_set_message("Error querying Solr index: {$e->getMessage}", "error");
+    }
+    catch (Exception $e) {
+      drupal_set_message(check_plain(t('Error searching Solr index')) . ' ' . $e->getMessage(), 'error');
       break;
     }
   }
