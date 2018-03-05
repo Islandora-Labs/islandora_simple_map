@@ -322,12 +322,12 @@ function _islandora_simple_map_get_collection_points_solr(AbstractObject $object
         $coords = $member['solr_doc'][$coord_field];
       }
       else {
-        $coords = [$member['solr_doc'][$coord_field]];
+        $coords = array($member['solr_doc'][$coord_field]);
       }
-      $points[] = [
+      $points[] = array(
         'pid' => $member['PID'],
         'coordinates' => $coords,
-      ];
+      );
     }
   }
   $points = array_filter($points, function($o) {
