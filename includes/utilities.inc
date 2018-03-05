@@ -290,7 +290,7 @@ function _islandora_simple_map_get_collection_points_solr(AbstractObject $object
   $page_num = 0;
   $page_size = 20;
   $count = NULL;
-  $members = [];
+  $members = array();
   $solr_build = new IslandoraSolrQueryProcessor();
   $params = [
     'rows' => $page_size,
