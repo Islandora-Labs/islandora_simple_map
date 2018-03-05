@@ -230,29 +230,108 @@ function _islandora_simple_map_collection_map_enabled() {
  */
 function _islandora_simple_map_get_collection_points(AbstractObject $object) {
   $points = array();
-  if (module_exists('islandora_basic_collection')) {
-    $page_num = 0;
-    $page_size = 20;
-    $count = NULL;
-    $members = array();
-    while (is_null($count) || ($count > ($page_num * $page_size) + $page_size)) {
-      list($count, $new_members) = islandora_basic_collection_get_member_objects($object, $page_num, $page_size);
-      $members = array_merge($members, $new_members);
-      $page_num += 1;
-    }
-    if (count($members) > 0) {
-      foreach ($members as $member) {
-        $pid = $member['object']['value'];
-        $object = islandora_object_load($pid);
-        if ($object) {
-          $coords = islandora_simple_map_process_coordinates($object);
-          if (isset($coords['coordinates']) && count($coords['coordinates']) > 0) {
-            $points[] = $coords;
-          }
+  if (module_exists('islandora_solr') && variable_get('islandora_simple_map_collection_coord_solr_field', '') !== '') {
+    $points = _islandora_simple_map_get_collection_points_solr($object);
+  }
+  else if (module_exists('islandora_basic_collection')) {
+    $points = _islandora_simple_map_get_collection_points_load($object);
+  }
+  return $points;
+}
+
+/**
+ * Get all the collection points from a collection by parsing MODS records.
+ *
+ * @param \AbstractObject $object
+ *   The collection object.
+ *
+ * @return array
+ *   The collection points (un-parsed).
+ */
+function _islandora_simple_map_get_collection_points_load(AbstractObject $object) {
+  $points = array();
+  $page_num = 0;
+  $page_size = 20;
+  $count = NULL;
+  $members = array();
+  while (is_null($count) || ($count > ($page_num * $page_size) + $page_size)) {
+    list($count, $new_members) = islandora_basic_collection_get_member_objects($object, $page_num, $page_size);
+    $members = array_merge($members, $new_members);
+    $page_num += 1;
+  }
+  if (count($members) > 0) {
+    foreach ($members as $member) {
+      $pid = $member['object']['value'];
+      $object = islandora_object_load($pid);
+      if ($object) {
+        $coords = islandora_simple_map_process_coordinates($object);
+        if (isset($coords['coordinates']) && count($coords['coordinates']) > 0) {
+          $points[] = $coords;
         }
       }
     }
   }
+  return $points;
+}
+
+/**
+ * Get all the collection points from a collection by querying Solr.
+ *
+ * @param \AbstractObject $object
+ *   The collection object.
+ *
+ * @return array
+ *   The collection points (un-parsed).
+ */
+function _islandora_simple_map_get_collection_points_solr(AbstractObject $object) {
+  $points = array();
+  $member_field = variable_get('islandora_solr_member_of_collection_field', 'RELS_EXT_isMemberOfCollection_uri_ms');
+  $coord_field = variable_get('islandora_simple_map_collection_coord_solr_field', '');
+  $page_num = 0;
+  $page_size = 20;
+  $count = NULL;
+  $members = [];
+  $solr_build = new IslandoraSolrQueryProcessor();
+  $params = [
+    'rows' => $page_size,
+    'start' => $page_num,
+    'fl' => "PID,{$coord_field}",
+  ];
+  $solr_query = format_string("!member:\"!pid\" OR !member:\"info:fedora/!pid\"",
+    [
+      '!member' => $member_field,
+      '!pid' => $object->id,
+    ]
+  );
+  while (is_null($count) || ($count > ($page_num * $page_size) + $page_size)) {
+    try {
+      $solr_build->buildAndExecuteQuery($solr_query, $params, FALSE);
+      $results = $solr_build->islandoraSolrResult;
+      $count = $results['response']['numFound'];
+      $members = array_merge($members, $results['response']['objects']);
+      $page_num += 1;
+    } catch (Exception $e) {
+      drupal_set_message("Error querying Solr index: {$e->getMessage}", "error");
+      break;
+    }
+  }
+  foreach ($members as $member) {
+    if (isset($member['solr_doc'][$coord_field])) {
+      if (is_array($member['solr_doc'][$coord_field])) {
+        $coords = $member['solr_doc'][$coord_field];
+      }
+      else {
+        $coords = [$member['solr_doc'][$coord_field]];
+      }
+      $points[] = [
+        'pid' => $member['PID'],
+        'coordinates' => $coords,
+      ];
+    }
+  }
+  $points = array_filter($points, function($o) {
+    return count($o['coordinates'] > 0);
+  });
   return $points;
 }
 
