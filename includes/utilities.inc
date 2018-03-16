@@ -392,7 +392,7 @@ function _islandora_simple_map_get_collection_points_solr(AbstractObject $object
         array_walk($coordinates, 'islandora_simple_map_clean_coordinates');
       }
       if (variable_get('islandora_simple_map_use_gmaps_api', FALSE)) {
-        // Only filter and standardize coordinates if we are using Javascript API.
+        // Only filter/standardize coordinates if we are using Javascript API.
         $coordinates = array_filter($coordinates, 'islandora_simple_map_is_valid_coordinates');
         array_walk($coordinates, 'islandora_simple_map_standardize_format');
       }
@@ -453,7 +453,7 @@ function _islandora_simple_map_generate_js_code(array $settings) {
 }
 
 /**
- * Remove the various search alters that stop us from getting any data from Solr.
+ * Remove search alters that stop us from getting any data from Solr.
  *
  * @param array $params
  *   The islandoraSolrQueryProcessor params
