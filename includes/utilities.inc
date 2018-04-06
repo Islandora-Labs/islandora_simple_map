@@ -98,7 +98,7 @@ function islandora_simple_map_parse_coordinates(array $coordinates) {
  */
 function islandora_simple_map_islandora_simple_map_get_coordinates(AbstractObject $object) {
   $found_coords = array();
-  if (variable_get('islandora_simple_map_use_solr', FALSE)) {
+  if (module_exists("islandora_solr") && variable_get('islandora_simple_map_use_solr', FALSE)) {
     $found_coords = _islandora_simple_map_get_coordinates_solr($object);
   }
   else {
