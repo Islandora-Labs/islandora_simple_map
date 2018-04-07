@@ -20,6 +20,8 @@ function islandora_simple_map_uninstall() {
     'islandora_simple_map_disable_scroll',
     'islandora_simple_map_disable_page_display',
     'islandora_simple_map_coordinate_delimiter',
+    'islandora_simple_map_coordinate_solr_field',
+    'islandora_simple_map_use_solr',
   );
   array_walk($variables, 'variable_del');
 }

@@ -95,10 +95,28 @@ function islandora_simple_map_parse_coordinates(array $coordinates) {
 
 /**
  * Implements hook_islandora_simple_map_get_coordinates().
- *
- * Parse a MODS record looking for coordinates.
  */
 function islandora_simple_map_islandora_simple_map_get_coordinates(AbstractObject $object) {
+  $found_coords = array();
+  if (module_exists("islandora_solr") && variable_get('islandora_simple_map_use_solr', FALSE)) {
+    $found_coords = _islandora_simple_map_get_coordinates_solr($object);
+  }
+  else {
+    $found_coords = _islandora_simple_map_get_coordinates_parse_mods($object);
+  }
+  return $found_coords;
+}
+
+/**
+ * Parse a MODS record looking for coordinates.
+ *
+ * @param AbstractObject $object
+ *   Object to find coordinates for.
+ *
+ * @return array
+ *   Array of raw coordinates.
+ */
+function _islandora_simple_map_get_coordinates_parse_mods(AbstractObject $object) {
   $mods_results = islandora_simple_map_get_mods_results($object);
   $found_coords = array();
   foreach ($mods_results as $node_value) {
@@ -110,6 +128,48 @@ function islandora_simple_map_islandora_simple_map_get_coordinates(AbstractObjec
     }
     else {
       $found_coords[] = $node_value;
+    }
+  }
+  return $found_coords;
+}
+
+/**
+ * Search Solr for coordinates.
+ *
+ * @param AbstractObject $object
+ *   Object to find coordinates for.
+ *
+ * @return array
+ *   Array of raw coordinates.
+ */
+function _islandora_simple_map_get_coordinates_solr(AbstractObject $object) {
+  $coord_field = variable_get('islandora_simple_map_coordinate_solr_field', '');
+  $found_coords = array();
+  $solr_build = new IslandoraSolrQueryProcessor();
+  $params = array(
+    'fl' => "PID,{$coord_field}",
+  );
+  $solr_query = format_string("PID:\"!pid\" OR PID:\"info:fedora/!pid\"",
+    array(
+      '!pid' => $object->id,
+    )
+  );
+  try {
+    $solr_build->buildQuery($solr_query, $params);
+    _islandora_simple_map_remove_search_restrictions($solr_build->solrParams);
+    $solr_build->executeQuery(FALSE);
+    $results = $solr_build->islandoraSolrResult['response']['objects'];
+  }
+  catch (Exception $e) {
+    drupal_set_message(check_plain(t('Error searching Solr index')) . ' ' . $e->getMessage(), 'error');
+  }
+  $member = reset($results);
+  if (isset($member['solr_doc'][$coord_field])) {
+    if (is_array($member['solr_doc'][$coord_field])) {
+      $found_coords = $member['solr_doc'][$coord_field];
+    }
+    else {
+      $found_coords = array($member['solr_doc'][$coord_field]);
     }
   }
   return $found_coords;
@@ -230,29 +290,122 @@ function _islandora_simple_map_collection_map_enabled() {
  */
 function _islandora_simple_map_get_collection_points(AbstractObject $object) {
   $points = array();
-  if (module_exists('islandora_basic_collection')) {
-    $page_num = 0;
-    $page_size = 20;
-    $count = NULL;
-    $members = array();
-    while (is_null($count) || ($count > ($page_num * $page_size) + $page_size)) {
-      list($count, $new_members) = islandora_basic_collection_get_member_objects($object, $page_num, $page_size);
-      $members = array_merge($members, $new_members);
-      $page_num += 1;
-    }
-    if (count($members) > 0) {
-      foreach ($members as $member) {
-        $pid = $member['object']['value'];
-        $object = islandora_object_load($pid);
-        if ($object) {
-          $coords = islandora_simple_map_process_coordinates($object);
-          if (isset($coords['coordinates']) && count($coords['coordinates']) > 0) {
-            $points[] = $coords;
-          }
+  if (module_exists('islandora_solr') &&
+    variable_get('islandora_simple_map_use_solr', FALSE)) {
+    $points = _islandora_simple_map_get_collection_points_solr($object);
+  }
+  elseif (module_exists('islandora_basic_collection')) {
+    $points = _islandora_simple_map_get_collection_points_load($object);
+  }
+  return $points;
+}
+
+/**
+ * Get all the collection points from a collection by parsing MODS records.
+ *
+ * @param \AbstractObject $object
+ *   The collection object.
+ *
+ * @return array
+ *   The collection points (un-parsed).
+ */
+function _islandora_simple_map_get_collection_points_load(AbstractObject $object) {
+  $points = array();
+  $page_num = 0;
+  $page_size = 20;
+  $count = NULL;
+  $members = array();
+  while (is_null($count) || ($count > ($page_num * $page_size) + $page_size)) {
+    list($count, $new_members) = islandora_basic_collection_get_member_objects($object, $page_num, $page_size);
+    $members = array_merge($members, $new_members);
+    $page_num += 1;
+  }
+  if (count($members) > 0) {
+    foreach ($members as $member) {
+      $pid = $member['object']['value'];
+      $object = islandora_object_load($pid);
+      if ($object) {
+        $coords = islandora_simple_map_process_coordinates($object);
+        if (isset($coords['coordinates']) && count($coords['coordinates']) > 0) {
+          $points[] = $coords;
         }
       }
     }
   }
+  return $points;
+}
+
+/**
+ * Get all the collection points from a collection by querying Solr.
+ *
+ * @param \AbstractObject $object
+ *   The collection object.
+ *
+ * @return array
+ *   The collection points (un-parsed).
+ */
+function _islandora_simple_map_get_collection_points_solr(AbstractObject $object) {
+  $points = array();
+  $member_field = variable_get('islandora_solr_member_of_collection_field', 'RELS_EXT_isMemberOfCollection_uri_ms');
+  $coord_field = variable_get('islandora_simple_map_coordinate_solr_field', '');
+  $page_num = 0;
+  $page_size = 20;
+  $count = NULL;
+  $members = array();
+  $solr_build = new IslandoraSolrQueryProcessor();
+  $solr_query = format_string("!member:\"!pid\" OR !member:\"info:fedora/!pid\"",
+    array(
+      '!member' => $member_field,
+      '!pid' => $object->id,
+    )
+  );
+  while (is_null($count) || ($count > ($page_num * $page_size) + $page_size)) {
+    $params = array(
+      'rows' => $page_size,
+      'start' => $page_num,
+      'fl' => "PID,{$coord_field}",
+    );
+    try {
+      $solr_build->buildQuery($solr_query, $params);
+      _islandora_simple_map_remove_search_restrictions($solr_build->solrParams);
+      $solr_build->executeQuery(FALSE);
+      $results = $solr_build->islandoraSolrResult;
+      $count = $results['response']['numFound'];
+      $members = array_merge($members, $results['response']['objects']);
+      $page_num += 1;
+    }
+    catch (Exception $e) {
+      drupal_set_message(check_plain(t('Error searching Solr index')) . ' ' . $e->getMessage(), 'error');
+      break;
+    }
+  }
+  foreach ($members as $member) {
+    if (isset($member['solr_doc'][$coord_field])) {
+      if (is_array($member['solr_doc'][$coord_field])) {
+        $coordinates = $member['solr_doc'][$coord_field];
+      }
+      else {
+        $coordinates = array($member['solr_doc'][$coord_field]);
+      }
+      $coordinates = islandora_simple_map_parse_coordinates($coordinates);
+      if (variable_get('islandora_simple_map_attempt_cleanup', TRUE)) {
+        array_walk($coordinates, 'islandora_simple_map_clean_coordinates');
+      }
+      if (variable_get('islandora_simple_map_use_gmaps_api', FALSE)) {
+        // Only filter/standardize coordinates if we are using Javascript API.
+        $coordinates = array_filter($coordinates, 'islandora_simple_map_is_valid_coordinates');
+        array_walk($coordinates, 'islandora_simple_map_standardize_format');
+      }
+
+      $points[] = array(
+        'pid' => $member['PID'],
+        'coordinates' => $coordinates,
+      );
+    }
+  }
+  $points = array_filter($points, function($o) {
+    return count($o['coordinates'] > 0);
+  });
   return $points;
 }
 
@@ -297,4 +450,18 @@ function _islandora_simple_map_generate_js_code(array $settings) {
       ),
     ),
   );
+}
+
+/**
+ * Remove search alters that stop us from getting any data from Solr.
+ *
+ * @param array $params
+ *   The islandoraSolrQueryProcessor params
+ */
+function _islandora_simple_map_remove_search_restrictions(array &$params) {
+  if (module_exists('islandora_compound_object') &&
+    variable_get('islandora_compound_object_hide_child_objects_solr', TRUE)) {
+    $fq = variable_get('islandora_compound_object_solr_fq', '-RELS_EXT_isConstituentOf_uri_mt:[* TO *]');
+    $params['fq'] = array_diff($params['fq'], array($fq));
+  }
 }

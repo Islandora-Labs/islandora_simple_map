@@ -60,35 +60,36 @@ function islandora_simple_map_admin_settings() {
         ),
       ),
     ),
-    'islandora_simple_map_collections' => array(
-      '#type' => 'fieldset',
-      '#title' => t('Collection Maps'),
+    'islandora_simple_map_collection_maps' => array(
+      '#type' => 'checkbox',
+      '#title' => t('Enable collection level maps?'),
+      '#description' => t('Aggregate object markers inside a collection into a single map for the collection.'),
+      '#default_value' => variable_get('islandora_simple_map_collection_maps', FALSE),
+      '#return_value' => TRUE,
+    ),
+  );
+  $form['islandora_simple_map_solr_fieldset'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Solr settings'),
+    'islandora_simple_map_use_solr' => array(
+      '#type' => 'checkbox',
+      '#title' => t('Use Solr for object map queries.'),
+      '#description' => t('Use Solr to query the coordinates of an object and/or collection.'),
+      '#default_value' => variable_get('islandora_simple_map_use_solr', FALSE),
+    ),
+    'islandora_simple_map_solr_wrapper' => array(
+      '#type' => 'container',
       '#states' => array(
         'visible' => array(
-          ':input[name="islandora_simple_map_use_gmaps_api"]' => array('checked' => TRUE),
+          ':input[name="islandora_simple_map_use_solr"]' => array('checked' => TRUE),
         ),
       ),
-      'islandora_simple_map_collection_maps' => array(
-        '#type' => 'checkbox',
-        '#title' => t('Enable collection level maps?'),
-        '#description' => t('Aggregate object markers inside a collection into a single map for the collection.'),
-        '#default_value' => variable_get('islandora_simple_map_collection_maps', FALSE),
-        '#return_value' => TRUE,
-      ),
-      'islandora_simple_map_collection_coord_solr_field' => array(
+      'islandora_simple_map_coordinate_solr_field' => array(
         '#type' => 'textfield',
         '#title' => t('Coordinates Solr field.'),
-        '#description' => t('Solr field with the coordinates from a records, can be multivalued.'),
-        '#default_value' => variable_get('islandora_simple_map_collection_coord_solr_field', ''),
+        '#description' => t('Solr field with the coordinates from a record, can be multivalued.'),
+        '#default_value' => variable_get('islandora_simple_map_coordinate_solr_field', ''),
         '#autocomplete_path' => 'islandora_solr/autocomplete_luke',
-        '#states' => array(
-          'required' => array(
-            ':input[name="islandora_simple_map_collection_maps"]' => array('checked' => TRUE),
-          ),
-          'visible' => array(
-            ':input[name="islandora_simple_map_collection_maps"]' => array('checked' => TRUE),
-          ),
-        ),
       ),
     ),
   );
@@ -160,11 +161,10 @@ function islandora_simple_map_admin_settings_form_validate(array $form, array &$
     form_set_error('islandora_simple_map_google_maps_api_key',
       'You must include a Google Maps API key or not use the Google Maps API.');
   }
-  if ($form_state['values']['islandora_simple_map_use_gmaps_api'] == TRUE &&
-    $form_state['values']['islandora_simple_map_collection_maps'] == TRUE &&
-    empty($form_state['values']['islandora_simple_map_collection_coord_solr_field'])) {
-    form_set_error('islandora_simple_map_collection_coord_solr_field',
-      'You must set a coordinate Solr field to enable Collections maps.');
+  if (empty($form_state['values']['islandora_simple_map_coordinate_solr_field'])
+    && $form_state['values']['islandora_simple_map_use_solr'] == TRUE) {
+    form_set_error('islandora_simple_map_coordinate_solr_field',
+      'You must specify a field for coordinates to use Solr.');
   }
 }
 
