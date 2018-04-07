@@ -152,6 +152,7 @@ array of coordinates that it could parse where the key is the original value and
 ## Maintainer
 
 * [Mark Jordan](https://github.com/mjordan)
+* [Jared Whiklo](https://github.com/whikloj)
 
 ## To do
 
