@@ -142,7 +142,7 @@ function _islandora_simple_map_get_coordinates_parse_mods(AbstractObject $object
  * @return array
  *   Array of raw coordinates.
  */
-function _islandora_simple_map_get_coordinates_solr(AbstractObject $object) {
+function r_islandora_simple_map_get_coordinates_solr(AbstractObject $object) {
   $coord_field = variable_get('islandora_simple_map_coordinate_solr_field', '');
   $found_coords = array();
   $solr_build = new IslandoraSolrQueryProcessor();
@@ -170,6 +170,23 @@ function _islandora_simple_map_get_coordinates_solr(AbstractObject $object) {
     }
     else {
       $found_coords = array($member['solr_doc'][$coord_field]);
+    }
+  }
+  return $found_coords;
+}
+
+function _islandora_simple_map_get_coordinates_solr(AbstractObject $object) {
+  $coord_field = variable_get('islandora_simple_map_coordinate_solr_field', '');
+  $found_coords = array();
+  $solr_build = new IslandoraSolrQueryProcessor();
+  $solr_build->buildQuery('RELS_EXT_isMemberOfCollection_uri_mt:"' . $object->id . '"',
+    array('fl' => "PID,{$coord_field}", 'rows' => '1000000')
+  );
+  $solr_build->executeQuery(FALSE);
+  $results = $solr_build->islandoraSolrResult['response']['objects'];
+  foreach ($results as $result) {
+    if (isset($result[$coord_field])) {
+      $found_coords[] = $result[$coord_field];
     }
   }
   return $found_coords;
