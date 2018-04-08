@@ -143,6 +143,13 @@ function islandora_simple_map_admin_settings() {
     '#default_value' => variable_get('islandora_simple_map_attempt_cleanup', TRUE),
     '#description' => t('Check this option if you want to clean up data before passing it off to Google Maps. Please consult the README file for more information'),
   );
+  $form['islandora_simple_map_omit_compound_display'] = array(
+    '#type' => 'checkbox',
+    '#title' => t("Don't display maps for compound parents."),
+    '#description' => t("Compounds render as themselves and their first child, so you get two maps. This removes the compound's map."),
+    '#return_value' => TRUE,
+    '#default_value' => variable_get('islandora_simple_map_omit_compound_display', TRUE),
+  );
   $form['#validate'][] = 'islandora_simple_map_admin_settings_form_validate';
   return system_settings_form($form);
 }

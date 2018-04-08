@@ -48,6 +48,7 @@ Common configuration options are:
 * the map's height, width, default zoom level, and whether or not the map is collapsed or expanded by default, and
 * option to clean up the data before it is passed to Google Maps.
 * option to enable maps on collections.
+* option to display maps for compounds (in addition to their first child).
 
 Once you enable the module, any object whose MODS file contains coordinates in the expected element will have a Google map appended to its display.
 
