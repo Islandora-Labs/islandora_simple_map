@@ -89,7 +89,7 @@ class IslandoraSimpleMapTestCase extends IslandoraWebTestCase {
    *   The expected array.
    * @param array $actual
    *   The actual result array.
-   * @param $message
+   * @param string $message
    *   The test message.
    *
    * @return bool
@@ -105,7 +105,7 @@ class IslandoraSimpleMapTestCase extends IslandoraWebTestCase {
         return $this->fail($message);
       }
       else {
-        // Associative
+        // Associative arrays.
         foreach ($expected as $k => $v) {
           if (!array_key_exists($k, $actual) || $v !== $actual[$k]) {
             // Key or value does not match.
@@ -125,9 +125,9 @@ class IslandoraSimpleMapTestCase extends IslandoraWebTestCase {
           return $this->fail($message);
         }
         else {
-          $tempKey = $index = array_search($v, $actual);
-          if ($tempKey !== FALSE) {
-            unset($actual[$tempKey]);
+          $temp_key = $index = array_search($v, $actual);
+          if ($temp_key !== FALSE) {
+            unset($actual[$temp_key]);
           }
           else {
             return $this->fail($message . " -- Error removing key value");
