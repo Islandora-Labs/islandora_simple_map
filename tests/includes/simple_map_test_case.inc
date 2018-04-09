@@ -82,4 +82,66 @@ class IslandoraSimpleMapTestCase extends IslandoraWebTestCase {
     variable_set('islandora_simple_map_use_gmaps_api', $val);
   }
 
+  /**
+   * Compare arrays regardless of order.
+   *
+   * @param array $expected
+   *   The expected array.
+   * @param array $actual
+   *   The actual result array.
+   * @param $message
+   *   The test message.
+   *
+   * @return bool
+   *   The test result.
+   */
+  protected function assertArrayEquals(array $expected, array $actual, $message) {
+    if (count($expected) !== count($actual)) {
+      return $this->fail($message);
+    }
+    $expect_assoc = (count(array_filter(array_keys($expected), 'is_string')) > 0);
+    if ($expect_assoc) {
+      if (count(array_filter(array_keys($actual), 'is_string')) > 0) {
+        return $this->fail($message);
+      }
+      else {
+        // Associative
+        foreach ($expected as $k => $v) {
+          if (!array_key_exists($k, $actual) || $v !== $actual[$k]) {
+            // Key or value does not match.
+            return $this->fail($message);
+          }
+          else {
+            // Remove matched entry from $actual.
+            unset($actual[$k]);
+          }
+        }
+      }
+    }
+    else {
+      foreach ($expected as $v) {
+        if (!in_array($v, $actual)) {
+          // Value not in $actual.
+          return $this->fail($message);
+        }
+        else {
+          $tempKey = $index = array_search($v, $actual);
+          if ($tempKey !== FALSE) {
+            unset($actual[$tempKey]);
+          }
+          else {
+            return $this->fail($message . " -- Error removing key value");
+          }
+        }
+      }
+    }
+    if (count($actual) == 0) {
+      // No excess values left.
+      return $this->pass($message);
+    }
+    else {
+      // Still items in $actual.
+      return $this->fail($message);
+    }
+  }
 }

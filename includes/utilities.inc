@@ -90,6 +90,10 @@ function islandora_simple_map_parse_coordinates(array $coordinates) {
       break;
     }
   }
+  if (count($to_process) > 0) {
+    // Stick un-parsed coordinates back in the mix.
+    $processed = array_merge($processed, array_values($to_process));
+  }
   return $processed;
 }
 

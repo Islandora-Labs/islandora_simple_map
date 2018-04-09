@@ -73,7 +73,77 @@ class IslandoraSimpleMapHookTestCase extends IslandoraSimpleMapTestCase {
    * Test hook_islandora_simple_map_parse_coordinates().
    */
   public function testParseCoordinates() {
+    $coordinates = array(
+      '45.4215, -75.6972',
+    );
+
+    $expected = array(
+      '45.4215, -75.6972',
+    );
+
+    $new_coords = islandora_simple_map_parse_coordinates($coordinates);
+    $this->assertArrayEquals($expected, $new_coords, 'Hook parse coordinates returned expected decimal result.');
+
+    $coordinates = array(
+      '32° 42\' 56.6496" N, 117° 9\' 39.9132" W',
+    );
+
+    $expected = array(
+      '32° 42\' 56.6496" N, 117° 9\' 39.9132" W',
+    );
+
+    $new_coords = islandora_simple_map_parse_coordinates($coordinates);
+    $this->assertArrayEquals($expected, $new_coords, 'Hook parsed coordinates returned expected DMS result.');
+
+    $coordinates = array(
+      'Kanaka Creek, BC',
+    );
+
+    $expected = array(
+      'Kanaka Creek, BC',
+    );
+
+    $new_coords = islandora_simple_map_parse_coordinates($coordinates);
+    $this->assertArrayEquals($expected, $new_coords, 'Hook parsed coordinates returned expected text result.');
+
+    $coordinates = array(
+      '45.4215, -75.6972',
+      '32° 42\' 56.6496" N, 117° 9\' 39.9132" W',
+    );
+
+    $expected = array(
+      '45.4215, -75.6972',
+      '32° 42\' 56.6496" N, 117° 9\' 39.9132" W',
+    );
+
+    $new_coords = islandora_simple_map_parse_coordinates($coordinates);
+    $this->assertArrayEquals($expected, $new_coords, 'Hook parsed coordinates returned expected decimal and DMS results.');
+
+    $coordinates = array(
+      '45.4215, -75.6972',
+      'Kanaka Creek, BC',
+    );
+
+    $expected = array(
+      '45.4215, -75.6972',
+      'Kanaka Creek, BC',
+    );
+
+    $new_coords = islandora_simple_map_parse_coordinates($coordinates);
+    $this->assertArrayEquals($expected, $new_coords, 'Hook parsed coordinates returned expected decimal and text results.');
+
     module_enable(array('islandora_simple_map_hooks_test'));
+    $coordinates = array(
+      '45.4215, -75.6972',
+    );
+
+    $expected = array(
+      '45.4215, -75.6972',
+    );
+
+    $new_coords = islandora_simple_map_parse_coordinates($coordinates);
+    $this->assertArrayEquals($expected, $new_coords, 'Hook parse coordinates returned expected results.');
+
     $coordinates = array(
       '45.4215, -75.6972',
       '43.6532, -79.3832',
@@ -89,7 +159,24 @@ class IslandoraSimpleMapHookTestCase extends IslandoraSimpleMapTestCase {
     );
 
     $new_coords = islandora_simple_map_parse_coordinates($coordinates);
-    $this->assertEqual($expected, $new_coords, 'Hook parse coordinates did not return expected results.');
+    $this->assertArrayEquals($expected, $new_coords, 'Hook parse coordinates returned expected results.');
+
+    $coordinates = array(
+      '45.4215, -75.6972',
+      '43.6532, -79.3832',
+      'Kanaka Creek, BC',
+      '32° 42\' 56.6496" N, 117° 9\' 39.9132" W',
+    );
+
+    $expected = array(
+      '45.4215, -75.6972',
+      '43.6532, -79.3832',
+      'Kanaka Creek, BC',
+      '32.715736, -117.161087',
+    );
+
+    $new_coords = islandora_simple_map_parse_coordinates($coordinates);
+    $this->assertArrayEquals($expected, $new_coords, 'Hook parse coordinates returned expected results.');
   }
 
   /**
