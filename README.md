@@ -35,13 +35,18 @@ Admin settings are available at `admin/islandora/tools/islandora_simple_map`:
 
 Enabling the **Google Maps Javascript API** opens configuration for:
 
+![islandora_simple_map_admin1](https://user-images.githubusercontent.com/2857697/38567430-d202110c-3cab-11e8-8aa3-aee56a2cf48d.jpg)
+
 * Your API key (required).
 * Disabling mouse wheel from causing map zoom.
 * Disable the map embed in the page. Useful if using the map block.
+* Enable [collection level maps](#collection-maps).
 
 It also displays **all** coordinates found, the Embed API only displays the first.
 
 Common configuration options are:
+
+![islandora_simple_map_admin3](https://user-images.githubusercontent.com/2857697/38567445-d9e92e0a-3cab-11e8-905a-7f9437f9e86b.jpg)
 
 * A delimiter to split multiple coordinates on.
 * the XPath expressions to the MODS elements where your map data is stored
@@ -52,12 +57,6 @@ Common configuration options are:
 
 Once you enable the module, any object whose MODS file contains coordinates in the expected element will have a Google map appended to its display.
 
-### Solr integration
-To use Solr to return the coordinates instead of parsing the MODS records you can check the "Use Solr for object map queries" checkbox.
-This will reveal an autocomplete field to enter the Solr field containing your object's coordinates.
-
-This affects **both** individual maps and collection map generation.
-
 ### Collection maps
 You can enable a map for each collection by checking the "Enable collection level maps?" option, you can then enable a map for a collection within the collection's Manage -> Collection sub-tab.
 
@@ -67,6 +66,15 @@ You can see all collections you have enabled collection maps on from the Admin -
 Collection maps retrieve all the objects for a collection via "paging" queries. (ie. grab 0-20, then 21-40, etc). 
 You can change the number of results per query with the "Collection page size" setting. 
 
+
+### Solr integration
+
+![islandora_simple_map_admin2](https://user-images.githubusercontent.com/2857697/38567440-d6934be6-3cab-11e8-9f9c-a2d11dfa8414.jpg)
+
+To use Solr to return the coordinates instead of parsing the MODS records you can check the "Use Solr for object map queries" checkbox.
+This will reveal an autocomplete field to enter the Solr field containing your object's coordinates.
+
+This affects **both** individual maps and collection map generation.
 
 ### Extract from MODS using XPath
 
