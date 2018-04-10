@@ -52,10 +52,21 @@ Common configuration options are:
 
 Once you enable the module, any object whose MODS file contains coordinates in the expected element will have a Google map appended to its display.
 
-If you have checked the "Enable collection level maps?" option, you can then enable a map for each collection within the collection's Manage subtabs.
+### Solr integration
+To use Solr to return the coordinates instead of parsing the MODS records you can check the "Use Solr for object map queries" checkbox.
+This will reveal an autocomplete field to enter the Solr field containing your object's coordinates.
 
-There is also the __Coordinates Solr field__ option if you index your object's coordinates. If you fill this in, then a
-Solr query will be done to retrieve the collections coordinates instead of parsing each collection member's MODS record.
+This affects **both** individual maps and collection map generation.
+
+### Collection maps
+You can enable a map for each collection by checking the "Enable collection level maps?" option, you can then enable a map for a collection within the collection's Manage -> Collection sub-tab.
+
+You can see all collections you have enabled collection maps on from the Admin -> Islandora -> Islandora Utility Modules
+-> Islandora Simple Map -> Collections with Maps tab.
+
+Collection maps retrieve all the objects for a collection via "paging" queries. (ie. grab 0-20, then 21-40, etc). 
+You can change the number of results per query with the "Collection page size" setting. 
+
 
 ### Extract from MODS using XPath
 

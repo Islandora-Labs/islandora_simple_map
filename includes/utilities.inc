@@ -346,7 +346,7 @@ function _islandora_simple_map_get_collection_points(AbstractObject $object) {
 function _islandora_simple_map_get_collection_points_load(AbstractObject $object) {
   $points = array();
   $page_num = -1;
-  $page_size = 20;
+  $page_size = (int) variable_get('islandora_simple_map_collection_pagesize', 20);
   $count = NULL;
   $members = array();
   do {
@@ -384,7 +384,7 @@ function _islandora_simple_map_get_collection_points_solr(AbstractObject $object
   $member_field = variable_get('islandora_solr_member_of_collection_field', 'RELS_EXT_isMemberOfCollection_uri_ms');
   $coord_field = variable_get('islandora_simple_map_coordinate_solr_field', '');
   $page_num = -1;
-  $page_size = 20;
+  $page_size = (int) variable_get('islandora_simple_map_collection_pagesize', 20);
   $count = NULL;
   $members = array();
   $solr_build = new IslandoraSolrQueryProcessor();

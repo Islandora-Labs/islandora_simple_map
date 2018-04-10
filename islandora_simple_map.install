@@ -24,6 +24,7 @@ function islandora_simple_map_uninstall() {
     'islandora_simple_map_use_solr',
     'islandora_simple_map_collection_maps',
     'islandora_simple_map_collection_maps_cache',
+    'islandora_simple_map_collection_pagesize',
   );
   array_walk($variables, 'variable_del');
 }

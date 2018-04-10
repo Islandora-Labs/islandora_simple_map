@@ -67,16 +67,27 @@ function islandora_simple_map_admin_settings() {
       '#default_value' => variable_get('islandora_simple_map_collection_maps', FALSE),
       '#return_value' => TRUE,
     ),
-    'islandora_simple_map_collection_maps_cache' => array(
-      '#type' => 'checkbox',
-      '#title' => t('Enable collection map cache for anonymous users.'),
-      '#description' => t('This will cache the marker points for a collection map to speed up the map loading. This is only enabled for anonymous users to avoid issues in caching privileged objects.'),
-      '#default_value' => variable_get('islandora_simple_map_collection_maps_cache', FALSE),
-      '#return_value' => TRUE,
+    'islandora_simple_map_collection_wrapper' => array(
+      '#type' => 'container',
       '#states' => array(
         'visible' => array(
           ':input[name="islandora_simple_map_collection_maps"]' => array('checked' => TRUE),
         ),
+      ),
+      'islandora_simple_map_collection_maps_cache' => array(
+        '#type' => 'checkbox',
+        '#title' => t('Enable collection map cache for anonymous users.'),
+        '#description' => t('This will cache the marker points for a collection map to speed up the map loading. This is only enabled for anonymous users to avoid issues in caching privileged objects.'),
+        '#default_value' => variable_get('islandora_simple_map_collection_maps_cache', FALSE),
+        '#return_value' => TRUE,
+      ),
+      'islandora_simple_map_collection_pagesize' => array(
+        '#type' => 'textfield',
+        '#title' => t("Collection page size"),
+        '#description' => t("Queries performed to get all the coordinates from a collection in chunks of this size. You can adjust it to grab more or less items per query if that helps performance. Defaults to 20"),
+        '#size' => 25,
+        '#element_validate' => array('element_validate_integer_positive'),
+        '#default_value' => variable_get('islandora_simple_map_collection_pagesize', 20),
       ),
     ),
   );
