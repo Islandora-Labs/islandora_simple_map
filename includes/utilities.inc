@@ -358,7 +358,7 @@ function _islandora_simple_map_get_collection_points_solr(AbstractObject $object
   $points = array();
   $member_field = variable_get('islandora_solr_member_of_collection_field', 'RELS_EXT_isMemberOfCollection_uri_ms');
   $coord_field = variable_get('islandora_simple_map_coordinate_solr_field', '');
-  $page_num = 0;
+  $page_num = -1;
   $page_size = 20;
   $count = NULL;
   $members = array();
@@ -369,26 +369,29 @@ function _islandora_simple_map_get_collection_points_solr(AbstractObject $object
       '!pid' => $object->id,
     )
   );
-  while (is_null($count) || ($count > ($page_num * $page_size) + $page_size)) {
-    $params = array(
-      'rows' => $page_size,
-      'start' => $page_num,
-      'fl' => "PID,{$coord_field}",
-    );
+  $params = array(
+    'fl' => "PID,{$coord_field}",
+  );
+
+  $solr_build->buildQuery($solr_query, $params);
+  _islandora_simple_map_remove_search_restrictions($solr_build->solrParams);
+
+  do {
+    $page_num += 1;
     try {
-      $solr_build->buildQuery($solr_query, $params);
-      _islandora_simple_map_remove_search_restrictions($solr_build->solrParams);
+      $solr_build->solrStart = $page_num * $page_size;
+      $solr_build->solrLimit = $page_size;
       $solr_build->executeQuery(FALSE);
       $results = $solr_build->islandoraSolrResult;
       $count = $results['response']['numFound'];
       $members = array_merge($members, $results['response']['objects']);
-      $page_num += 1;
     }
     catch (Exception $e) {
       drupal_set_message(check_plain(t('Error searching Solr index')) . ' ' . $e->getMessage(), 'error');
       break;
     }
-  }
+  } while (is_null($count) || ($count > ($page_num * $page_size) + $page_size));
+
   foreach ($members as $member) {
     if (isset($member['solr_doc'][$coord_field])) {
       if (is_array($member['solr_doc'][$coord_field])) {
