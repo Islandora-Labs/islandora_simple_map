@@ -42,7 +42,7 @@ function islandora_simple_map_menu() {
     'title' => 'Collection Maps',
     'description' => 'Collections displaying a map of all member points',
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('islandora_simple_map_admin_collection_display'),
+    'page arguments' => array('administer site configuration'),
     'access callback' => 'islandora_simple_map_collection_admin_access',
     'type' => MENU_LOCAL_TASK,
     'file' => 'includes/admin_form.inc',
