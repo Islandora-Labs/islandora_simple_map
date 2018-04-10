@@ -75,7 +75,13 @@ function islandora_simple_map_parse_coordinates(array $coordinates) {
   // Don't need to parse coordinates already in decimal notation.
   $processed = array_filter($coordinates, 'islandora_simple_map_is_valid_coordinates');
   $coordinates = array_diff($coordinates, $processed);
-  $to_process = array_combine($coordinates, $coordinates);
+  // TODO: PHP 5.3.3 needs this check or it throws a fit. Dump it when we can.
+  if (count($coordinates) > 0) {
+    $to_process = array_combine($coordinates, $coordinates);
+  }
+  else {
+    $to_process = array();
+  }
   foreach ($hooks as $hook) {
     if (isset($hook['file'])) {
       require_once $hook['file'];
