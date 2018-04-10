@@ -321,15 +321,16 @@ function _islandora_simple_map_get_collection_points(AbstractObject $object) {
  */
 function _islandora_simple_map_get_collection_points_load(AbstractObject $object) {
   $points = array();
-  $page_num = 0;
+  $page_num = -1;
   $page_size = 20;
   $count = NULL;
   $members = array();
-  while (is_null($count) || ($count > ($page_num * $page_size) + $page_size)) {
+  do {
+    $page_num += 1;
     list($count, $new_members) = islandora_basic_collection_get_member_objects($object, $page_num, $page_size);
     $members = array_merge($members, $new_members);
-    $page_num += 1;
-  }
+  } while (is_null($count) || ($count > ($page_num * $page_size) + $page_size));
+
   if (count($members) > 0) {
     foreach ($members as $member) {
       $pid = $member['object']['value'];
