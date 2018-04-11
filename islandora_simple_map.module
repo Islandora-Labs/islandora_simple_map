@@ -42,8 +42,9 @@ function islandora_simple_map_menu() {
     'title' => 'Collection Maps',
     'description' => 'Collections displaying a map of all member points',
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('administer site configuration'),
+    'page arguments' => array('islandora_simple_map_admin_collection_display'),
     'access callback' => 'islandora_simple_map_collection_admin_access',
+    'access arguments' => array('administer site configuration'),
     'type' => MENU_LOCAL_TASK,
     'file' => 'includes/admin_form.inc',
   );
@@ -90,11 +91,14 @@ function islandora_simple_map_theme() {
 /**
  * Access check for admin page of collections displaying maps.
  *
+ * @param string $permission
+ *   The permission to have to access the collection tab.
+ *
  * @return bool
  *   Does user have privilege and are collections enabled.
  */
-function islandora_simple_map_collection_admin_access() {
-  return (user_access('administer site configuration') &&
+function islandora_simple_map_collection_admin_access($permission) {
+  return (user_access($permission) &&
     _islandora_simple_map_collection_map_enabled());
 }
 
