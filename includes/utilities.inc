@@ -305,11 +305,9 @@ function _islandora_simple_map_get_collection_points(AbstractObject $object) {
     // Caching for anonymous users.
     $cache_roles = 'anonymous';
     $coordinate_cache = &drupal_static(__FUNCTION__);
-    // Separate cache object for each collection.
-    $cache_name = 'islandora_simple_map_collection_map_' . str_replace(':', '_', $object->id);
     $from_cache = FALSE;
     if (!isset($coordinate_cache)) {
-      $cache = cache_get($cache_name);
+      $cache = _islandora_simple_map_get_cache($object->id);
       if ($cache !== FALSE) {
         $coordinate_cache = $cache->data;
       }
@@ -330,7 +328,7 @@ function _islandora_simple_map_get_collection_points(AbstractObject $object) {
     }
     if (isset($from_cache)) {
       $coordinate_cache[$cache_roles] = $points;
-      cache_set($cache_name, $coordinate_cache);
+      _islandora_simple_map_set_cache($object->id, $coordinate_cache);
     }
   }
   return $points;
@@ -504,4 +502,42 @@ function _islandora_simple_map_remove_search_restrictions(array &$params) {
     $fq = variable_get('islandora_compound_object_solr_fq', '-RELS_EXT_isConstituentOf_uri_mt:[* TO *]');
     $params['fq'] = array_diff($params['fq'], array($fq));
   }
+}
+
+/**
+ * Utility function to get the collection cache.
+ *
+ * @param $pid
+ *   The collection PID.
+ *
+ * @return mixed
+ *   The cache or FALSE.
+ */
+function _islandora_simple_map_get_cache($pid) {
+  $cache_name = 'islandora_simple_map_collection_map_' . str_replace(':', '_', $pid);
+  return cache_get($cache_name, ISLANDORA_SIMPLE_MAP_CACHE_BIN);
+}
+
+/**
+ * Utility function to set the collection map cache.
+ *
+ * @param $pid
+ *   The collection PID.
+ * @param $data
+ *   The cached data.
+ */
+function _islandora_simple_map_set_cache($pid, $data) {
+  $cache_name = 'islandora_simple_map_collection_map_' . str_replace(':', '_', $pid);
+  cache_set($cache_name, $data, ISLANDORA_SIMPLE_MAP_CACHE_BIN);
+}
+
+/**
+ * Utility function to clear collection map cache.
+ *
+ * @param $pid
+ *   The collection PID.
+ */
+function _islandora_simple_map_clear_cache($pid) {
+  $cache_name = 'islandora_simple_map_collection_map_' . str_replace(':', '_', $pid);
+  cache_clear_all($cache_name, ISLANDORA_SIMPLE_MAP_CACHE_BIN, TRUE);
 }
