@@ -89,7 +89,7 @@ function islandora_simple_map_collection_manage_form_submit($form, &$form_state)
     }
     if ($clear_cache) {
       _islandora_simple_map_clear_cache($pid);
-      drupal_set_message('Cache cleared.');
+      drupal_set_message(t('Cache cleared.'));
     }
   }
 }

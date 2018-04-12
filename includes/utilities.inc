@@ -507,7 +507,7 @@ function _islandora_simple_map_remove_search_restrictions(array &$params) {
 /**
  * Utility function to get the collection cache.
  *
- * @param $pid
+ * @param string $pid
  *   The collection PID.
  *
  * @return mixed
@@ -526,9 +526,9 @@ function _islandora_simple_map_get_cache($pid) {
 /**
  * Utility function to set the collection map cache.
  *
- * @param $pid
+ * @param string $pid
  *   The collection PID.
- * @param $data
+ * @param mixed $data
  *   The cached data.
  */
 function _islandora_simple_map_set_cache($pid, $data) {
@@ -541,7 +541,7 @@ function _islandora_simple_map_set_cache($pid, $data) {
 /**
  * Utility function to clear collection map cache.
  *
- * @param $pid
+ * @param string $pid
  *   The collection PID.
  */
 function _islandora_simple_map_clear_cache($pid) {

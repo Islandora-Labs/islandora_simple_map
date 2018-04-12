@@ -191,12 +191,12 @@ function islandora_simple_map_admin_settings_form_validate(array $form, array &$
 /**
  * Clear all caches if caching or collection maps are disabled.
  *
- * @param $form
+ * @param array $form
  *   The Drupal form.
- * @param $form_state
+ * @param array $form_state
  *   The Drupal form state.
  */
-function islandora_simple_map_admin_settings_cache_check($form, $form_state) {
+function islandora_simple_map_admin_settings_cache_check(array $form, array $form_state) {
   if ($form_state['values']['islandora_simple_map_collection_maps_cache'] != TRUE ||
     $form_state['values']['islandora_simple_map_collection_maps'] != TRUE) {
     cache_clear_all(ISLANDORA_SIMPLE_MAP_CACHE_PREFIX, ISLANDORA_SIMPLE_MAP_CACHE_BIN, TRUE);
