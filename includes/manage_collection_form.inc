@@ -56,7 +56,7 @@ function islandora_simple_map_collection_manage_form_submit($form, &$form_state)
     $pid = $form_state['values']['islandora_simple_map_collection_pid'];
     $clear_cache = FALSE;
     if (isset($form_state['triggering_element']['#value']) &&
-      $form_state['triggering_element']['#value'] == 'Clear cache') {
+      $form_state['triggering_element']['#value'] == t('Clear cache')) {
       $clear_cache = TRUE;
     }
     else {

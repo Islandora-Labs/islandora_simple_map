@@ -514,8 +514,13 @@ function _islandora_simple_map_remove_search_restrictions(array &$params) {
  *   The cache or FALSE.
  */
 function _islandora_simple_map_get_cache($pid) {
-  $cache_name = 'islandora_simple_map_collection_map_' . str_replace(':', '_', $pid);
-  return cache_get($cache_name, ISLANDORA_SIMPLE_MAP_CACHE_BIN);
+  if (variable_get('islandora_simple_map_collection_maps_cache', FALSE)) {
+    $cache_name = ISLANDORA_SIMPLE_MAP_CACHE_PREFIX . str_replace(':', '_', $pid);
+    return cache_get($cache_name, ISLANDORA_SIMPLE_MAP_CACHE_BIN);
+  }
+  else {
+    return FALSE;
+  }
 }
 
 /**
@@ -527,8 +532,10 @@ function _islandora_simple_map_get_cache($pid) {
  *   The cached data.
  */
 function _islandora_simple_map_set_cache($pid, $data) {
-  $cache_name = 'islandora_simple_map_collection_map_' . str_replace(':', '_', $pid);
-  cache_set($cache_name, $data, ISLANDORA_SIMPLE_MAP_CACHE_BIN);
+  if (variable_get('islandora_simple_map_collection_maps_cache', FALSE)) {
+    $cache_name = ISLANDORA_SIMPLE_MAP_CACHE_PREFIX . str_replace(':', '_', $pid);
+    cache_set($cache_name, $data, ISLANDORA_SIMPLE_MAP_CACHE_BIN);
+  }
 }
 
 /**
@@ -538,6 +545,6 @@ function _islandora_simple_map_set_cache($pid, $data) {
  *   The collection PID.
  */
 function _islandora_simple_map_clear_cache($pid) {
-  $cache_name = 'islandora_simple_map_collection_map_' . str_replace(':', '_', $pid);
-  cache_clear_all($cache_name, ISLANDORA_SIMPLE_MAP_CACHE_BIN, TRUE);
+  $cache_name = ISLANDORA_SIMPLE_MAP_CACHE_PREFIX . str_replace(':', '_', $pid);
+  cache_clear_all($cache_name, ISLANDORA_SIMPLE_MAP_CACHE_BIN, FALSE);
 }
