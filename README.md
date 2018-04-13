@@ -146,10 +146,9 @@ The XPath expressions used to retrieve map data are executed in the order they a
 
 `hook_islandora_simple_map_get_coordinates(AbstractObject $object)`
 
-Implementations of this hook should return an array of decimal coordinates. 
-These are merged with all other implementations. 
-If you are using the Javascript API, they are then validated/filtered to ensure they are decimal coordinates.
-Lastly (using either API) they are de-duplicated to determine the points to show on the map.
+Implementations of this hook should return an array of coordinates.
+These are merged with all other implementations and passed off to be parsed by implementations
+of the below hook.
 
 `hook_islandora_simple_map_parse_coordinates_callback()`
 
@@ -168,7 +167,12 @@ Where
 * `function_name` is a function that accepts an array of coordinates of various formats and returns an associative 
 array of coordinates that it could parse where the key is the original value and value is the parsed value.
 * `file` is the file to include to access this function. (Optional)
-* `weight` is to order the hooks. Default is 100. (Optional) 
+* `weight` is to order the hooks. Default is 100. (Optional)
+
+If you are using the Javascript API, the parsed coordinates are then validated/filtered to ensure they are decimal coordinates.
+
+Lastly (using either API) they are de-duplicated to determine the points to show on the map for an object.
+
 ## Maintainer
 
 * [Mark Jordan](https://github.com/mjordan)
