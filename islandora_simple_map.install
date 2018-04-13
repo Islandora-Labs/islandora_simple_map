@@ -23,6 +23,7 @@ function islandora_simple_map_uninstall() {
     'islandora_simple_map_coordinate_solr_field',
     'islandora_simple_map_use_solr',
     'islandora_simple_map_collection_maps',
+    'islandora_simple_map_collection_maps_cache',
   );
   array_walk($variables, 'variable_del');
 }

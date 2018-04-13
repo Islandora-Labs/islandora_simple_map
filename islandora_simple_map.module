@@ -8,6 +8,8 @@
 define('ISLANDORA_SIMPLE_MAP_XPATHS', "//mods:subject/mods:cartographics/mods:coordinates\n//mods:subject/mods:geographic");
 define('ISLANDORA_SIMPLE_MAP_COORDINATE_HOOK', 'islandora_simple_map_get_coordinates');
 define('ISLANDORA_SIMPLE_MAP_PARSE_HOOK', 'islandora_simple_map_parse_coordinates_callback');
+define('ISLANDORA_SIMPLE_MAP_CACHE_PREFIX', 'islandora_simple_map_collection_map_');
+define('ISLANDORA_SIMPLE_MAP_CACHE_BIN', 'cache');
 
 // Includes blocks.
 require_once dirname(__FILE__) . '/includes/blocks.inc';
