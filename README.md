@@ -35,13 +35,18 @@ Admin settings are available at `admin/islandora/tools/islandora_simple_map`:
 
 Enabling the **Google Maps Javascript API** opens configuration for:
 
+![islandora_simple_map_admin1](https://user-images.githubusercontent.com/2857697/38567430-d202110c-3cab-11e8-8aa3-aee56a2cf48d.jpg)
+
 * Your API key (required).
 * Disabling mouse wheel from causing map zoom.
 * Disable the map embed in the page. Useful if using the map block.
+* Enable [collection level maps](#collection-maps).
 
 It also displays **all** coordinates found, the Embed API only displays the first.
 
 Common configuration options are:
+
+![islandora_simple_map_admin3](https://user-images.githubusercontent.com/2857697/38567445-d9e92e0a-3cab-11e8-905a-7f9437f9e86b.jpg)
 
 * A delimiter to split multiple coordinates on.
 * the XPath expressions to the MODS elements where your map data is stored
@@ -52,10 +57,24 @@ Common configuration options are:
 
 Once you enable the module, any object whose MODS file contains coordinates in the expected element will have a Google map appended to its display.
 
-If you have checked the "Enable collection level maps?" option, you can then enable a map for each collection within the collection's Manage subtabs.
+### Collection maps
+You can enable a map for each collection by checking the "Enable collection level maps?" option, you can then enable a map for a collection within the collection's Manage -> Collection sub-tab.
 
-There is also the __Coordinates Solr field__ option if you index your object's coordinates. If you fill this in, then a
-Solr query will be done to retrieve the collections coordinates instead of parsing each collection member's MODS record.
+You can see all collections you have enabled collection maps on from the Admin -> Islandora -> Islandora Utility Modules
+-> Islandora Simple Map -> Collections with Maps tab.
+
+Collection maps retrieve all the objects for a collection via "paging" queries. (ie. grab 0-20, then 21-40, etc). 
+You can change the number of results per query with the "Collection page size" setting. 
+
+
+### Solr integration
+
+![islandora_simple_map_admin2](https://user-images.githubusercontent.com/2857697/38567440-d6934be6-3cab-11e8-9f9c-a2d11dfa8414.jpg)
+
+To use Solr to return the coordinates instead of parsing the MODS records you can check the "Use Solr for object map queries" checkbox.
+This will reveal an autocomplete field to enter the Solr field containing your object's coordinates.
+
+This affects **both** individual maps and collection map generation.
 
 ### Extract from MODS using XPath
 
@@ -127,10 +146,9 @@ The XPath expressions used to retrieve map data are executed in the order they a
 
 `hook_islandora_simple_map_get_coordinates(AbstractObject $object)`
 
-Implementations of this hook should return an array of decimal coordinates. 
-These are merged with all other implementations. 
-If you are using the Javascript API, they are then validated/filtered to ensure they are decimal coordinates.
-Lastly (using either API) they are de-duplicated to determine the points to show on the map.
+Implementations of this hook should return an array of coordinates.
+These are merged with all other implementations and passed off to be parsed by implementations
+of the below hook.
 
 `hook_islandora_simple_map_parse_coordinates_callback()`
 
@@ -149,7 +167,12 @@ Where
 * `function_name` is a function that accepts an array of coordinates of various formats and returns an associative 
 array of coordinates that it could parse where the key is the original value and value is the parsed value.
 * `file` is the file to include to access this function. (Optional)
-* `weight` is to order the hooks. Default is 100. (Optional) 
+* `weight` is to order the hooks. Default is 100. (Optional)
+
+If you are using the Javascript API, the parsed coordinates are then validated/filtered to ensure they are decimal coordinates.
+
+Lastly (using either API) they are de-duplicated to determine the points to show on the map for an object.
+
 ## Maintainer
 
 * [Mark Jordan](https://github.com/mjordan)
