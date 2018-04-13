@@ -67,6 +67,18 @@ function islandora_simple_map_admin_settings() {
       '#default_value' => variable_get('islandora_simple_map_collection_maps', FALSE),
       '#return_value' => TRUE,
     ),
+    'islandora_simple_map_collection_maps_cache' => array(
+      '#type' => 'checkbox',
+      '#title' => t('Enable collection map cache for anonymous users.'),
+      '#description' => t('This will cache the marker points for a collection map to speed up the map loading. This is only enabled for anonymous users to avoid issues in caching privileged objects.'),
+      '#default_value' => variable_get('islandora_simple_map_collection_maps_cache', FALSE),
+      '#return_value' => TRUE,
+      '#states' => array(
+        'visible' => array(
+          ':input[name="islandora_simple_map_collection_maps"]' => array('checked' => TRUE),
+        ),
+      ),
+    ),
   );
   $form['islandora_simple_map_solr_fieldset'] = array(
     '#type' => 'fieldset',
@@ -151,6 +163,7 @@ function islandora_simple_map_admin_settings() {
     '#default_value' => variable_get('islandora_simple_map_omit_compound_display', TRUE),
   );
   $form['#validate'][] = 'islandora_simple_map_admin_settings_form_validate';
+  $form['#submit'][] = 'islandora_simple_map_admin_settings_cache_check';
   return system_settings_form($form);
 }
 
@@ -172,6 +185,21 @@ function islandora_simple_map_admin_settings_form_validate(array $form, array &$
     && $form_state['values']['islandora_simple_map_use_solr'] == TRUE) {
     form_set_error('islandora_simple_map_coordinate_solr_field',
       'You must specify a field for coordinates to use Solr.');
+  }
+}
+
+/**
+ * Clear all caches if caching or collection maps are disabled.
+ *
+ * @param array $form
+ *   The Drupal form.
+ * @param array $form_state
+ *   The Drupal form state.
+ */
+function islandora_simple_map_admin_settings_cache_check(array $form, array $form_state) {
+  if ($form_state['values']['islandora_simple_map_collection_maps_cache'] != TRUE ||
+    $form_state['values']['islandora_simple_map_collection_maps'] != TRUE) {
+    cache_clear_all(ISLANDORA_SIMPLE_MAP_CACHE_PREFIX, ISLANDORA_SIMPLE_MAP_CACHE_BIN, TRUE);
   }
 }
 

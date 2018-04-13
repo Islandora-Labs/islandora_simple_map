@@ -300,12 +300,36 @@ function _islandora_simple_map_collection_map_enabled() {
  */
 function _islandora_simple_map_get_collection_points(AbstractObject $object) {
   $points = array();
-  if (module_exists('islandora_solr') &&
-    variable_get('islandora_simple_map_use_solr', FALSE)) {
-    $points = _islandora_simple_map_get_collection_points_solr($object);
+
+  if (user_is_anonymous()) {
+    // Caching for anonymous users.
+    $cache_roles = 'anonymous';
+    $coordinate_cache = &drupal_static(__FUNCTION__);
+    $from_cache = FALSE;
+    if (!isset($coordinate_cache)) {
+      $cache = _islandora_simple_map_get_cache($object->id);
+      if ($cache !== FALSE) {
+        $coordinate_cache = $cache->data;
+      }
+    }
+    if (isset($coordinate_cache[$cache_roles])) {
+      $points = $coordinate_cache[$cache_roles];
+      // Retrieved from cache.
+      $from_cache = TRUE;
+    }
   }
-  elseif (module_exists('islandora_basic_collection')) {
-    $points = _islandora_simple_map_get_collection_points_load($object);
+  if (!isset($from_cache) || $from_cache === FALSE) {
+    if (module_exists('islandora_solr') &&
+      variable_get('islandora_simple_map_use_solr', FALSE)) {
+      $points = _islandora_simple_map_get_collection_points_solr($object);
+    }
+    elseif (module_exists('islandora_basic_collection')) {
+      $points = _islandora_simple_map_get_collection_points_load($object);
+    }
+    if (isset($from_cache)) {
+      $coordinate_cache[$cache_roles] = $points;
+      _islandora_simple_map_set_cache($object->id, $coordinate_cache);
+    }
   }
   return $points;
 }
@@ -478,4 +502,49 @@ function _islandora_simple_map_remove_search_restrictions(array &$params) {
     $fq = variable_get('islandora_compound_object_solr_fq', '-RELS_EXT_isConstituentOf_uri_mt:[* TO *]');
     $params['fq'] = array_diff($params['fq'], array($fq));
   }
+}
+
+/**
+ * Utility function to get the collection cache.
+ *
+ * @param string $pid
+ *   The collection PID.
+ *
+ * @return mixed
+ *   The cache or FALSE.
+ */
+function _islandora_simple_map_get_cache($pid) {
+  if (variable_get('islandora_simple_map_collection_maps_cache', FALSE)) {
+    $cache_name = ISLANDORA_SIMPLE_MAP_CACHE_PREFIX . str_replace(':', '_', $pid);
+    return cache_get($cache_name, ISLANDORA_SIMPLE_MAP_CACHE_BIN);
+  }
+  else {
+    return FALSE;
+  }
+}
+
+/**
+ * Utility function to set the collection map cache.
+ *
+ * @param string $pid
+ *   The collection PID.
+ * @param mixed $data
+ *   The cached data.
+ */
+function _islandora_simple_map_set_cache($pid, $data) {
+  if (variable_get('islandora_simple_map_collection_maps_cache', FALSE)) {
+    $cache_name = ISLANDORA_SIMPLE_MAP_CACHE_PREFIX . str_replace(':', '_', $pid);
+    cache_set($cache_name, $data, ISLANDORA_SIMPLE_MAP_CACHE_BIN);
+  }
+}
+
+/**
+ * Utility function to clear collection map cache.
+ *
+ * @param string $pid
+ *   The collection PID.
+ */
+function _islandora_simple_map_clear_cache($pid) {
+  $cache_name = ISLANDORA_SIMPLE_MAP_CACHE_PREFIX . str_replace(':', '_', $pid);
+  cache_clear_all($cache_name, ISLANDORA_SIMPLE_MAP_CACHE_BIN, FALSE);
 }
