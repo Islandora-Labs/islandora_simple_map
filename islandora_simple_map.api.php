@@ -51,3 +51,19 @@ function hook_islandora_simple_map_parse_coordinates_callback() {
     ),
   );
 }
+
+
+/**
+ * Gather KML documents to render on a map.
+ *
+ * @param AbstractObject $object
+ *   The object for which the KML is to be gathered.
+ *
+ * @return array
+ *   An array of URLs pointing at publically-accessible KML documents.
+ */
+function hook_islandora_simple_map_gather_kml(AbstractObject $object) {
+  return array(
+    'http://googlemaps.github.io/kml-samples/kml/Placemark/placemark.kml',
+  );
+}

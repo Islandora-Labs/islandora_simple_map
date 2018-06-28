@@ -162,6 +162,25 @@ function islandora_simple_map_admin_settings() {
     '#return_value' => TRUE,
     '#default_value' => variable_get('islandora_simple_map_omit_compound_display', TRUE),
   );
+  $form['islandora_simple_map_kml_datastream_scrape_mimetypes'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Allowable KML Datastream MIME-types'),
+    '#description' => t('MIME-types, one per line.'),
+    '#default_value' => variable_get('islandora_simple_map_kml_datastream_scrape_mimetypes', 'application/vnd.google-earth.kml+xml'),
+    '#required' => TRUE,
+  );
+  $form['islandora_simple_map_kml_datastream_scrape_dsids'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Allowable KML Datastream IDs'),
+    '#description' => t('The IDs to which to limit the MIME-type match. If left blank, matches will be attempted on <em>all</em> datastreams.'),
+    '#default_value' => variable_get('islandora_simple_map_kml_datastream_scrape_dsids', ''),
+  );
+  $form['islandora_simple_map_kml_datastream_scrape_models'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Allowable Object models for displaying KML'),
+    '#description' => t('Only objects with the given models will be matched. Should be the bare name of model PIDs, for example: "islandora:collectionCModel". If left blank, matches will be attempted on <em>all</em> datastreams.'),
+    '#default_value' => variable_get('islandora_simple_map_kml_datastream_scrape_models', ''),
+  );
   $form['#validate'][] = 'islandora_simple_map_admin_settings_form_validate';
   $form['#submit'][] = 'islandora_simple_map_admin_settings_cache_check';
   return system_settings_form($form);

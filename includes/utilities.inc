@@ -548,3 +548,63 @@ function _islandora_simple_map_clear_cache($pid) {
   $cache_name = ISLANDORA_SIMPLE_MAP_CACHE_PREFIX . str_replace(':', '_', $pid);
   cache_clear_all($cache_name, ISLANDORA_SIMPLE_MAP_CACHE_BIN, FALSE);
 }
+
+/**
+ * Helper to invoke hooks to gather GeoJSON info for a given object.
+ *
+ * @param AbstractObject $object
+ *   The object for which to gather GeoJSON features.
+ *
+ * @return array|NULL
+ *   If any features were returned, an associative array wrapping them up in a
+ *   "FeatureCollection"; otherwise, NULL.
+ */
+function islandora_simple_map_gather_geojson(AbstractObject $object) {
+  $geojson = module_invoke_all('islandora_simple_map_gather_geojson', $object);
+  drupal_alter('islandora_simple_map_gather_geojson', $geojson, $object);
+
+  if ($geojson) {
+    return array(
+      'type' => 'FeatureCollection',
+      'features' => $geojson,
+    );
+  }
+}
+
+/**
+ * Helper to invoke hooks to gather KML info for a given object.
+ *
+ * @param AbstractObject $object
+ *   The object for which to gather KML.
+ *
+ * @return array
+ *   An array of KML info.
+ */
+function islandora_simple_map_gather_kml(AbstractObject $object) {
+  $_split_parse = function ($to_parse) {
+    return drupal_map_assoc(array_filter(array_map('trim', explode("\r\n", $to_parse))));
+  };
+  $models = $_split_parse(variable_get('kml_datastream_scrape_models', ''));
+  if ($models && !array_intersect($object->models, $models)) {
+    return;
+  }
+  $mimetypes = $_split_parse(variable_get('kml_datastream_scrape_mimetypes', 'application/vnd.google-earth.kml+xml'));
+  $dsids = $_split_parse(variable_get('kml_datastream_scrape_dsids', ''));
+
+  $candidates = iterator_to_array($object);
+  if ($dsids) {
+    $candidates = array_intersect_key($candidates, $dsids);
+  }
+  $map_to_mime = function (AbstractDatastream $datastream) {
+    return $datastream->mimetype;
+  };
+  $candidates = array_intersect(array_map($map_to_mime, $candidates), $mimetypes);
+
+  $kml = array();
+  foreach (array_keys($candidates) as $dsid) {
+    $kml[] = url("islandora/object/{$object->id}/datastream/$dsid/view", array(
+      'absolute' => TRUE,
+    ));
+  }
+  return $kml;
+}

@@ -22,6 +22,19 @@
           });
           map.defaultZoom = map.getZoom();
           map.initialZoom = true;
+
+          if (config.map_markers.geojson != null) {
+            map.data.addGeoJson(config.map_markers.geojson);
+          }
+
+          $.each(config.map_markers.kml, function (kid, url) {
+            var layer = new google.maps.KmlLayer({
+              preserveViewport: true,
+              map: map,
+              url: url
+            });
+          });
+
           if (multiple_objects) {
             config.map_markers.forEach(function (objVal) {
               var pid = objVal.pid;
