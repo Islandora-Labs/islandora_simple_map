@@ -172,13 +172,13 @@ function islandora_simple_map_admin_settings() {
   $form['islandora_simple_map_kml_datastream_scrape_dsids'] = array(
     '#type' => 'textarea',
     '#title' => t('Allowable KML Datastream IDs'),
-    '#description' => t('The IDs to which to limit the MIME-type match. If left blank, matches will be attempted on <em>all</em> datastreams.'),
+    '#description' => t('The IDs to which to limit the MIME-type match, one per line. If left blank, matches will be attempted on <em>all</em> datastreams.'),
     '#default_value' => variable_get('islandora_simple_map_kml_datastream_scrape_dsids', ''),
   );
   $form['islandora_simple_map_kml_datastream_scrape_models'] = array(
     '#type' => 'textarea',
     '#title' => t('Allowable Object models for displaying KML'),
-    '#description' => t('Only objects with the given models will be matched. Should be the bare name of model PIDs, for example: "islandora:collectionCModel". If left blank, matches will be attempted on <em>all</em> datastreams.'),
+    '#description' => t('Only objects with the given models (one per line) will be matched. Should be the bare name of model PIDs, for example: "islandora:collectionCModel". If left blank, matches will be attempted on <em>all</em> datastreams.'),
     '#default_value' => variable_get('islandora_simple_map_kml_datastream_scrape_models', ''),
   );
   $form['#validate'][] = 'islandora_simple_map_admin_settings_form_validate';
