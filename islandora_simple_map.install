@@ -16,7 +16,6 @@ function islandora_simple_map_uninstall() {
     'islandora_simple_map_zoom',
     'islandora_simple_map_collapsed',
     'islandora_simple_map_use_gmaps_api',
-    'islandora_simple_map_google_maps_api_key',
     'islandora_simple_map_disable_scroll',
     'islandora_simple_map_disable_page_display',
     'islandora_simple_map_coordinate_delimiter',
@@ -24,6 +23,11 @@ function islandora_simple_map_uninstall() {
     'islandora_simple_map_use_solr',
     'islandora_simple_map_collection_maps',
     'islandora_simple_map_collection_maps_cache',
+    'islandora_simple_map_map_type',
+    'islandora_simple_map_openstreet_map_provider',
+    'islandora_simple_map_api_keys',
+    'islandora_simple_map_attempt_cleanup',
+    'islandora_simple_map_omit_compound_display',
   );
   array_walk($variables, 'variable_del');
 }
@@ -71,4 +75,18 @@ function islandora_simple_map_update_7101() {
   variable_set('islandora_simple_map_disable_page_display', variable_get('islandora_simple_maps_disable_page_display', FALSE));
   variable_del('islandora_simple_maps_disable_scroll');
   variable_del('islandora_simple_maps_disable_page_display');
+}
+
+/**
+ * Move Google API to new serialized variable storing all keys.
+ */
+function islandora_simple_map_update_7102() {
+  $google_api_key = variable_get('islandora_simple_map_google_maps_api_key', '');
+  variable_del('islandora_simple_map_google_maps_api_key');
+  if (!empty($google_api_key)) {
+    $keys = array(
+      'google_maps' => $google_api_key,
+    );
+    variable_set('islandora_simple_map_api_keys', serialize($keys));
+  }
 }

@@ -21,7 +21,7 @@ function islandora_simple_map_process_coordinates(AbstractObject $object) {
     if (variable_get('islandora_simple_map_attempt_cleanup', TRUE)) {
       array_walk($coordinates, 'islandora_simple_map_clean_coordinates');
     }
-    if (variable_get('islandora_simple_map_use_gmaps_api', FALSE)) {
+    if (_islandora_simple_map_multiple_coord_support()) {
       // Only filter and standardize coordinates if we are using Javascript API.
       $coordinates = array_filter($coordinates, 'islandora_simple_map_is_valid_coordinates');
       array_walk($coordinates, 'islandora_simple_map_standardize_format');
@@ -284,7 +284,7 @@ function _islandora_simple_map_display_collection_map($pid) {
  *   If collection maps can operate.
  */
 function _islandora_simple_map_collection_map_enabled() {
-  return (variable_get('islandora_simple_map_use_gmaps_api', FALSE)
+  return (_islandora_simple_map_multiple_coord_support()
     && variable_get('islandora_simple_map_collection_maps', FALSE)
     && module_exists('islandora_basic_collection'));
 }
@@ -452,34 +452,19 @@ function _islandora_simple_map_get_collection_points_solr(AbstractObject $object
  *
  * @param array $settings
  *   The array of Google Maps settings.
+ * @param string $map_div_id
+ *   The DIV id for the current map.
  *
  * @return array
  *   The #attached array.
  */
-function _islandora_simple_map_generate_js_code(array $settings) {
+function _islandora_simple_map_generate_js_code(array $settings, $map_div_id) {
   $module_path = drupal_get_path('module', 'islandora_simple_map');
-  return array(
+  $map_type = variable_get('islandora_simple_map_map_type', ISLANDORA_SIMPLE_MAP_GOOGLE_MAPS);
+  $code = array(
     'js' => array(
       'misc/collapse.js',
       'misc/form.js',
-      array(
-        'type' => 'setting',
-        'data' => $settings,
-      ),
-      array(
-        'type' => 'file',
-        'data' => "{$module_path}/js/object_map_markers.js",
-      ),
-      array(
-        'type' => 'external',
-        'data' => url("https://maps.googleapis.com/maps/api/js", array(
-          'query' => array(
-            'key' => variable_get('islandora_simple_map_google_maps_api_key', ''),
-            'callback' => 'Drupal.islandora_simple_map.initialize',
-          ),
-        )),
-        'defer' => TRUE,
-      ),
     ),
     'css' => array(
       array(
@@ -488,6 +473,52 @@ function _islandora_simple_map_generate_js_code(array $settings) {
       ),
     ),
   );
+  $temp_settings = &$settings['islandora_simple_map'][$map_div_id];
+  $temp_settings['map_zoom_level'] =
+    (int) variable_get('islandora_simple_map_zoom', '10');
+  $temp_settings['disable_scroll_zoom'] =
+    (bool) variable_get('islandora_simple_map_disable_scroll', FALSE);
+
+  // Google maps
+  if ($map_type == ISLANDORA_SIMPLE_MAP_GOOGLE_MAPS) {
+    $code['js'][] = array(
+      'type' => 'file',
+      'data' => "{$module_path}/js/google_maps.js",
+    );
+    $code['js'][] = array(
+      'type' => 'external',
+      'data' => url("https://maps.googleapis.com/maps/api/js", array(
+        'query' => array(
+          'key' => variable_get('islandora_simple_map_google_maps_api_key', ''),
+          'callback' => 'Drupal.islandora_simple_map.initialize',
+        ),
+      )),
+      'defer' => TRUE,
+    );
+  }
+  else {
+    // OpenStreet Maps
+    $provider = islandora_simple_map_openstreet_map_providers(variable_get('islandora_simple_map_osm_provider', 'osm'));
+    $temp_settings['provider_settings'] = $provider;
+    $code['js'][] = array(
+      'type' => 'file',
+      'data' => "{$module_path}/js/openstreet_maps.js",
+    );
+    $code['js'][] = array(
+      'type' => 'external',
+      'data' => 'https://unpkg.com/leaflet@1.3.4/dist/leaflet.js',
+      'defer' => TRUE,
+    );
+    $code['css'][] = array(
+      'type' => 'external',
+      'data' => 'https://unpkg.com/leaflet@1.3.4/dist/leaflet.css',
+    );
+  }
+  $code['js'][] = array(
+    'type' => 'setting',
+    'data' => $settings,
+  );
+  return $code;
 }
 
 /**
@@ -547,4 +578,59 @@ function _islandora_simple_map_set_cache($pid, $data) {
 function _islandora_simple_map_clear_cache($pid) {
   $cache_name = ISLANDORA_SIMPLE_MAP_CACHE_PREFIX . str_replace(':', '_', $pid);
   cache_clear_all($cache_name, ISLANDORA_SIMPLE_MAP_CACHE_BIN, FALSE);
+}
+
+/**
+ * Are using Google with Javascript API or OpenStreetMaps.
+ *
+ * @return bool
+ *    Whether the API supports multiple coordinates on a map.
+ */
+function _islandora_simple_map_multiple_coord_support() {
+  $selected_api = variable_get('islandora_simple_map_map_type', ISLANDORA_SIMPLE_MAP_GOOGLE_MAPS);
+  $use_gmaps_api = variable_get('islandora_simple_map_use_gmaps_api', FALSE);
+  return ($selected_api == ISLANDORA_SIMPLE_MAP_OPENSTREET_MAPS || $use_gmaps_api);
+}
+
+/**
+ * Return a tile provider or all of them.
+ *
+ * @param string|null $provider_id
+ *   The id of a tile provider
+ *
+ * @return array
+ *   All providers, the chosen one or none if invalid ID.
+ */
+function islandora_simple_map_openstreet_map_providers($provider_id = NULL) {
+  $providers = array(
+    'osm' => array(
+      'title' => 'OpenStreet Map (not for production use)',
+      'url' => '',
+      'attribution' => '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      'template' => 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    ),
+    'mapbox' => array(
+      'title' => 'MapBox',
+      'url' => 'https://www.mapbox.com',
+      'attribution' => "&copy; <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> " .
+        "&copy; <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> " .
+        "<strong><a href='https://www.mapbox.com/map-feedback/' target='_blank'>Improve this map</a></strong>",
+      'template' => 'https://api.mapbox.com/styles/v1/{username}/{style_id}/tiles/{tilesize}/{z}/{x}/{y}',
+    ),
+    'thunderforest' => array(
+      'title' => 'Thunderforest',
+      'url' => 'https://www.thunderforest.com',
+      'attribution' => "Maps &copy; <a href='http://www.thunderforest.com/'>Thunderforest</a> " .
+        ", Data &copy; <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap contributors</a>",
+      'template' => 'https://tile.thunderforest.com/cycle/{z}/{x}/{y}.png?apikey={apikey}',
+    ),
+  );
+
+  if (is_null($provider_id)) {
+    return $providers;
+  }
+  elseif (array_key_exists($provider_id, $providers)) {
+    return $providers[$provider_id];
+  }
+  return array();
 }
