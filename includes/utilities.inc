@@ -474,12 +474,10 @@ function _islandora_simple_map_generate_js_code(array $settings, $map_div_id) {
     ),
   );
   $temp_settings = &$settings['islandora_simple_map'][$map_div_id];
-  $temp_settings['map_zoom_level'] =
-    (int) variable_get('islandora_simple_map_zoom', '10');
-  $temp_settings['disable_scroll_zoom'] =
-    (bool) variable_get('islandora_simple_map_disable_scroll', FALSE);
+  $temp_settings['map_zoom_level'] = (int) variable_get('islandora_simple_map_zoom', '10');
+  $temp_settings['disable_scroll_zoom'] = (bool) variable_get('islandora_simple_map_disable_scroll', FALSE);
 
-  // Google maps
+  // Google maps.
   if ($map_type == ISLANDORA_SIMPLE_MAP_GOOGLE_MAPS) {
     $code['js'][] = array(
       'type' => 'file',
@@ -497,7 +495,7 @@ function _islandora_simple_map_generate_js_code(array $settings, $map_div_id) {
     );
   }
   else {
-    // OpenStreet Maps
+    // OpenStreet Maps.
     $provider = islandora_simple_map_openstreet_map_providers(variable_get('islandora_simple_map_osm_provider', 'osm'));
     $temp_settings['provider_settings'] = $provider;
     $code['js'][] = array(
@@ -584,7 +582,7 @@ function _islandora_simple_map_clear_cache($pid) {
  * Are using Google with Javascript API or OpenStreetMaps.
  *
  * @return bool
- *    Whether the API supports multiple coordinates on a map.
+ *   Whether the API supports multiple coordinates on a map.
  */
 function _islandora_simple_map_multiple_coord_support() {
   $selected_api = variable_get('islandora_simple_map_map_type', ISLANDORA_SIMPLE_MAP_GOOGLE_MAPS);
@@ -612,16 +610,13 @@ function islandora_simple_map_openstreet_map_providers($provider_id = NULL) {
     'mapbox' => array(
       'title' => 'MapBox',
       'url' => 'https://www.mapbox.com',
-      'attribution' => "&copy; <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> " .
-        "&copy; <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> " .
-        "<strong><a href='https://www.mapbox.com/map-feedback/' target='_blank'>Improve this map</a></strong>",
+      'attribution' => "&copy; <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> &copy; <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> <strong><a href='https://www.mapbox.com/map-feedback/' target='_blank'>Improve this map</a></strong>",
       'template' => 'https://api.mapbox.com/styles/v1/{username}/{style_id}/tiles/{tilesize}/{z}/{x}/{y}',
     ),
     'thunderforest' => array(
       'title' => 'Thunderforest',
       'url' => 'https://www.thunderforest.com',
-      'attribution' => "Maps &copy; <a href='http://www.thunderforest.com/'>Thunderforest</a> " .
-        ", Data &copy; <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap contributors</a>",
+      'attribution' => "Maps &copy; <a href='http://www.thunderforest.com/'>Thunderforest</a>, Data &copy; <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap contributors</a>",
       'template' => 'https://tile.thunderforest.com/cycle/{z}/{x}/{y}.png?apikey={apikey}',
     ),
   );

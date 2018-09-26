@@ -10,7 +10,7 @@
  */
 function islandora_simple_map_admin_settings_form($form, &$form_state) {
   module_load_include('inc', 'islandora_simple_map', 'includes/utilities');
-  // Get all the available OSM providers
+  // Get all the available OSM providers.
   $os_providers = islandora_simple_map_openstreet_map_providers();
   // Generate select box options from the above list.
   $os_options = array();
@@ -33,7 +33,7 @@ function islandora_simple_map_admin_settings_form($form, &$form_state) {
   // Get the provider settings.
   $current_osm_settings = $get_or_blank($current_osm_provider, $os_providers);
   if (!is_array($current_osm_settings)) {
-    // If this provider is removed default to osm
+    // If this provider is removed default to osm.
     $current_osm_provider = 'mapbox';
     $current_osm_settings = $get_or_blank($current_osm_provider, $os_providers);
   }
@@ -103,7 +103,7 @@ function islandora_simple_map_admin_settings_form($form, &$form_state) {
       '#default_value' => $current_osm_provider,
       '#ajax' => array(
         'wrapper' => 'islandora_simple_map_osm_wrapper',
-        'callback' => 'islandora_simple_maps_osm_key_callback'
+        'callback' => 'islandora_simple_maps_osm_key_callback',
       ),
     ),
     'islandora_simple_map_osm_wrapper' => array(
@@ -120,8 +120,7 @@ function islandora_simple_map_admin_settings_form($form, &$form_state) {
       "islandora_simple_map_osm_attribution" => array(
         '#type' => 'textfield',
         '#title' => t("Attribution links"),
-        '#description' => t("Links/text added to the bottom of the map, " .
-          "sometimes required by tile provider. For viewing only."),
+        '#description' => t("Links/text added to the bottom of the map, sometimes required by tile provider. For viewing only."),
         '#size' => 100,
         '#maxlength' => 200,
         '#default_value' => $get_or_blank('attribution', $current_osm_settings),
@@ -288,8 +287,8 @@ function islandora_simple_map_admin_settings_form($form, &$form_state) {
 function islandora_simple_maps_osm_key_callback(array $form, array &$form_state) {
   $element = $form['openstreet_api']['islandora_simple_map_osm_wrapper'];
   // Otherwise the #value from pre-AJAX is displayed.
-  $element['islandora_simple_map_osm_api_key']['#value'] =
-    $element['islandora_simple_map_osm_api_key']['#default_value'];
+  $element['islandora_simple_map_osm_api_key']['#value']
+    = $element['islandora_simple_map_osm_api_key']['#default_value'];
   return $element;
 }
 
@@ -316,11 +315,6 @@ function islandora_simple_map_admin_settings_form_validate(array $form, array &$
 
 /**
  * Implements hook_form_submit().
- *
- * @param array $form
- *   The form.
- * @param array $form_state
- *   The form state.
  */
 function islandora_simple_map_admin_settings_form_submit(array $form, array &$form_state) {
   $values = $form_state['values'];
@@ -346,7 +340,7 @@ function islandora_simple_map_admin_settings_form_submit(array $form, array &$fo
   // Solr options.
   variable_set('islandora_simple_map_use_solr', $values['islandora_simple_map_use_solr']);
   variable_set('islandora_simple_map_coordinate_solr_field', $values['islandora_simple_map_coordinate_solr_field']);
-  // Assorted options
+  // Assorted options.
   variable_set('islandora_simple_map_coordinate_delimiter', $values['islandora_simple_map_coordinate_delimiter']);
   variable_set('islandora_simple_map_xpath', $values['islandora_simple_map_xpath']);
   variable_set('islandora_simple_map_collapsed', $values['islandora_simple_map_collapsed']);
