@@ -24,11 +24,8 @@
           }
           var defaultZoom = parseInt(config.map_zoom_level);
           var map = L.map(mapId).setView(firstCenter, defaultZoom);
-          L.tileLayer(config.provider_settings.template, {
-            'attribution' : config.provider_settings.attribution,
-            'maxZoom' : 18,
-            'id' : 'example'
-          }).addTo(map);
+          var default_config = config.provider_settings.tile_config;
+          L.tileLayer(config.provider_settings.template, default_config).addTo(map);
           map.defaultZoom = defaultZoom;
           map.initialZoom = true;
           if (multiple_objects) {

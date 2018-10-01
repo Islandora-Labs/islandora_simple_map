@@ -496,8 +496,8 @@ function _islandora_simple_map_generate_js_code(array $settings, $map_div_id) {
   }
   else {
     // OpenStreet Maps.
-    $provider = islandora_simple_map_openstreet_map_providers(variable_get('islandora_simple_map_osm_provider', 'osm'));
-    $temp_settings['provider_settings'] = $provider;
+    $provider = islandora_simple_map_openstreet_map_providers(variable_get('islandora_simple_map_osm_provider', 'osm'), TRUE);
+
     $code['js'][] = array(
       'type' => 'file',
       'data' => "{$module_path}/js/openstreet_maps.js",
@@ -511,6 +511,14 @@ function _islandora_simple_map_generate_js_code(array $settings, $map_div_id) {
       'type' => 'external',
       'data' => 'https://unpkg.com/leaflet@1.3.4/dist/leaflet.css',
     );
+    if (isset($provider['resources'])) {
+      // We will eventually provide JS/CSS resources by provider, here is where.
+      $resources = $provider['resources'];
+      unset($provider['resources']);
+      $code = array_merge_recursive($code, $resources);
+    }
+
+    $temp_settings['provider_settings'] = $provider;
   }
   $code['js'][] = array(
     'type' => 'setting',
@@ -591,41 +599,90 @@ function _islandora_simple_map_multiple_coord_support() {
 }
 
 /**
+ * Get an API key.
+ *
+ * @param string $provider
+ *   The provider.
+ *
+ * @return string|bool
+ *   The key or FALSE if not found.
+ */
+function _islandora_simple_map_get_api_key($provider) {
+  $api_keys = unserialize(variable_get('islandora_simple_map_api_keys', 'a:0:{}'));
+  if (array_key_exists($provider, $api_keys)) {
+    return $api_keys[$provider];
+  }
+  return FALSE;
+}
+
+/**
+ * Set an API Key.
+ *
+ * @param string $provider
+ *   The provider.
+ * @param string $key
+ *   The API key.
+ */
+function _islandora_simple_map_set_api_key($provider, $key) {
+  $api_keys = unserialize(variable_get('islandora_simple_map_api_keys', 'a:0:{}'));
+  $api_keys[$provider] = $key;
+  variable_set('islandora_simple_map_api_keys', serialize($api_keys));
+}
+
+/**
  * Return a tile provider or all of them.
  *
  * @param string|null $provider_id
- *   The id of a tile provider
+ *   The id of a tile provider.
+ * @param bool $finalized
+ *   Replace tokens with keys.
  *
  * @return array
  *   All providers, the chosen one or none if invalid ID.
  */
-function islandora_simple_map_openstreet_map_providers($provider_id = NULL) {
+function islandora_simple_map_openstreet_map_providers($provider_id = NULL, $finalized = FALSE) {
   $providers = array(
     'osm' => array(
       'title' => 'OpenStreet Map (not for production use)',
       'url' => '',
-      'attribution' => '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
       'template' => 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      'tile_config' => array(
+        'attribution' => '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        'maxZoom' => 18,
+      ),
     ),
     'mapbox' => array(
       'title' => 'MapBox',
       'url' => 'https://www.mapbox.com',
-      'attribution' => "&copy; <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> &copy; <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> <strong><a href='https://www.mapbox.com/map-feedback/' target='_blank'>Improve this map</a></strong>",
-      'template' => 'https://api.mapbox.com/styles/v1/{username}/{style_id}/tiles/{tilesize}/{z}/{x}/{y}',
+      'template' => 'https://api.mapbox.com/styles/v1/mapbox/streets-v10/tiles/{z}/{x}/{y}?access_token={apikey}',
+      'tile_config' => array(
+        'attribution' => "&copy; <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> &copy; <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> <strong><a href='https://www.mapbox.com/map-feedback/' target='_blank'>Improve this map</a></strong>",
+        'tileSize' => 256,
+        'maxZoom' => 18,
+      ),
     ),
     'thunderforest' => array(
       'title' => 'Thunderforest',
       'url' => 'https://www.thunderforest.com',
-      'attribution' => "Maps &copy; <a href='http://www.thunderforest.com/'>Thunderforest</a>, Data &copy; <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap contributors</a>",
-      'template' => 'https://tile.thunderforest.com/cycle/{z}/{x}/{y}.png?apikey={apikey}',
+      'template' => 'https://tile.thunderforest.com/transport/{z}/{x}/{y}.png?apikey={apikey}',
+      'tile_config' => array(
+        'attribution' => "Maps &copy; <a href='http://www.thunderforest.com/'>Thunderforest</a>, Data &copy; <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap contributors</a>",
+      ),
     ),
   );
 
+  $p = array();
   if (is_null($provider_id)) {
-    return $providers;
+    $p = $providers;
   }
   elseif (array_key_exists($provider_id, $providers)) {
-    return $providers[$provider_id];
+    $p = $providers[$provider_id];
+    if ($finalized) {
+      $key = _islandora_simple_map_get_api_key($provider_id);
+      if ($key !== FALSE) {
+        $p['template'] = str_replace('{apikey}', $key, $p['template']);
+      }
+    }
   }
-  return array();
+  return $p;
 }

@@ -18,7 +18,7 @@ function islandora_simple_map_admin_settings_form($form, &$form_state) {
     $os_options[$key] = $data['title'];
   }
   // Now store all the API keys under one variable.
-  $api_keys = unserialize(variable_get('islandora_simple_map_api_keys', 'a:0:{}'));
+
   // Simple get from array or return blank string.
   $get_or_blank = function($key, $array) {
     return array_key_exists($key, $array) ?
@@ -65,7 +65,7 @@ function islandora_simple_map_admin_settings_form($form, &$form_state) {
         array('@url' => 'https://developers.google.com/maps/documentation/javascript/get-api-key')),
       '#length' => 30,
       '#maxlength' => 255,
-      '#default_value' => $get_or_blank('google_maps', $api_keys),
+      '#default_value' => _islandora_simple_map_get_api_key(ISLANDORA_SIMPLE_MAP_GOOGLE_MAPS),
       '#states' => array(
         'required' => array(
           ':input[name="islandora_simple_map_use_gmaps_api"]' => array('checked' => TRUE),
@@ -88,7 +88,7 @@ function islandora_simple_map_admin_settings_form($form, &$form_state) {
     ),
     '#states' => array(
       'visible' => array(
-        ':input[name="islandora_simple_map_map_type"]' => array('value' => 'google_maps'),
+        ':input[name="islandora_simple_map_map_type"]' => array('value' => ISLANDORA_SIMPLE_MAP_GOOGLE_MAPS),
       ),
     ),
   );
@@ -115,7 +115,7 @@ function islandora_simple_map_admin_settings_form($form, &$form_state) {
       "islandora_simple_map_osm_api_key" => array(
         '#type' => 'textfield',
         '#title' => t('Tile server API key'),
-        '#default_value' => $get_or_blank($current_osm_provider, $api_keys),
+        '#default_value' => _islandora_simple_map_get_api_key($current_osm_provider),
       ),
       "islandora_simple_map_osm_attribution" => array(
         '#type' => 'textfield',
@@ -123,7 +123,7 @@ function islandora_simple_map_admin_settings_form($form, &$form_state) {
         '#description' => t("Links/text added to the bottom of the map, sometimes required by tile provider. For viewing only."),
         '#size' => 100,
         '#maxlength' => 200,
-        '#default_value' => $get_or_blank('attribution', $current_osm_settings),
+        '#default_value' => $get_or_blank('attribution', $current_osm_settings['tile_config']),
         '#disabled' => TRUE,
       ),
       "islandora_simple_map_osm_tile_template" => array(
@@ -319,20 +319,19 @@ function islandora_simple_map_admin_settings_form_validate(array $form, array &$
 function islandora_simple_map_admin_settings_form_submit(array $form, array &$form_state) {
   $values = $form_state['values'];
   variable_set('islandora_simple_map_map_type', $values['islandora_simple_map_map_type']);
-  $api_keys = unserialize(variable_get('islandora_simple_map_api_keys', 'a:0:{}'));
   if ($values['islandora_simple_map_map_type'] == ISLANDORA_SIMPLE_MAP_GOOGLE_MAPS) {
     // Only store Google values.
     variable_set('islandora_simple_map_use_gmaps_api', $values['islandora_simple_map_use_gmaps_api']);
-    $api_keys['google_maps'] = $values['islandora_simple_map_google_maps_api_key'];
+    _islandora_simple_map_set_api_key(ISLANDORA_SIMPLE_MAPS_GOOGLE_MAPS, $values['islandora_simple_map_google_maps_api_key']);
     variable_set('islandora_simple_map_disable_scroll', $values['islandora_simple_map_disable_scroll']);
   }
   else {
     // Doing OSM.
     $curr_osm = $values['islandora_simple_map_osm_provider'];
     variable_set('islandora_simple_map_osm_provider', $curr_osm);
-    $api_keys[$curr_osm] = $values['islandora_simple_map_osm_api_key'];
+    _islandora_simple_map_set_api_key($curr_osm, $values['islandora_simple_map_osm_api_key']);
   }
-  variable_set('islandora_simple_map_api_keys', serialize($api_keys));
+
   // Other advanced options.
   variable_set('islandora_simple_map_disable_page_display', $values['islandora_simple_map_disable_page_display']);
   variable_set('islandora_simple_map_collection_maps', $values['islandora_simple_map_collection_maps']);
