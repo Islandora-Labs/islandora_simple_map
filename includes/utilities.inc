@@ -487,7 +487,7 @@ function _islandora_simple_map_generate_js_code(array $settings, $map_div_id) {
       'type' => 'external',
       'data' => url("https://maps.googleapis.com/maps/api/js", array(
         'query' => array(
-          'key' => variable_get('islandora_simple_map_google_maps_api_key', ''),
+          'key' => _islandora_simple_map_get_api_key(ISLANDORA_SIMPLE_MAP_GOOGLE_MAPS),
           'callback' => 'Drupal.islandora_simple_map.initialize',
         ),
       )),
