@@ -318,11 +318,16 @@ function islandora_simple_map_admin_settings_form_validate(array $form, array &$
  */
 function islandora_simple_map_admin_settings_form_submit(array $form, array &$form_state) {
   $values = $form_state['values'];
-  variable_set('islandora_simple_map_map_type', $values['islandora_simple_map_map_type']);
+  $previous = variable_get('islandora_simple_map_map_type', ISLANDORA_SIMPLE_MAP_GOOGLE_MAPS);
+  $changed = ($previous != $values['islandora_simple_map_map_type']);
+  if ($changed) {
+    variable_set('islandora_simple_map_map_type', $values['islandora_simple_map_map_type']);
+    _drupal_flush_css_js();
+  }
   if ($values['islandora_simple_map_map_type'] == ISLANDORA_SIMPLE_MAP_GOOGLE_MAPS) {
     // Only store Google values.
     variable_set('islandora_simple_map_use_gmaps_api', $values['islandora_simple_map_use_gmaps_api']);
-    _islandora_simple_map_set_api_key(ISLANDORA_SIMPLE_MAPS_GOOGLE_MAPS, $values['islandora_simple_map_google_maps_api_key']);
+    _islandora_simple_map_set_api_key(ISLANDORA_SIMPLE_MAP_GOOGLE_MAPS, $values['islandora_simple_map_google_maps_api_key']);
     variable_set('islandora_simple_map_disable_scroll', $values['islandora_simple_map_disable_scroll']);
   }
   else {
@@ -348,6 +353,7 @@ function islandora_simple_map_admin_settings_form_submit(array $form, array &$fo
   variable_set('islandora_simple_map_zoom', $values['islandora_simple_map_zoom']);
   variable_set('islandora_simple_map_attempt_cleanup', $values['islandora_simple_map_attempt_cleanup']);
   variable_set('islandora_simple_map_omit_compound_display', $values['islandora_simple_map_omit_compound_display']);
+  drupal_set_message("Configuration settings saved");
 }
 
 /**
