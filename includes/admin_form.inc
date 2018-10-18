@@ -353,7 +353,7 @@ function islandora_simple_map_admin_settings_form_submit(array $form, array &$fo
   variable_set('islandora_simple_map_zoom', $values['islandora_simple_map_zoom']);
   variable_set('islandora_simple_map_attempt_cleanup', $values['islandora_simple_map_attempt_cleanup']);
   variable_set('islandora_simple_map_omit_compound_display', $values['islandora_simple_map_omit_compound_display']);
-  drupal_set_message("Configuration settings saved");
+  drupal_set_message(t("Configuration settings saved"));
 }
 
 /**
