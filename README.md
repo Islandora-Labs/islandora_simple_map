@@ -32,7 +32,7 @@ Install as usual, see [this](https://drupal.org/documentation/install/modules-th
 
 ## Configuration
 
-This module allows you to provide maps produced from [Google Maps](#google) or [OpenStreetMap](#osm)
+This module allows you to provide maps produced from [Google Maps](#google-maps) or [OpenStreetMap](#openstreetmap)
 
 Admin settings are available at `admin/islandora/tools/islandora_simple_map`:
 
