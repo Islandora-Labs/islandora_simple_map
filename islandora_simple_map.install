@@ -86,6 +86,6 @@ function islandora_simple_map_update_7102() {
   if (!empty($google_api_key)) {
     $keys = variable_get('islandora_simple_map_api_keys', array());
     $keys[ISLANDORA_SIMPLE_MAP_GOOGLE_MAPS] = $google_api_key;
-    variable_set('islandora_simple_map_api_keys', serialize($keys));
+    variable_set('islandora_simple_map_api_keys', $keys);
   }
 }
