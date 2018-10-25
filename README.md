@@ -1,20 +1,23 @@
-# Islandora Simple Map [![Build Status](https://travis-ci.org/mjordan/islandora_simple_map.svg?branch=7.x)](https://travis-ci.org/mjordan/islandora_simple_map)
+# Islandora Simple Map [![Build Status](https://travis-ci.org/Islandora-Labs/islandora_simple_map.svg?branch=7.x)](https://travis-ci.org/Islandora-Labs/islandora_simple_map)
 
-Islandora module that appends a Google map to an object's display if its MODS datastream contains the required data. You can see it in action [here](http://digital.lib.sfu.ca/pfp-980/buffalo-stanley-park-vancouver-bc).
+Islandora module that provides the ability to add a map to an object's display. You can see it in action [here](http://digital.lib.sfu.ca/pfp-980/buffalo-stanley-park-vancouver-bc).
 
 ## Overview
 
-This module can use geographic coordinates and place names in MODS elements to populate a Google map that is then appended to the object's display.
+This module can use geographic coordinates and place names in MODS (or other) elements to populate a Google or OpenStreetMaps map that is then appended to the object's display or displayed in a block.
 
-This module allows use of Google Map's [Embed API](https://developers.google.com/maps/documentation/embed/) or, for more functionality, the [Javascript API](https://developers.google.com/maps/documentation/javascript/):
+This module allows use of either Google Map's [Embed API](https://developers.google.com/maps/documentation/embed/) or, for more functionality, the [Google Maps Javascript API](https://developers.google.com/maps/documentation/javascript/)
+or [OpenStreetMap API](https://wiki.openstreetmap.org/wiki/API):
 
-Feature | Embed API | JavaScript API
+Feature | Embed | JavaScript / OpenStreetMaps
 --- | --- | ---
 API key | not required | required
 blocks | not supported | supported
 multivalued coordinates | not supported (first coordinate/place name only) | supported
-place names | supported | not supported
+place names | supported | not supported *
 collection maps | not supported | supported
+
+\* You can write a custom place name lookup to make use of the [hooks](#api) but this is not provided currently.
 
 This module exposes two [hooks](#api) to allow developers to write their own function to extract information and return coordinates for display on the map
 and to parse coordinates provided in various formats to decimal format for display.
@@ -29,30 +32,67 @@ Install as usual, see [this](https://drupal.org/documentation/install/modules-th
 
 ## Configuration
 
-If you choose to use the Javascript API you will need to [get an API Key](https://developers.google.com/maps/documentation/javascript/get-api-key). If you choose to use the Embed API, you do not need an API key.
+This module allows you to provide maps produced from [Google Maps](#google-maps) or [OpenStreetMap](#openstreetmap)
 
 Admin settings are available at `admin/islandora/tools/islandora_simple_map`:
+
+You can select which to use with the **Choose map type** drop down.
+
+### Google Maps
+
+![Google Maps Admin screenshot](docs/admin_gmaps.jpg)
+
+If you choose to use the Javascript API you will need to [get an API Key](https://developers.google.com/maps/documentation/javascript/get-api-key). If you choose to use the Embed API, you do not need an API key.
+
+If you do not use the Javascript API some options are not available.
+
+Embed API
+![Google Maps Embed Admin screenshot](docs/admin_gmap_embed.jpg)
+
+Javascript API
+![Google Maps Javascript options screenshot](docs/admin_gmaps_api_features.jpg)
 
 Enabling the **Google Maps Javascript API** opens configuration for:
 
 * Your API key (required).
 * Disabling mouse wheel from causing map zoom.
-* Disable the map embed in the page. Useful if using the map block.
+* Additional [enhanced options](#enhanced-options) described below. 
 
-It also displays **all** coordinates found, the Embed API only displays the first.
+The Embed API only displays the first coordinate found.
+
+### OpenStreetMap
+
+![OSM Admin screenshot](docs/admin_osm.jpg)
+
+The OpenStreetMap allows you to choose between 3 tile providers (OpenStreetMap, MapBox and Thunderforest)
+
+**Note**: The OpenStreetMap tile provider is for testing and very small sites. Read the [OpenStreetMap Tile Usage Policy](https://operations.osmfoundation.org/policies/tiles/)
+for more information.
+
+The other two providers will require you to register to get an API key.
+
+The OpenStreetMap maps also provide additional [enhanced options](#enhanced-options) described below.
+
+### Enhanced options
+
+Using Google Maps with the Javascript API or using OpenStreetMap opens additional functionality including.
+
+* Display **all** coordinates found and show multiple points on a map.
+* Display a map in a block.
+* Disable the map embed in the page. Useful if using the above map block.
+* [Collection maps](#collection-maps).
+
+### Common configuration options
 
 Common configuration options are:
 
 * A delimiter to split multiple coordinates on.
 * the XPath expressions to the MODS elements where your map data is stored
 * the map's height, width, default zoom level, and whether or not the map is collapsed or expanded by default, and
-* option to clean up the data before it is passed to Google Maps.
-* option to enable maps on collections.
+* option to clean up the data before it is passed to the map provider.
 * option to display maps for compounds (in addition to their first child).
 
 Once you enable the module, any object whose MODS file contains coordinates in the expected element will have a Google map appended to its display.
-
-If you have checked the "Enable collection level maps?" option, you can then enable a map for each collection within the collection's Manage subtabs.
 
 There is also the __Coordinates Solr field__ option if you index your object's coordinates. If you fill this in, then a
 Solr query will be done to retrieve the collections coordinates instead of parsing each collection member's MODS record.
@@ -123,6 +163,36 @@ The XPath expressions used to retrieve map data are executed in the order they a
 **Note**: If you wish to reproduce this behaviour using the Javascript API you would need a new hook implementation using the 
 [Google Places API](https://developers.google.com/places/) to convert place names to coordinates.
 
+### Collection maps
+
+Collection maps provide a single map with markers for all items directly in the collection (does not include sub-directories).
+
+If you have checked the "Enable collection level maps?" option, you can then enable a map for each collection within the collection's Manage subtabs.
+
+![Collection maps admin screenshot](docs/admin_collection_maps.jpg)
+
+You can also cache collection points for anonymous users, this can significantly improve performance on maps with large
+numbers of points.
+
+To enable a collection map, manage the collection and choose the **Collection** tab.
+![Collection manage tab screenshot](docs/admin_enable_collection_map.jpg)
+
+Choose the _Manage Islandora Simple Map_ tab.
+![Collection manage Islandora Simple Map screenshot](docs/admin_enable_collection_map_2.jpg)
+
+Check the "Display map of resources in this collection" checkbox and click **Save**. You can also un-check and **Save** 
+to disable a collection's map.
+
+You can also find a listing of all enabled collection maps on the **Collection Maps** tab of the admin screen.
+From here you can disable one or more collection maps.
+![Collection maps tab screenshot](docs/admin_enable_collection_map_3.jpg)
+
+Collection maps appear as a new tab on the Collection.
+![Collection map example screenshot](docs/collection_maps_1.jpg)
+
+Each marker is clickable with a tooltip of the title and thumbnail of the object and a link back to the resource.
+![Collection map tooltip screenshot](docs/collection_maps_2.jpg)
+
 ## API
 
 `hook_islandora_simple_map_get_coordinates(AbstractObject $object)`
@@ -157,7 +227,6 @@ array of coordinates that it could parse where the key is the original value and
 
 ## To do
 
-* Add support for non-Google maps.
 * Add a Drupal permission to "View Islandora Simple Map maps".
 
 ## Development and feedback

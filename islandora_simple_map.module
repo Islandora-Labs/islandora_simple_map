@@ -10,6 +10,8 @@ define('ISLANDORA_SIMPLE_MAP_COORDINATE_HOOK', 'islandora_simple_map_get_coordin
 define('ISLANDORA_SIMPLE_MAP_PARSE_HOOK', 'islandora_simple_map_parse_coordinates_callback');
 define('ISLANDORA_SIMPLE_MAP_CACHE_PREFIX', 'islandora_simple_map_collection_map_');
 define('ISLANDORA_SIMPLE_MAP_CACHE_BIN', 'cache');
+define('ISLANDORA_SIMPLE_MAP_GOOGLE_MAPS', 'google_maps');
+define('ISLANDORA_SIMPLE_MAP_OPENSTREET_MAPS', 'openstreet_maps');
 
 // Includes blocks.
 require_once dirname(__FILE__) . '/includes/blocks.inc';
@@ -26,7 +28,7 @@ function islandora_simple_map_menu() {
     'description' => 'Configure the Islandora Simple Map module.',
     'page callback' => 'drupal_get_form',
     'access arguments' => array('administer site configuration'),
-    'page arguments' => array('islandora_simple_map_admin_settings'),
+    'page arguments' => array('islandora_simple_map_admin_settings_form'),
     'type' => MENU_NORMAL_ITEM,
     'file' => 'includes/admin_form.inc',
   );
@@ -35,7 +37,7 @@ function islandora_simple_map_menu() {
     'description' => 'Configure the Islandora Simple Map module.',
     'page callback' => 'drupal_get_form',
     'access arguments' => array('administer site configuration'),
-    'page arguments' => array('islandora_simple_map_admin_settings'),
+    'page arguments' => array('islandora_simple_map_admin_settings_form'),
     'type' => MENU_DEFAULT_LOCAL_TASK,
     'file' => 'includes/admin_form.inc',
     'weight' => -9,
@@ -127,9 +129,8 @@ function islandora_simple_map_islandora_view_object_alter(&$object, &$rendered) 
   if (isset($found_coords['coordinates']) && count($found_coords['coordinates']) > 0) {
     $width = (int) variable_get('islandora_simple_map_iframe_width', '600');
     $height = (int) variable_get('islandora_simple_map_iframe_height', '600');
-    $zoom = (int) variable_get('islandora_simple_map_zoom', '10');
     $collapsed = variable_get('islandora_simple_map_collapsed', 'collapsed');
-    if (variable_get('islandora_simple_map_use_gmaps_api', FALSE)) {
+    if (_islandora_simple_map_multiple_coord_support()) {
       if (variable_get('islandora_simple_map_disable_page_display', FALSE)) {
         return array();
       }
@@ -137,8 +138,6 @@ function islandora_simple_map_islandora_view_object_alter(&$object, &$rendered) 
       $settings['islandora_simple_map'][$map_div_id] = array(
         'map_markers' => $found_coords,
         'map_div_id' => $map_div_id,
-        'map_zoom_level' => $zoom,
-        'disable_scroll_zoom' => (bool) variable_get('islandora_simple_map_disable_scroll', FALSE),
       );
       $content = array(
         'islandora_simple_map' => array(
@@ -155,7 +154,7 @@ function islandora_simple_map_islandora_view_object_alter(&$object, &$rendered) 
               'class' => array('islandora-simple-map-holder', 'islandora-simple-map-page'),
             ),
           ),
-          '#attached' => _islandora_simple_map_generate_js_code($settings),
+          '#attached' => _islandora_simple_map_generate_js_code($settings, $map_div_id),
         ),
       );
       $content['islandora_simple_map']['#attached']['css'][] = array(
@@ -164,7 +163,6 @@ function islandora_simple_map_islandora_view_object_alter(&$object, &$rendered) 
       );
     }
     else {
-
       $width = variable_get('islandora_simple_map_iframe_width', '600');
       $height = variable_get('islandora_simple_map_iframe_height', '600');
       $zoom = variable_get('islandora_simple_map_zoom', '10');
@@ -293,13 +291,10 @@ function islandora_simple_map_islandora_basic_collection_build_manage_object(arr
 function islandora_simple_map_collection_map_view(AbstractObject $object) {
   $coordinates = _islandora_simple_map_get_collection_points($object);
   if (count($coordinates) > 0) {
-    $zoom = (int) variable_get('islandora_simple_map_zoom', '10');
     $map_div_id = drupal_html_id('islandora_simple_map_collection_page');
     $settings['islandora_simple_map'][$map_div_id] = array(
       'map_markers' => $coordinates,
       'map_div_id' => $map_div_id,
-      'map_zoom_level' => $zoom,
-      'disable_scroll_zoom' => FALSE,
     );
     $content = array(
       'islandora_simple_map' => array(
@@ -309,7 +304,7 @@ function islandora_simple_map_collection_map_view(AbstractObject $object) {
             'id' => $map_div_id,
             'class' => array('islandora-simple-map-holder', 'islandora-simple-map-collection-page'),
           ),
-          '#attached' => _islandora_simple_map_generate_js_code($settings),
+          '#attached' => _islandora_simple_map_generate_js_code($settings, $map_div_id),
         ),
       ),
     );
