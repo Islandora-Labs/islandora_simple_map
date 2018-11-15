@@ -10,7 +10,7 @@
  */
 function islandora_simple_map_block_info() {
   $blocks = array();
-  if (variable_get('islandora_simple_map_use_gmaps_api', FALSE)) {
+  if (_islandora_simple_map_multiple_coord_support()) {
     $blocks['islandora_simple_map_object'] = array(
       'info' => t('Islandora Simple Map Object Block'),
       'cache' => DRUPAL_CACHE_PER_USER,
@@ -24,7 +24,7 @@ function islandora_simple_map_block_info() {
  */
 function islandora_simple_map_block_view($delta = '') {
   if ($delta == 'islandora_simple_map_object' || $delta == 'islandora_simple_map_collection') {
-    if (variable_get('islandora_simple_map_use_gmaps_api', FALSE)) {
+    if (_islandora_simple_map_multiple_coord_support()) {
       $object = menu_get_object('islandora_object', 2);
       if ($object) {
         $found_coords = islandora_simple_map_process_coordinates($object);
@@ -35,8 +35,6 @@ function islandora_simple_map_block_view($delta = '') {
           $settings['islandora_simple_map'][$map_div_id] = array(
             'map_markers' => $found_coords,
             'map_div_id' => $map_div_id,
-            'map_zoom_level' => (int) variable_get('islandora_simple_map_zoom', '10'),
-            'disable_scroll_zoom' => (bool) variable_get('islandora_simple_map_disable_scroll', FALSE),
           );
           $block = array(
             'content' => array(
@@ -47,7 +45,7 @@ function islandora_simple_map_block_view($delta = '') {
                   'class' => array('islandora-simple-map-holder', 'islandora-simple-map-block'),
                 ),
               ),
-              '#attached' => _islandora_simple_map_generate_js_code($settings),
+              '#attached' => _islandora_simple_map_generate_js_code($settings, $map_div_id),
             ),
           );
         }
