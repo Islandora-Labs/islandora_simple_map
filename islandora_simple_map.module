@@ -126,7 +126,12 @@ function islandora_simple_map_islandora_view_object_alter(&$object, &$rendered) 
     return array();
   }
   $found_coords = islandora_simple_map_process_coordinates($object);
-  if (isset($found_coords['coordinates']) && count($found_coords['coordinates']) > 0) {
+  $found_geojson = islandora_simple_map_get_geojson($object);
+  $found_kml = islandora_simple_map_get_kml($object);
+  if ((isset($found_coords['coordinates']) && count($found_coords['coordinates']) > 0)
+    || !empty($found_geojson)
+    || !empty($found_kml)
+  ) {
     $width = (int) variable_get('islandora_simple_map_iframe_width', '600');
     $height = (int) variable_get('islandora_simple_map_iframe_height', '600');
     $collapsed = variable_get('islandora_simple_map_collapsed', 'collapsed');
@@ -136,7 +141,9 @@ function islandora_simple_map_islandora_view_object_alter(&$object, &$rendered) 
       }
       $map_div_id = drupal_html_id('islandora_simple_map_page');
       $settings['islandora_simple_map'][$map_div_id] = array(
-        'map_markers' => $found_coords,
+        'map_markers' => [$found_coords],
+        'map_geojson' => $found_geojson,
+        'map_kml' => $found_kml,
         'map_div_id' => $map_div_id,
       );
       $content = array(
