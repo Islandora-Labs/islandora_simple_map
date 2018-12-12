@@ -697,9 +697,9 @@ function islandora_simple_map_openstreet_map_providers($provider_id = NULL, $fin
  *   If any features were returned, an associative array wrapping them up in a
  *   "FeatureCollection"; otherwise, NULL.
  */
-function islandora_simple_map_gather_geojson(AbstractObject $object) {
-  $geojson = module_invoke_all('islandora_simple_map_gather_geojson', $object);
-  drupal_alter('islandora_simple_map_gather_geojson', $geojson, $object);
+function islandora_simple_map_get_geojson(AbstractObject $object) {
+  $geojson = module_invoke_all('islandora_simple_map_get_geojson', $object);
+  drupal_alter('islandora_simple_map_get_geojson', $geojson, $object);
 
   if ($geojson) {
     return array(
@@ -718,7 +718,7 @@ function islandora_simple_map_gather_geojson(AbstractObject $object) {
  * @return array
  *   An array of KML info.
  */
-function islandora_simple_map_gather_kml(AbstractObject $object) {
+function islandora_simple_map_get_kml(AbstractObject $object) {
   $_split_parse = function ($to_parse) {
     return drupal_map_assoc(array_filter(array_map('trim', explode("\r\n", $to_parse))));
   };

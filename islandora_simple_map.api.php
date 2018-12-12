@@ -53,7 +53,7 @@ function hook_islandora_simple_map_parse_coordinates_callback() {
 }
 
 /**
- * Gather GeoJSON Feature objects for rendering on a map for the given object.
+ * Get GeoJSON Feature objects for rendering on a map for the given object.
  *
  * @param AbstractObject $object
  *   The object for which to gather GeoJSON Features.
@@ -63,7 +63,7 @@ function hook_islandora_simple_map_parse_coordinates_callback() {
  *
  * @see http://geojson.org/geojson-spec.html#feature-objects
  */
-function hook_islandora_simple_map_gather_geojson(AbstractObject $object) {
+function hook_islandora_simple_map_get_geojson(AbstractObject $object) {
   $geojson = array();
 
   $geojson[] = array(
@@ -88,13 +88,13 @@ function hook_islandora_simple_map_gather_geojson(AbstractObject $object) {
  * @param AbstractObject $object
  *   The object for which GeoJSON is being gathered.
  *
- * @see hook_islandora_gmap_gather_geojson()
+ * @see hook_islandora_gmap_get_geojson()
  */
-function hook_islandora_simple_map_gather_geojson_alter(array &$geojson, AbstractObject $object) {
+function hook_islandora_simple_map_get_geojson_alter(array &$geojson, AbstractObject $object) {
 }
 
 /**
- * Gather KML documents to render on a map.
+ * Get KML documents to render on a map.
  *
  * @param AbstractObject $object
  *   The object for which the KML is to be gathered.
@@ -102,7 +102,7 @@ function hook_islandora_simple_map_gather_geojson_alter(array &$geojson, Abstrac
  * @return array
  *   An array of URLs pointing at publically-accessible KML documents.
  */
-function hook_islandora_simple_map_gather_kml(AbstractObject $object) {
+function hook_islandora_simple_map_get_kml(AbstractObject $object) {
   return array(
     'http://googlemaps.github.io/kml-samples/kml/Placemark/placemark.kml',
   );
