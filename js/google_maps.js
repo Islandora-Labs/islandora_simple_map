@@ -28,7 +28,7 @@
           }
 
           if (config.map_kml) {
-            config.map_kml.forEach(function (kid, url) {
+            config.map_kml.forEach(function (url) {
               var layer = new google.maps.KmlLayer({
                 preserveViewport: true,
                 map: map,
