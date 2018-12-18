@@ -719,30 +719,8 @@ function islandora_simple_map_get_geojson(AbstractObject $object) {
  *   An array of KML info.
  */
 function islandora_simple_map_get_kml(AbstractObject $object) {
-  $_split_parse = function ($to_parse) {
-    return drupal_map_assoc(array_filter(array_map('trim', explode("\r\n", $to_parse))));
-  };
-  $models = $_split_parse(variable_get('kml_datastream_scrape_models', ''));
-  if ($models && !array_intersect($object->models, $models)) {
-    return;
-  }
-  $mimetypes = $_split_parse(variable_get('kml_datastream_scrape_mimetypes', 'application/vnd.google-earth.kml+xml'));
-  $dsids = $_split_parse(variable_get('kml_datastream_scrape_dsids', ''));
+  $kml = module_invoke_all('islandora_simple_map_get_kml', $object);
+  drupal_alter('islandora_simple_map_get_kml', $kml, $object);
 
-  $candidates = iterator_to_array($object);
-  if ($dsids) {
-    $candidates = array_intersect_key($candidates, $dsids);
-  }
-  $map_to_mime = function (AbstractDatastream $datastream) {
-    return $datastream->mimetype;
-  };
-  $candidates = array_intersect(array_map($map_to_mime, $candidates), $mimetypes);
-
-  $kml = array();
-  foreach (array_keys($candidates) as $dsid) {
-    $kml[] = url("islandora/object/{$object->id}/datastream/$dsid/view", array(
-      'absolute' => TRUE,
-    ));
-  }
   return $kml;
 }
