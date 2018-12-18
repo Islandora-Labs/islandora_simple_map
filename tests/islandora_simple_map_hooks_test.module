@@ -114,7 +114,7 @@ function islandora_simple_map_hooks_test_islandora_simple_map_get_geojson(Abstra
 /**
  * Implements hook_islandora_simple_map_get_kml().
  */
-function hook_islandora_simple_map_get_kml(AbstractObject $object) {
+function islandora_simple_map_hooks_test_islandora_simple_map_get_kml(AbstractObject $object) {
   $kml = array();
 
   if ($object->id === 'test:simpleMapKml') {

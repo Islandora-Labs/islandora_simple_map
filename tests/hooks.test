@@ -75,10 +75,10 @@ class IslandoraSimpleMapHookTestCase extends IslandoraSimpleMapTestCase {
   public function testGetGeojsonHook() {
     module_enable(array('islandora_simple_map_hooks_test'));
     $object = $this->admin->repository->constructObject('test:simpleMapGeojson');
-    $this->admin->repository->ingestObject($object);
 
     $expected = array(
-      array(
+      'type' => 'FeatureCollection',
+      'features' => array(
         'type' => 'Feature',
         'geometry' => array(
           'type' => 'Point',
@@ -100,7 +100,6 @@ class IslandoraSimpleMapHookTestCase extends IslandoraSimpleMapTestCase {
   public function testGetKmlHook() {
     module_enable(array('islandora_simple_map_hooks_test'));
     $object = $this->admin->repository->constructObject('test:simpleMapKml');
-    $this->admin->repository->ingestObject($object);
 
     $expected = array(
       'http://googlemaps.github.io/kml-samples/kml/Placemark/placemark.kml',
