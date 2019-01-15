@@ -34,6 +34,10 @@ function islandora_simple_map_scrape_mods_admin_settings_form($form, &$form_stat
       '@api_url' => 'https://developers.google.com/places/web-service/search#TextSearchRequests',
     )),
   );
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save configuration'),
+  );
   return $form;
 }
 
