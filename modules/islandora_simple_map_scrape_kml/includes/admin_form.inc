@@ -40,8 +40,13 @@ function islandora_simple_map_scrape_kml_admin_settings_form($form, &$form_state
  */
 function islandora_simple_map_admin_settings_form_submit(array $form, array &$form_state) {
   $values = $form_state['values'];
-  variable_set('islandora_simple_map_scrape_kml_mimetypes', $values['islandora_simple_map_scrape_kml_mimetypes']);
-  variable_set('islandora_simple_map_scrape_kml_dsids', $values['islandora_simple_map_scrape_kml_dsids']);
-  variable_set('islandora_simple_map_scrape_kml_dsids', $values['islandora_simple_map_scrape_kml_models']);
+  $variables = array(
+    'islandora_simple_map_scrape_kml_mimetypes',
+    'islandora_simple_map_scrape_kml_dsids',
+    'islandora_simple_map_scrape_kml_models',
+  );
+  foreach ($variables as $variable) {
+    variable_set($variable, $values[$variable]);
+  }
   drupal_set_message(t("Configuration settings saved"));
 }
