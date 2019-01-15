@@ -10,6 +10,7 @@ const KML_DATASTREAM_SCRAPE_DEFAULT_MIMETYPE = 'application/vnd.google-earth.kml
  * Implements hook_menu().
  */
 function islandora_simple_map_scrape_kml_menu() {
+  $items = array();
   $items['admin/islandora/tools/islandora_simple_map/scrape_kml'] = array(
     'title' => 'KML scraping',
     'description' => 'Configure the KML scraping settings.',
