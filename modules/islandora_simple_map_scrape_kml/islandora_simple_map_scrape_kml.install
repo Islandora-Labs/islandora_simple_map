@@ -7,7 +7,7 @@
 /**
  * Implements hook_uninstall().
  */
-function kml_datastream_scrape_uninstall() {
+function islandora_simple_map_scrape_kml_uninstall() {
   $variables = array(
     'islandora_simple_map_scrape_kml_mimetypes',
     'islandora_simple_map_scrape_kml_dsids',
