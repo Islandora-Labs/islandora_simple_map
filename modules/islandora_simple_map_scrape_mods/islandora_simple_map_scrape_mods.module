@@ -19,7 +19,7 @@ function islandora_simple_map_scrape_mods_menu() {
     'page callback' => 'drupal_get_form',
     'access arguments' => array('administer site configuration'),
     'page arguments' => array('islandora_simple_map_scrape_mods_admin_settings_form'),
-    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'type' => MENU_LOCAL_TASK,
     'file' => 'includes/admin_form.inc',
     'weight' => 10,
   );
