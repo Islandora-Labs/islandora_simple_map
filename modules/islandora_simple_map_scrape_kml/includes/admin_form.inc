@@ -38,7 +38,7 @@ function islandora_simple_map_scrape_kml_admin_settings_form($form, &$form_state
 /**
  * Implements hook_form_submit().
  */
-function islandora_simple_map_admin_settings_form_submit(array $form, array &$form_state) {
+function islandora_simple_map_scrape_kml_admin_settings_form_submit(array $form, array &$form_state) {
   $values = $form_state['values'];
   $variables = array(
     'islandora_simple_map_scrape_kml_mimetypes',
