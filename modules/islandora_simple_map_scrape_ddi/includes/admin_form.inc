@@ -5,10 +5,6 @@
  * Administrative forms.
  */
 
-const SCRAPE_DDI_LAT_XPATHS = "//codeBook:stdyInfo/codeBook:sumDscr/codeBook:boundPoly/codeBook:polygon/codeBook:point/codeBook:gringLat";
-const SCRAPE_DDI_LON_XPATHS = "//codeBook:stdyInfo/codeBook:sumDscr/codeBook:boundPoly/codeBook:polygon/codeBook:point/codeBook:gringLon";
-const SCRAPE_DDI_KML_XPATHS = "//codeBook:stdyInfo/codeBook:sumDscr/codeBook:geogCover/*[local-name() = 'kml']";
-
 /**
  * Admin settings form builder.
  */
