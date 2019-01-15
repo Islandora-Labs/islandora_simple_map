@@ -17,7 +17,7 @@ function islandora_simple_map_scrape_ddi_admin_settings_form($form, &$form_state
   $form['islandora_simple_map_scrape_ddi_lon_xpaths'] = array(
     '#type' => 'textarea',
     '#title' => t('Longitude XPaths'),
-    '#default_value' => variable_get('islandora_simple_map_scrape_ddi_long_xpaths', SCRAPE_DDI_LON_XPATHS),
+    '#default_value' => variable_get('islandora_simple_map_scrape_ddi_lon_xpaths', SCRAPE_DDI_LON_XPATHS),
   );
   $form['islandora_simple_map_scrape_ddi_kml_xpaths'] = array(
     '#type' => 'textarea',
