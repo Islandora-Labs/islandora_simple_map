@@ -47,12 +47,12 @@ function _islandora_simple_map_scrape_ddi_kml_access_callback($datastream) {
 }
 
 /**
- * Implements hook_islandora_gmap_gather_geojson().
+ * Implements hook_islandora_simple_map_get_geojson().
  */
-function scrape_ddi_islandora_gmap_gather_geojson(AbstractObject $object) {
-  module_load_include('inc', 'scrape_ddi', 'includes/utilities');
-  $lat_xpaths = _islandora_simple_map_scrape_ddi_parse_paths(variable_get('scrape_ddi_lat_xpaths', SCRAPE_DDI_LAT_XPATHS));
-  $lon_xpaths = _islandora_simple_map_scrape_ddi_parse_paths(variable_get('scrape_ddi_lon_xpaths', SCRAPE_DDI_LON_XPATHS));
+function islandora_simple_map_scrape_ddi_islandora_simple_map_get_geojson(AbstractObject $object) {
+  module_load_include('inc', 'islandora_simple_map_scrape_ddi', 'includes/utilities');
+  $lat_xpaths = _islandora_simple_map_scrape_ddi_parse_paths(variable_get('islandora_simple_map_scrape_ddi_lat_xpaths', SCRAPE_DDI_LAT_XPATHS));
+  $lon_xpaths = _islandora_simple_map_scrape_ddi_parse_paths(variable_get('islandora_simple_map_scrape_ddi_lon_xpaths', SCRAPE_DDI_LON_XPATHS));
 
   $get_value = function (DOMNode $node) {
     return trim($node->nodeValue);
@@ -65,8 +65,8 @@ function scrape_ddi_islandora_gmap_gather_geojson(AbstractObject $object) {
   // Match two optionally-signed comma-separated floating-point numbers.
   $good_lat = preg_grep(SCRAPE_DDI_COORDS_REGEX, $lat);
   $good_lon = preg_grep(SCRAPE_DDI_COORDS_REGEX, $lon);
-  $cleanup = variable_get('scrape_ddi_attempt_cleanup', FALSE);
-  $search = variable_get('scrape_ddi_fallback_to_search', FALSE);
+  $cleanup = variable_get('islandora_simple_map_scrape_ddi_attempt_cleanup', FALSE);
+  $search = variable_get('islandora_simple_map_scrape_ddi_fallback_to_search', FALSE);
 
   $bad_lat = ($cleanup || $search) ?
     drupal_map_assoc(array_diff($lat, $good_lat)) :
@@ -95,7 +95,7 @@ function scrape_ddi_islandora_gmap_gather_geojson(AbstractObject $object) {
   }, $good_lat, $good_lon);
 
   if ($bad_lat && $bad_lon && $search) {
-    module_load_include('inc', 'scrape_ddi', 'includes/places');
+    module_load_include('inc', 'islandora_simple_map_scrape_ddi', 'includes/places');
     $bad_coords = array($bad_lat, $bad_lon);
     $searched = _islandora_simple_map_scrape_ddi_search_fallback($bad_coords);
     if ($searched) {
