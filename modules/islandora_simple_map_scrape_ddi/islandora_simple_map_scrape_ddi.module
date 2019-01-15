@@ -107,14 +107,14 @@ function islandora_simple_map_scrape_ddi_islandora_simple_map_get_geojson(Abstra
 }
 
 /**
- * Implements hook_islandora_gmap_gather_kml().
+ * Implements hook_islandora_simple_map_get_kml().
  */
-function scrape_ddi_islandora_gmap_gather_kml(AbstractObject $object) {
-  module_load_include('inc', 'scrape_ddi', 'includes/utilities');
-  $xpaths = _islandora_simple_map_scrape_ddi_parse_paths(variable_get('scrape_ddi_kml_xpaths', SCRAPE_DDI_KML_XPATHS));
+function islandora_simple_map_scrape_ddi_islandora_simple_map_get_kml(AbstractObject $object) {
+  module_load_include('inc', 'islandora_simple_map_scrape_ddi', 'includes/utilities');
+  $xpaths = _islandora_simple_map_scrape_ddi_parse_paths(variable_get('islandora_simple_map_scrape_ddi_kml_xpaths', SCRAPE_DDI_KML_XPATHS));
 
   $get_value = function (DOMNode $node, $pos) use ($object) {
-    return url("islandora/object/{$object->id}/datastream/DDI/islandora_gmap_scrape_kml/$pos/loc.kml", array(
+    return url("islandora/object/{$object->id}/datastream/DDI/islandora_simple_map_scrape_ddi_kml/$pos/loc.kml", array(
       'absolute' => TRUE,
     ));
   };
