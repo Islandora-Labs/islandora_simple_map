@@ -9,7 +9,6 @@
  */
 function islandora_simple_map_scrape_mods_uninstall() {
   $variables = array(
-    'islandora_simple_map_scrape_mods_xpaths',
     'islandora_simple_map_scrape_mods_kml_xpaths',
     'islandora_simple_map_scrape_mods_attempt_cleanup',
     'islandora_simple_map_scrape_mods_fallback_to_search',

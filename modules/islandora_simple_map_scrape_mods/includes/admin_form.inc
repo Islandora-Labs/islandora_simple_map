@@ -9,11 +9,6 @@
  * Admin settings form builder.
  */
 function islandora_simple_map_scrape_mods_admin_settings_form($form, &$form_state) {
-  $form['islandora_simple_map_scrape_mods_xpaths'] = array(
-    '#type' => 'textarea',
-    '#title' => t('Coordinate XPaths'),
-    '#default_value' => variable_get('islandora_simple_map_scrape_mods_xpaths', SCRAPE_MODS_XPATHS),
-  );
   $form['islandora_simple_map_scrape_mods_kml_xpaths'] = array(
     '#type' => 'textarea',
     '#title' => t('KML XPaths'),
@@ -47,7 +42,6 @@ function islandora_simple_map_scrape_mods_admin_settings_form($form, &$form_stat
 function islandora_simple_map_scrape_mods_admin_settings_form_submit(array $form, array &$form_state) {
   $values = $form_state['values'];
   $variables = array(
-    'islandora_simple_map_scrape_mods_xpaths',
     'islandora_simple_map_scrape_mods_kml_xpaths',
     'islandora_simple_map_scrape_mods_attempt_cleanup',
     'islandora_simple_map_scrape_mods_fallback_to_search',

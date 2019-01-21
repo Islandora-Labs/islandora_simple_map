@@ -4,7 +4,6 @@
  * General hooks.
  */
 
-const SCRAPE_MODS_XPATHS = "//mods:subject/mods:cartographics/mods:coordinates\r\n//mods:subject/mods:geographic";
 const SCRAPE_MODS_KML_XPATHS = "//mods:subject/mods:cartographics/mods:cartographicExtension/*[local-name() = 'kml']";
 const SCRAPE_MODS_COORDS_REGEX = '/^[+\-]?\d+\.\d+,\s*[+\-]?\d+\.\d+?/';
 
@@ -49,7 +48,7 @@ function _islandora_simple_map_scrape_mods_kml_access_callback($datastream) {
  */
 function islandora_simple_map_scrape_mods_islandora_simple_map_get_geojson(AbstractObject $object) {
   module_load_include('inc', 'islandora_simple_map_scrape_mods', 'includes/utilities');
-  $xpaths = _islandora_simple_map_scrape_mods_parse_paths(variable_get('islandora_simple_map_scrape_mods_xpaths', SCRAPE_MODS_XPATHS));
+  $xpaths = _islandora_simple_map_scrape_mods_parse_paths(variable_get('islandora_simple_map_xpath', ISLANDORA_SIMPLE_MAP_XPATHS));
 
   $get_value = function (DOMNode $node) {
     return trim($node->nodeValue);
