@@ -8,7 +8,7 @@
  * Menu callback; grab the given item.
  */
 function _islandora_simple_map_scrape_ddi_get_kml(AbstractDatastream $datastream, $position) {
-  module_load_include('inc', 'scrape_ddi', 'includes/utilities');
+  module_load_include('inc', 'islandora_simple_map_scrape_ddi', 'includes/utilities');
 
   $elements = _islandora_simple_map_scrape_ddi_get_kml_elements($datastream);
 
