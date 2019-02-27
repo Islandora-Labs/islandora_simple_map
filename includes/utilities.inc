@@ -23,7 +23,7 @@ function islandora_simple_map_process_coordinates(AbstractObject $object) {
       array_walk($coordinates, 'islandora_simple_map_clean_coordinates');
     }
     if (variable_get('islandora_simple_map_fallback_search', FALSE)) {
-      $search_coordinates = array_diff($orig_coordinates, $coordinates);
+      $search_coordinates = array_diff($orig_coordinates, array_filter($orig_coordinates, 'islandora_simple_map_is_valid_coordinates'));
       array_walk($search_coordinates, 'islandora_simple_map_search_google_places');
       $coordinates = array_merge($coordinates, array_filter($search_coordinates));
     }
@@ -469,13 +469,13 @@ function _islandora_simple_map_get_collection_points_solr(AbstractObject $object
       else {
         $coordinates = array($member['solr_doc'][$coord_field]);
       }
-      $coordinates = islandora_simple_map_parse_coordinates($coordinates);
       $orig_coordinates = $coordinates;
+      $coordinates = islandora_simple_map_parse_coordinates($coordinates);
       if (variable_get('islandora_simple_map_attempt_cleanup', TRUE)) {
         array_walk($coordinates, 'islandora_simple_map_clean_coordinates');
       }
       if (variable_get('islandora_simple_map_fallback_search', FALSE)) {
-        $search_coordinates = array_diff($orig_coordinates, $coordinates);
+        $search_coordinates = array_diff($orig_coordinates, array_filter($orig_coordinates, 'islandora_simple_map_is_valid_coordinates'));
         array_walk($search_coordinates, 'islandora_simple_map_search_google_places');
         $coordinates = array_merge($coordinates, array_filter($search_coordinates));
       }
