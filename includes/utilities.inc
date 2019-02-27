@@ -760,6 +760,25 @@ function islandora_simple_map_get_geojson(AbstractObject $object) {
 }
 
 /**
+ * Implements hook_islandora_simple_map_get_geojson().
+ */
+function islandora_simple_map_islandora_simple_map_get_geojson(AbstractObject $object) {
+  // Simply get processed coordinates and format as GeoJson.
+  $coordinate_data = islandora_simple_map_process_coordinates($object);
+  $geojson = array_map(function ($coord) {
+    return array(
+      'type' => 'Feature',
+      'geometry' => array(
+        'type' => 'Point',
+        'coordinates' => array_reverse(array_map('doubleval', array_map('trim', explode(',', $coord)))),
+      ),
+    );
+  }, $coordinate_data['coordinates']);
+
+  return $geojson;
+}
+
+/**
  * Helper to invoke hooks to gather KML info for a given object.
  *
  * @param AbstractObject $object
