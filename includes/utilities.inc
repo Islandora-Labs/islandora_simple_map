@@ -17,9 +17,15 @@
 function islandora_simple_map_process_coordinates(AbstractObject $object) {
   $coordinates = islandora_simple_map_get_coordinates($object);
   if (count($coordinates) > 0) {
+    $orig_coordinates = $coordinates;
     $coordinates = islandora_simple_map_parse_coordinates($coordinates);
     if (variable_get('islandora_simple_map_attempt_cleanup', TRUE)) {
       array_walk($coordinates, 'islandora_simple_map_clean_coordinates');
+    }
+    if (variable_get('islandora_simple_map_fallback_search', TRUE)) {
+      $search_coordinates = array_diff($orig_coordinates, $coordinates);
+      array_walk($search_coordinates, 'islandora_simple_map_search_google_places');
+      $coordinates = array_merge($coordinates, array_filter($search_coordinates));
     }
     if (_islandora_simple_map_multiple_coord_support()) {
       // Only filter and standardize coordinates if we are using Javascript API.
@@ -246,6 +252,44 @@ function islandora_simple_map_is_valid_coordinates($coordinates) {
 }
 
 /**
+ * Use Google Places search to find coordinates by text search.
+ *
+ * @param string $keywords
+ *   Keywords to search by.
+ *
+ * @return array|NULL
+ *   Coordinates if found, else NULL.
+ */
+function islandora_simple_map_search_google_places($keywords) {
+  if ($api_key = _islandora_simple_map_get_api_key(ISLANDORA_SIMPLE_MAP_GOOGLE_MAPS)) {
+    $response = drupal_http_request(url('https://maps.googleapis.com/maps/api/place/textsearch/json', array(
+      'query' => array(
+        'key' => $api_key,
+        'query' => $keywords,
+      ),
+      'external' => TRUE,
+    )));
+
+    if (isset($response->data)) {
+      $response_data = drupal_json_decode($response->data);
+      $map_to_coordinates = function ($result) {
+        return array(
+          $result['geometry']['location']['lat'],
+          $result['geometry']['location']['lng'],
+        );
+      };
+
+      $coordinates = array_map($map_to_coordinates, $response_data['results']);
+
+      // Return just the first result?
+      return reset($coordinates);
+    }
+  }
+
+  return NULL;
+}
+
+/**
  * Standardize coordinates to account for whitespace differences.
  *
  * @param string $coordinates
@@ -426,8 +470,14 @@ function _islandora_simple_map_get_collection_points_solr(AbstractObject $object
         $coordinates = array($member['solr_doc'][$coord_field]);
       }
       $coordinates = islandora_simple_map_parse_coordinates($coordinates);
+      $orig_coordinates = $coordinates;
       if (variable_get('islandora_simple_map_attempt_cleanup', TRUE)) {
         array_walk($coordinates, 'islandora_simple_map_clean_coordinates');
+      }
+      if (variable_get('islandora_simple_map_fallback_search', TRUE)) {
+        $search_coordinates = array_diff($orig_coordinates, $coordinates);
+        array_walk($search_coordinates, 'islandora_simple_map_search_google_places');
+        $coordinates = array_merge($coordinates, array_filter($search_coordinates));
       }
       if (variable_get('islandora_simple_map_use_gmaps_api', FALSE)) {
         // Only filter/standardize coordinates if we are using Javascript API.
