@@ -11,6 +11,7 @@
 function islandora_simple_map_uninstall() {
   $variables = array(
     'islandora_simple_map_xpath',
+    'islandora_simple_map_output',
     'islandora_simple_map_iframe_width',
     'islandora_simple_map_iframe_height',
     'islandora_simple_map_zoom',
@@ -27,6 +28,7 @@ function islandora_simple_map_uninstall() {
     'islandora_simple_map_openstreet_map_provider',
     'islandora_simple_map_api_keys',
     'islandora_simple_map_attempt_cleanup',
+    'islandora_simple_map_fallback_search',
     'islandora_simple_map_omit_compound_display',
   );
   array_walk($variables, 'variable_del');
