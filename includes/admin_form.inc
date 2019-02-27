@@ -221,6 +221,15 @@ function islandora_simple_map_admin_settings_form($form, &$form_state) {
     '#default_value' => variable_get('islandora_simple_map_xpath', ISLANDORA_SIMPLE_MAP_XPATHS),
     '#description' => t("Enter one XPath expression per line, in preferred order with the most preferred first. The first data found in the object's MODS datastream by this list of XPath expressions will be used to populate the map."),
   );
+  $form['islandora_simple_map_output'] = array(
+    '#title' => t('Output to use to pass co-ordinates to maps'),
+    '#type' => 'select',
+    '#default_value' => variable_get('islandora_simple_map_output', ISLANDORA_SIMPLE_MAP_OUTPUT_COORDS),
+    '#options' => array(
+      ISLANDORA_SIMPLE_MAP_OUTPUT_COORDS => t('Co-ordinates (default)'),
+      ISLANDORA_SIMPLE_MAP_OUTPUT_GEOJSON => t('GeoJson'),
+    ),
+  );
   $form['islandora_simple_map_collapsed'] = array(
     '#type' => 'select',
     '#title' => t('Collapse map by default?'),
@@ -258,6 +267,20 @@ function islandora_simple_map_admin_settings_form($form, &$form_state) {
     '#return_value' => TRUE,
     '#default_value' => variable_get('islandora_simple_map_attempt_cleanup', TRUE),
     '#description' => t('Check this option if you want to clean up data before passing it off to Google Maps. Please consult the README file for more information'),
+  );
+  $form['islandora_simple_map_fallback_search'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Fallback to Google Places search'),
+    '#return_value' => TRUE,
+    '#default_value' => variable_get('islandora_simple_map_fallback_search', FALSE),
+    '#description' => t('To support more human-readable values, such as "Charlottetown, PE, Canada", fallback to passing non-coordinate data as a text search to <a href="@api_url">Google Places API</a>. Notice the reference in the API documentation regarding higher (10-times) API quota usage.', array(
+      '@api_url' => 'https://developers.google.com/places/web-service/search#TextSearchRequests',
+    )),
+    '#states' => array(
+      'visible' => array(
+        ':input[name="islandora_simple_map_use_gmaps_api"]' => array('checked' => TRUE),
+      ),
+    ),
   );
   $form['islandora_simple_map_omit_compound_display'] = array(
     '#type' => 'checkbox',
@@ -329,6 +352,7 @@ function islandora_simple_map_admin_settings_form_submit(array $form, array &$fo
     variable_set('islandora_simple_map_use_gmaps_api', $values['islandora_simple_map_use_gmaps_api']);
     _islandora_simple_map_set_api_key(ISLANDORA_SIMPLE_MAP_GOOGLE_MAPS, $values['islandora_simple_map_google_maps_api_key']);
     variable_set('islandora_simple_map_disable_scroll', $values['islandora_simple_map_disable_scroll']);
+    variable_set('islandora_simple_map_fallback_search', $values['islandora_simple_map_fallback_search']);
   }
   else {
     // Doing OSM.
@@ -347,6 +371,7 @@ function islandora_simple_map_admin_settings_form_submit(array $form, array &$fo
   // Assorted options.
   variable_set('islandora_simple_map_coordinate_delimiter', $values['islandora_simple_map_coordinate_delimiter']);
   variable_set('islandora_simple_map_xpath', $values['islandora_simple_map_xpath']);
+  variable_set('islandora_simple_map_output', $values['islandora_simple_map_output']);
   variable_set('islandora_simple_map_collapsed', $values['islandora_simple_map_collapsed']);
   variable_set('islandora_simple_map_iframe_width', $values['islandora_simple_map_iframe_width']);
   variable_set('islandora_simple_map_iframe_height', $values['islandora_simple_map_iframe_height']);

@@ -12,6 +12,8 @@ define('ISLANDORA_SIMPLE_MAP_CACHE_PREFIX', 'islandora_simple_map_collection_map
 define('ISLANDORA_SIMPLE_MAP_CACHE_BIN', 'cache');
 define('ISLANDORA_SIMPLE_MAP_GOOGLE_MAPS', 'google_maps');
 define('ISLANDORA_SIMPLE_MAP_OPENSTREET_MAPS', 'openstreet_maps');
+define('ISLANDORA_SIMPLE_MAP_OUTPUT_COORDS', 'coordinates');
+define('ISLANDORA_SIMPLE_MAP_OUTPUT_GEOJSON', 'geojson');
 
 // Includes blocks.
 require_once dirname(__FILE__) . '/includes/blocks.inc';
