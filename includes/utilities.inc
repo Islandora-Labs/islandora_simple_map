@@ -273,16 +273,14 @@ function islandora_simple_map_search_google_places($keywords) {
     if (isset($response->data)) {
       $response_data = drupal_json_decode($response->data);
       $map_to_coordinates = function ($result) {
-        return array(
-          $result['geometry']['location']['lat'],
-          $result['geometry']['location']['lng'],
-        );
+        return isset($result['geometry'], $result['geometry']['location'])
+          ? implode(',', $result['geometry']['location'])
+          : NULL;
       };
 
       $coordinates = array_map($map_to_coordinates, $response_data['results']);
 
-      // Return just the first result?
-      return reset($coordinates);
+      return $coordinates;
     }
   }
 
