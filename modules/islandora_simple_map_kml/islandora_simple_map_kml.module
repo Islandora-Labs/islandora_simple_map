@@ -86,11 +86,16 @@ function islandora_simple_map_kml_islandora_simple_map_kml_get_kml(AbstractObjec
   };
   $candidates = array_intersect(array_map($map_to_mime, $candidates), $mimetypes);
 
-  $to_return = array();
+  $kml = array();
   foreach (array_keys($candidates) as $dsid) {
-    $to_return[] = url("islandora/object/{$object->id}/datastream/$dsid/view", array(
+    $kml[] = url("islandora/object/{$object->id}/datastream/$dsid/view", array(
       'absolute' => TRUE,
     ));
   }
-  return $to_return;
+
+  // Get KML from MODS data.
+  module_load_include('inc', 'islandora_simple_map_kml', 'includes/utilities');
+  $kml = array_merge($kml, _islandora_simple_map_kml_mods_get_kml($object));
+
+  return $kml;
 }
