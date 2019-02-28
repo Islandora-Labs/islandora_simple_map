@@ -14,7 +14,7 @@
  * @return array
  *   An array of URLs pointing at publically-accessible KML documents.
  */
-function hook_islandora_simple_map_get_kml(AbstractObject $object) {
+function hook_islandora_simple_map_kml_get_kml(AbstractObject $object) {
   return array(
     'http://googlemaps.github.io/kml-samples/kml/Placemark/placemark.kml',
   );
@@ -30,5 +30,5 @@ function hook_islandora_simple_map_get_kml(AbstractObject $object) {
  *
  * @see hook_islandora_gmap_get_kml()
  */
-function hook_islandora_simple_map_get_kml_alter(array &$kml, AbstractObject $object) {
+function hook_islandora_simple_map_kml_get_kml_alter(array &$kml, AbstractObject $object) {
 }
