@@ -4,16 +4,16 @@
  * General hooks.
  */
 
-const KML_DATASTREAM_SCRAPE_DEFAULT_MIMETYPE = 'application/vnd.google-earth.kml+xml';
+const ISLANDORA_SIMPLE_MAP_KML_DATASTREAM_DEFAULT_MIMETYPE = 'application/vnd.google-earth.kml+xml';
 
 /**
  * Implements hook_menu().
  */
 function islandora_simple_map_kml_menu() {
   $items = array();
-  $items['admin/islandora/tools/islandora_simple_map/scrape_kml'] = array(
-    'title' => 'KML scraping',
-    'description' => 'Configure the KML scraping settings.',
+  $items['admin/islandora/tools/islandora_simple_map/kml'] = array(
+    'title' => 'KML',
+    'description' => 'Configure the KML settings.',
     'page callback' => 'drupal_get_form',
     'access arguments' => array('administer site configuration'),
     'page arguments' => array('islandora_simple_map_kml_admin_settings_form'),
@@ -36,7 +36,7 @@ function islandora_simple_map_kml_islandora_simple_map_get_kml(AbstractObject $o
   if ($models && !array_intersect($object->models, $models)) {
     return;
   }
-  $mimetypes = $_split_parse(variable_get('islandora_simple_map_kml_mimetypes', KML_DATASTREAM_SCRAPE_DEFAULT_MIMETYPE));
+  $mimetypes = $_split_parse(variable_get('islandora_simple_map_kml_mimetypes', ISLANDORA_SIMPLE_MAP_KML_DATASTREAM_DEFAULT_MIMETYPE));
   $dsids = $_split_parse(variable_get('islandora_simple_map_kml_dsids', ''));
 
   $candidates = iterator_to_array($object);
