@@ -23,7 +23,24 @@ function islandora_simple_map_kml_menu() {
     'weight' => 10,
   );
 
+  $items['islandora/object/%islandora_object/datastream/%islandora_datastream/islandora_simple_map_scrape_mods_kml'] = array(
+    'title' => 'Scrape MODS KML',
+    'page callback' => '_islandora_simple_map_kml_mods',
+    'page arguments' => array(2, 4),
+    'access callback' => '_islandora_simple_map_kml_mods_access_callback',
+    'access arguments' => array(2),
+    'type' => MENU_CALLBACK,
+    'file' => 'includes/utilities.inc',
+  );
+
   return $items;
+}
+
+/**
+ * Access callback for the KML MODS callback.
+ */
+function _islandora_simple_map_kml_mods_access_callback($datastream) {
+  return $datastream->id == 'MODS' && islandora_datastream_access(ISLANDORA_VIEW_OBJECTS, $datastream);
 }
 
 /**

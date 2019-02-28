@@ -1,16 +1,16 @@
 <?php
+
 /**
  * @file
- * Menu callback.
+ * General use functions.
  */
 
 /**
- * Menu callback; grab the given item.
+ * Menu callback to deliver KML from MODS data.
  */
-function _islandora_simple_map_scrape_mods_scrape_kml(AbstractDatastream $datastream, $position) {
-  module_load_include('inc', 'islandora_simple_map_scrape_mods', 'includes/utilities');
-
-  $elements = _islandora_simple_map_scrape_mods_get_kml_elements($datastream);
+function _islandora_simple_map_kml_mods(AbstractDatastream $datastream, $position) {
+  $xpaths = preg_split('/$\R?^/m', trim(variable_get('islandora_simple_map_kml_mods_xpaths', ISLANDORA_SIMPLE_MAP_KML_MODS_XPATHS)));
+  $elements = islandora_simple_map_get_mods_results($datastream->parent, $xpaths);
 
   if (!isset($elements[$position])) {
     drupal_not_found();
@@ -27,3 +27,4 @@ function _islandora_simple_map_scrape_mods_scrape_kml(AbstractDatastream $datast
   print $doc->saveXML();
   drupal_exit();
 }
+
