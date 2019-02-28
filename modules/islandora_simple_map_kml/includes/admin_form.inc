@@ -8,25 +8,25 @@
 /**
  * Admin settings form builder.
  */
-function islandora_simple_map_scrape_kml_admin_settings_form($form, &$form_state) {
-  $form['islandora_simple_map_scrape_kml_mimetypes'] = array(
+function islandora_simple_map_kml_admin_settings_form($form, &$form_state) {
+  $form['islandora_simple_map_kml_mimetypes'] = array(
     '#type' => 'textarea',
     '#title' => t('Allowable KML Datastream MIME-types'),
     '#description' => t('MIME-types, one per line.'),
-    '#default_value' => variable_get('islandora_simple_map_scrape_kml_mimetypes', 'application/vnd.google-earth.kml+xml'),
+    '#default_value' => variable_get('islandora_simple_map_kml_mimetypes', 'application/vnd.google-earth.kml+xml'),
     '#required' => TRUE,
   );
-  $form['islandora_simple_map_scrape_kml_dsids'] = array(
+  $form['islandora_simple_map_kml_dsids'] = array(
     '#type' => 'textarea',
     '#title' => t('Allowable KML Datastream IDs'),
     '#description' => t('The IDs to which to limit the MIME-type match, one per line. If left blank, matches will be attempted on <em>all</em> datastreams.'),
-    '#default_value' => variable_get('islandora_simple_map_scrape_kml_dsids', ''),
+    '#default_value' => variable_get('islandora_simple_map_kml_dsids', ''),
   );
-  $form['islandora_simple_map_scrape_kml_models'] = array(
+  $form['islandora_simple_map_kml_models'] = array(
     '#type' => 'textarea',
     '#title' => t('Allowable Object models for displaying KML'),
     '#description' => t('Only objects with the given models (one per line) will be matched. Should be the bare name of model PIDs, for example: "islandora:collectionCModel". If left blank, matches will be attempted on <em>all</em> datastreams.'),
-    '#default_value' => variable_get('islandora_simple_map_scrape_kml_models', ''),
+    '#default_value' => variable_get('islandora_simple_map_kml_models', ''),
   );
   $form['submit'] = array(
     '#type' => 'submit',
@@ -38,12 +38,12 @@ function islandora_simple_map_scrape_kml_admin_settings_form($form, &$form_state
 /**
  * Implements hook_form_submit().
  */
-function islandora_simple_map_scrape_kml_admin_settings_form_submit(array $form, array &$form_state) {
+function islandora_simple_map_kml_admin_settings_form_submit(array $form, array &$form_state) {
   $values = $form_state['values'];
   $variables = array(
-    'islandora_simple_map_scrape_kml_mimetypes',
-    'islandora_simple_map_scrape_kml_dsids',
-    'islandora_simple_map_scrape_kml_models',
+    'islandora_simple_map_kml_mimetypes',
+    'islandora_simple_map_kml_dsids',
+    'islandora_simple_map_kml_models',
   );
   foreach ($variables as $variable) {
     variable_set($variable, $values[$variable]);

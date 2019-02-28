@@ -9,14 +9,14 @@ const KML_DATASTREAM_SCRAPE_DEFAULT_MIMETYPE = 'application/vnd.google-earth.kml
 /**
  * Implements hook_menu().
  */
-function islandora_simple_map_scrape_kml_menu() {
+function islandora_simple_map_kml_menu() {
   $items = array();
   $items['admin/islandora/tools/islandora_simple_map/scrape_kml'] = array(
     'title' => 'KML scraping',
     'description' => 'Configure the KML scraping settings.',
     'page callback' => 'drupal_get_form',
     'access arguments' => array('administer site configuration'),
-    'page arguments' => array('islandora_simple_map_scrape_kml_admin_settings_form'),
+    'page arguments' => array('islandora_simple_map_kml_admin_settings_form'),
     'type' => MENU_LOCAL_TASK,
     'file' => 'includes/admin_form.inc',
     'weight' => 10,
@@ -28,16 +28,16 @@ function islandora_simple_map_scrape_kml_menu() {
 /**
  * Implements hook_islandora_simple_map_get_kml().
  */
-function islandora_simple_map_scrape_kml_islandora_simple_map_get_kml(AbstractObject $object) {
+function islandora_simple_map_kml_islandora_simple_map_get_kml(AbstractObject $object) {
   $_split_parse = function ($to_parse) {
     return drupal_map_assoc(array_filter(array_map('trim', explode("\r\n", $to_parse))));
   };
-  $models = $_split_parse(variable_get('islandora_simple_map_scrape_kml_models', ''));
+  $models = $_split_parse(variable_get('islandora_simple_map_kml_models', ''));
   if ($models && !array_intersect($object->models, $models)) {
     return;
   }
-  $mimetypes = $_split_parse(variable_get('islandora_simple_map_scrape_kml_mimetypes', KML_DATASTREAM_SCRAPE_DEFAULT_MIMETYPE));
-  $dsids = $_split_parse(variable_get('islandora_simple_map_scrape_kml_dsids', ''));
+  $mimetypes = $_split_parse(variable_get('islandora_simple_map_kml_mimetypes', KML_DATASTREAM_SCRAPE_DEFAULT_MIMETYPE));
+  $dsids = $_split_parse(variable_get('islandora_simple_map_kml_dsids', ''));
 
   $candidates = iterator_to_array($object);
   if ($dsids) {
