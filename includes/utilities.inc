@@ -24,7 +24,7 @@ function islandora_simple_map_process_coordinates(AbstractObject $object) {
     }
     if (variable_get('islandora_simple_map_fallback_search', FALSE)) {
       $search_coordinates = array_diff($orig_coordinates, array_filter($orig_coordinates, 'islandora_simple_map_is_valid_coordinates'));
-      array_walk($search_coordinates, 'islandora_simple_map_search_google_places');
+      $search_coordinates = array_map('islandora_simple_map_search_google_places', $search_coordinates);
       $coordinates = array_merge($coordinates, array_filter($search_coordinates));
     }
     if (_islandora_simple_map_multiple_coord_support()) {
@@ -280,7 +280,7 @@ function islandora_simple_map_search_google_places($keywords) {
 
       $coordinates = array_map($map_to_coordinates, $response_data['results']);
 
-      return $coordinates;
+      return reset($coordinates);
     }
   }
 
