@@ -95,7 +95,7 @@ class IslandoraSimpleMapHookTestCase extends IslandoraSimpleMapTestCase {
   }
 
   /**
-   * Test hook_islandora_simple_map_get_kml().
+   * Test hook_islandora_simple_map_kml_get_kml().
    */
   public function testGetKmlHook() {
     module_enable(array('islandora_simple_map_hooks_test'));
@@ -105,7 +105,7 @@ class IslandoraSimpleMapHookTestCase extends IslandoraSimpleMapTestCase {
       'http://googlemaps.github.io/kml-samples/kml/Placemark/placemark.kml',
     );
 
-    $kml = islandora_simple_map_get_kml($object);
+    $kml = islandora_simple_map_kml_get_kml($object);
     $this->assertEqual($expected, $kml, "Hook get kml did not return expected results.");
   }
 
