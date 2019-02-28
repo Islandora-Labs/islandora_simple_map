@@ -32,7 +32,7 @@ function islandora_simple_map_process_coordinates(AbstractObject $object) {
       $coordinates = array_filter($coordinates, 'islandora_simple_map_is_valid_coordinates');
       array_walk($coordinates, 'islandora_simple_map_standardize_format');
     }
-    $coordinates = array_unique($coordinates);
+    $coordinates = array_values(array_unique($coordinates));
   }
   return array('pid' => $object->id, 'coordinates' => $coordinates);
 }
@@ -485,7 +485,7 @@ function _islandora_simple_map_get_collection_points_solr(AbstractObject $object
 
       $points[] = array(
         'pid' => $member['PID'],
-        'coordinates' => $coordinates,
+        'coordinates' => array_values($coordinates),
       );
     }
   }
