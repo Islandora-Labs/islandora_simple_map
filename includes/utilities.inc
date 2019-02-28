@@ -782,23 +782,3 @@ function islandora_simple_map_islandora_simple_map_get_geojson(AbstractObject $o
   }
   return $geojson;
 }
-
-/**
- * Helper to invoke hooks to gather KML info for a given object.
- *
- * @param AbstractObject $object
- *   The object for which to gather KML.
- *
- * @return array
- *   An array of KML info.
- */
-function islandora_simple_map_get_kml(AbstractObject $object) {
-  $kml = array();
-
-  // Since KML is Google Maps-specific, check the map type being used.
-  if (variable_get('islandora_simple_map_map_type', ISLANDORA_SIMPLE_MAP_GOOGLE_MAPS) === ISLANDORA_SIMPLE_MAP_GOOGLE_MAPS) {
-    $kml = module_invoke_all('islandora_simple_map_get_kml', $object);
-    drupal_alter('islandora_simple_map_get_kml', $kml, $object);
-  }
-  return $kml;
-}
