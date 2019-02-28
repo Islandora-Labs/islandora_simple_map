@@ -12,6 +12,7 @@ function islandora_simple_map_kml_uninstall() {
     'islandora_simple_map_kml_mimetypes',
     'islandora_simple_map_kml_dsids',
     'islandora_simple_map_kml_models',
+    'islandora_simple_map_kml_mods_xpaths',
   );
   array_map('variable_del', $variables);
 }

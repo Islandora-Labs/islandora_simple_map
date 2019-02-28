@@ -5,6 +5,7 @@
  */
 
 const ISLANDORA_SIMPLE_MAP_KML_DATASTREAM_DEFAULT_MIMETYPE = 'application/vnd.google-earth.kml+xml';
+const ISLANDORA_SIMPLE_MAP_KML_MODS_XPATHS = "//mods:subject/mods:cartographics/mods:cartographicExtension/*[local-name() = 'kml']";
 
 /**
  * Implements hook_menu().

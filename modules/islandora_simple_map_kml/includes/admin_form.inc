@@ -28,6 +28,12 @@ function islandora_simple_map_kml_admin_settings_form($form, &$form_state) {
     '#description' => t('Only objects with the given models (one per line) will be matched. Should be the bare name of model PIDs, for example: "islandora:collectionCModel". If left blank, matches will be attempted on <em>all</em> datastreams.'),
     '#default_value' => variable_get('islandora_simple_map_kml_models', ''),
   );
+  $form['islandora_simple_map_kml_mods_xpaths'] = array(
+    '#title' => t('XPath expressions to MODS elements containing KML'),
+    '#type' => 'textarea',
+    '#default_value' => variable_get('islandora_simple_map_kml_mods_xpaths', ISLANDORA_SIMPLE_MAP_KML_MODS_XPATHS),
+    '#description' => t("Enter one XPath expression per line, in preferred order with the most preferred first. The first data found in the object's MODS datastream by this list of XPath expressions will be used to populate the map."),
+  );
   $form['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Save configuration'),
