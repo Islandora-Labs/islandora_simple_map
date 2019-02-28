@@ -205,11 +205,12 @@ function _islandora_simple_map_get_coordinates_solr(AbstractObject $object) {
  * @return array
  *   The unaltered node values.
  */
-function islandora_simple_map_get_mods_results(AbstractObject $object) {
+function islandora_simple_map_get_mods_results(AbstractObject $object, $xpaths = NULL) {
   $results = array();
   if (isset($object['MODS'])) {
+    $xpaths = $xpaths ?: variable_get('islandora_simple_map_xpath', ISLANDORA_SIMPLE_MAP_XPATHS);
     $mods = $object['MODS']->content;
-    $xpaths = preg_split('/$\R?^/m', trim(variable_get('islandora_simple_map_xpath', ISLANDORA_SIMPLE_MAP_XPATHS)));
+    $xpaths = preg_split('/$\R?^/m', trim($xpaths));
     $mods_doc = new DOMDocument();
     if ($mods_doc->loadXML($mods)) {
       $mods_xpath = new DOMXPath($mods_doc);
