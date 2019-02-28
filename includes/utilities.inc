@@ -793,8 +793,12 @@ function islandora_simple_map_islandora_simple_map_get_geojson(AbstractObject $o
  *   An array of KML info.
  */
 function islandora_simple_map_get_kml(AbstractObject $object) {
-  $kml = module_invoke_all('islandora_simple_map_get_kml', $object);
-  drupal_alter('islandora_simple_map_get_kml', $kml, $object);
+  $kml = array();
 
+  // Since KML is Google Maps-specific, check the map type being used.
+  if (variable_get('islandora_simple_map_map_type', ISLANDORA_SIMPLE_MAP_GOOGLE_MAPS) === ISLANDORA_SIMPLE_MAP_GOOGLE_MAPS) {
+    $kml = module_invoke_all('islandora_simple_map_get_kml', $object);
+    drupal_alter('islandora_simple_map_get_kml', $kml, $object);
+  }
   return $kml;
 }
