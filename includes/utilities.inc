@@ -10,29 +10,34 @@
  *
  * @param \AbstractObject $object
  *   The object being viewed.
+ * @param bool $force
+ *   Force getting coordinates regardless of admin variable islandora_simple_map_output.
  *
  * @return array
  *   An array of unique coordinates.
  */
-function islandora_simple_map_process_coordinates(AbstractObject $object) {
-  $coordinates = islandora_simple_map_get_coordinates($object);
-  if (count($coordinates) > 0) {
-    $orig_coordinates = $coordinates;
-    $coordinates = islandora_simple_map_parse_coordinates($coordinates);
-    if (variable_get('islandora_simple_map_attempt_cleanup', TRUE)) {
-      array_walk($coordinates, 'islandora_simple_map_clean_coordinates');
+function islandora_simple_map_process_coordinates(AbstractObject $object, $force = FALSE) {
+  $coordinates = array();
+  if ($force || variable_get('islandora_simple_map_output', ISLANDORA_SIMPLE_MAP_OUTPUT_COORDS) === ISLANDORA_SIMPLE_MAP_OUTPUT_COORDS) {
+    $coordinates = islandora_simple_map_get_coordinates($object);
+    if (count($coordinates) > 0) {
+      $orig_coordinates = $coordinates;
+      $coordinates = islandora_simple_map_parse_coordinates($coordinates);
+      if (variable_get('islandora_simple_map_attempt_cleanup', TRUE)) {
+        array_walk($coordinates, 'islandora_simple_map_clean_coordinates');
+      }
+      if (variable_get('islandora_simple_map_fallback_search', FALSE)) {
+        $search_coordinates = array_diff($orig_coordinates, array_filter($orig_coordinates, 'islandora_simple_map_is_valid_coordinates'));
+        $search_coordinates = array_map('islandora_simple_map_search_google_places', $search_coordinates);
+        $coordinates = array_merge($coordinates, array_filter($search_coordinates));
+      }
+      if (_islandora_simple_map_multiple_coord_support()) {
+        // Only filter and standardize coordinates if we are using Javascript API.
+        $coordinates = array_filter($coordinates, 'islandora_simple_map_is_valid_coordinates');
+        array_walk($coordinates, 'islandora_simple_map_standardize_format');
+      }
+      $coordinates = array_values(array_unique($coordinates));
     }
-    if (variable_get('islandora_simple_map_fallback_search', FALSE)) {
-      $search_coordinates = array_diff($orig_coordinates, array_filter($orig_coordinates, 'islandora_simple_map_is_valid_coordinates'));
-      $search_coordinates = array_map('islandora_simple_map_search_google_places', $search_coordinates);
-      $coordinates = array_merge($coordinates, array_filter($search_coordinates));
-    }
-    if (_islandora_simple_map_multiple_coord_support()) {
-      // Only filter and standardize coordinates if we are using Javascript API.
-      $coordinates = array_filter($coordinates, 'islandora_simple_map_is_valid_coordinates');
-      array_walk($coordinates, 'islandora_simple_map_standardize_format');
-    }
-    $coordinates = array_values(array_unique($coordinates));
   }
   return array('pid' => $object->id, 'coordinates' => $coordinates);
 }
@@ -761,18 +766,20 @@ function islandora_simple_map_get_geojson(AbstractObject $object) {
  * Implements hook_islandora_simple_map_get_geojson().
  */
 function islandora_simple_map_islandora_simple_map_get_geojson(AbstractObject $object) {
-  // Simply get processed coordinates and format as GeoJson.
-  $coordinate_data = islandora_simple_map_process_coordinates($object);
-  $geojson = array_map(function ($coord) {
-    return array(
-      'type' => 'Feature',
-      'geometry' => array(
-        'type' => 'Point',
-        'coordinates' => array_reverse(array_map('doubleval', array_map('trim', explode(',', $coord)))),
-      ),
-    );
-  }, $coordinate_data['coordinates']);
-
+  $geojson = array();
+  if (variable_get('islandora_simple_map_output', ISLANDORA_SIMPLE_MAP_OUTPUT_COORDS) === ISLANDORA_SIMPLE_MAP_OUTPUT_GEOJSON) {
+    // Simply get processed coordinates and format as GeoJson.
+    $coordinate_data = islandora_simple_map_process_coordinates($object, TRUE);
+    $geojson = array_map(function ($coord) {
+      return array(
+        'type' => 'Feature',
+        'geometry' => array(
+          'type' => 'Point',
+          'coordinates' => array_reverse(array_map('doubleval', array_map('trim', explode(',', $coord)))),
+        ),
+      );
+    }, $coordinate_data['coordinates']);
+  }
   return $geojson;
 }
 
