@@ -1,8 +1,0 @@
-<?php
-/**
- * @file
- * General hooks.
- */
-
-const SCRAPE_MODS_KML_XPATHS = "//mods:subject/mods:cartographics/mods:cartographicExtension/*[local-name() = 'kml']";
-const SCRAPE_MODS_COORDS_REGEX = '/^[+\-]?\d+\.\d+,\s*[+\-]?\d+\.\d+?/';
