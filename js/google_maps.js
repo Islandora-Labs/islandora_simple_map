@@ -24,6 +24,12 @@
           map.initialZoom = true;
 
           if (config.map_geojson) {
+            // Add a listener to extend bounds whenever a geojson feature is added.
+            map.data.addListener('addfeature', function(e) {
+              Drupal.islandora_simple_map.processPoint(e.feature.getGeometry(), bounds);
+            });
+
+            // Add the geojson.
             map.data.addGeoJson(config.map_geojson);
           }
 
@@ -97,6 +103,17 @@
       });
       marker.pid = pid;
       Drupal.islandora_simple_map.markers.push(marker);
+    },
+    processPoint: function(geometry, bounds) {
+      if (geometry instanceof google.maps.LatLng) {
+        bounds.extend(geometry);
+      } else if (geometry instanceof google.maps.Data.Point) {
+        bounds.extend(geometry.get());
+      } else {
+        geometry.getArray().forEach(function(g) {
+          Drupal.islandora_simple_map.processPoint(g, bounds);
+        });
+      }
     },
     redraw: function(map, bounds) {
       google.maps.event.trigger(map, 'resize');
