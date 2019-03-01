@@ -34,6 +34,12 @@ function islandora_simple_map_kml_admin_settings_form($form, &$form_state) {
     '#default_value' => variable_get('islandora_simple_map_kml_mods_xpaths', ISLANDORA_SIMPLE_MAP_KML_MODS_XPATHS),
     '#description' => t("Enter one XPath expression per line, in preferred order with the most preferred first. The first data found in the object's MODS datastream by this list of XPath expressions will be used to populate the map."),
   );
+  $form['islandora_simple_map_kml_ddi_xpaths'] = array(
+    '#type' => 'textarea',
+    '#title' => t('XPath expressions to DDI elements containing KML'),
+    '#default_value' => variable_get('islandora_simple_map_kml_ddi_xpaths', ISLANDORA_SIMPLE_MAP_KML_DDI_XPATHS),
+    '#description' => t("Enter one XPath expression per line, in preferred order with the most preferred first. The first data found in the object's DDI datastream by this list of XPath expressions will be used to populate the map."),
+  );
   $form['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Save configuration'),
@@ -50,6 +56,8 @@ function islandora_simple_map_kml_admin_settings_form_submit(array $form, array 
     'islandora_simple_map_kml_mimetypes',
     'islandora_simple_map_kml_dsids',
     'islandora_simple_map_kml_models',
+    'islandora_simple_map_kml_mods_xpaths',
+    'islandora_simple_map_kml_ddi_xpaths',
   );
   foreach ($variables as $variable) {
     variable_set($variable, $values[$variable]);

@@ -51,6 +51,6 @@ function _islandora_simple_map_ddi_scrape(AbstractObject $object, array $xpaths)
  *   An array of DOMNode instances, scraped from the datastream.
  */
 function _islandora_simple_map_ddi_get_kml_elements(AbstractDatastream $datastream) {
-  $xpaths = _islandora_simple_map_ddi_parse_paths(variable_get('islandora_simple_map_ddi_kml_xpaths', ISLANDORA_SIMPLE_MAP_DDI_KML_XPATHS));
+  $xpaths = _islandora_simple_map_ddi_parse_paths(variable_get('islandora_simple_map_kml_ddi_xpaths', ISLANDORA_SIMPLE_MAP_KML_DDI_XPATHS));
   return _islandora_simple_map_ddi_scrape($datastream->parent, $xpaths);
 }

@@ -19,12 +19,6 @@ function islandora_simple_map_ddi_admin_settings_form($form, &$form_state) {
     '#title' => t('DDI longitude XPaths'),
     '#default_value' => variable_get('islandora_simple_map_ddi_lon_xpaths', ISLANDORA_SIMPLE_MAP_DDI_LON_XPATHS),
   );
-  $form['islandora_simple_map_ddi_kml_xpaths'] = array(
-    '#type' => 'textarea',
-    '#title' => t('DDI KML XPaths'),
-    '#default_value' => variable_get('islandora_simple_map_ddi_kml_xpaths', ISLANDORA_SIMPLE_MAP_DDI_KML_XPATHS),
-    '#description' => t('XPaths matching the root &lt;kml/&gt; element of embedded KML documents.'),
-  );
   $form['islandora_simple_map_ddi_attempt_cleanup'] = array(
     '#type' => 'checkbox',
     '#title' => t('Attempt cleanup?'),
@@ -54,7 +48,6 @@ function islandora_simple_map_ddi_admin_settings_form_submit(array $form, array 
   $variables = array(
     'islandora_simple_map_ddi_lat_xpaths',
     'islandora_simple_map_ddi_lon_xpaths',
-    'islandora_simple_map_ddi_kml_xpaths',
     'islandora_simple_map_ddi_attempt_cleanup',
     'islandora_simple_map_ddi_fallback_to_search',
   );
