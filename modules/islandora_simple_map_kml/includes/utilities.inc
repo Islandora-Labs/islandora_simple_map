@@ -15,6 +15,15 @@ function _islandora_simple_map_kml_mods(AbstractDatastream $datastream, $positio
 }
 
 /**
+ * Menu callback to deliver KML from DDI data.
+ */
+function _islandora_simple_map_kml_ddi(AbstractDatastream $datastream, $position) {
+  $xpaths = variable_get('islandora_simple_map_kml_ddi_xpaths', ISLANDORA_SIMPLE_MAP_KML_DDI_XPATHS);
+  $elements = islandora_simple_map_get_datastream_results($datastream->parent, 'DDI', $xpaths);
+  _islandora_simple_map_deliver_kml($elements, $position);
+}
+
+/**
  * Helper to deliver KML data from elements.
  */
 function _islandora_simple_map_deliver_kml($elements, $position) {

@@ -34,6 +34,16 @@ function islandora_simple_map_kml_menu() {
     'file' => 'includes/utilities.inc',
   );
 
+  $items['islandora/object/%islandora_object/datastream/%islandora_datastream/islandora_simple_map_kml_ddi'] = array(
+    'title' => 'Scrape DDI KML',
+    'page callback' => '_islandora_simple_map_kml_ddi',
+    'page arguments' => array(2, 4),
+    'access callback' => '_islandora_simple_map_kml_ddi_access_callback',
+    'access arguments' => array(2),
+    'type' => MENU_CALLBACK,
+    'file' => 'includes/utilities.inc',
+  );
+
   return $items;
 }
 
@@ -42,6 +52,13 @@ function islandora_simple_map_kml_menu() {
  */
 function _islandora_simple_map_kml_mods_access_callback($datastream) {
   return $datastream->id == 'MODS' && islandora_datastream_access(ISLANDORA_VIEW_OBJECTS, $datastream);
+}
+
+/**
+ * Access callback for the KML scrape callback.
+ */
+function _islandora_simple_map_kml_ddi_access_callback($datastream) {
+  return $datastream->id == 'DDI' && islandora_datastream_access(ISLANDORA_VIEW_OBJECTS, $datastream);
 }
 
 /**
