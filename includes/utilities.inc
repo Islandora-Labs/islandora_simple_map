@@ -124,6 +124,7 @@ function islandora_simple_map_islandora_simple_map_get_coordinates(AbstractObjec
   }
   else {
     $found_coords = _islandora_simple_map_get_coordinates_parse_mods($object);
+    $found_coords = array_merge($found_coords, _islandora_simple_map_get_coordinates_parse_ddi($object));
   }
   return $found_coords;
 }
@@ -152,6 +153,33 @@ function _islandora_simple_map_get_coordinates_parse_mods(AbstractObject $object
     }
   }
   return $found_coords;
+}
+
+/**
+ * Parse a DDI record looking for coordinates.
+ *
+ * @param AbstractObject $object
+ *   Object to find coordinates for.
+ *
+ * @return array
+ *   Array of raw coordinates.
+ */
+function _islandora_simple_map_get_coordinates_parse_ddi(AbstractObject $object) {
+  $lat_xpaths = variable_get('islandora_simple_map_ddi_lat_xpaths', ISLANDORA_SIMPLE_MAP_DDI_LAT_XPATHS);
+  $lon_xpaths = variable_get('islandora_simple_map_ddi_lon_xpaths', ISLANDORA_SIMPLE_MAP_DDI_LON_XPATHS);
+
+  $get_value = function (DOMNode $node) {
+    return trim($node->nodeValue);
+  };
+  $lat = array_map($get_value, islandora_simple_map_get_datastream_results($object, 'DDI', $lat_xpaths));
+  $lon = array_map($get_value, islandora_simple_map_get_datastream_results($object, 'DDI', $lon_xpaths));
+
+  // Return values as comma-separated pairs.
+  $to_return = array_map(function ($lat, $lon) {
+    return "$lat,$lon";
+  }, $lat, $lon);
+
+  return $to_return;
 }
 
 /**
@@ -213,8 +241,8 @@ function _islandora_simple_map_get_coordinates_solr(AbstractObject $object) {
  */
 function islandora_simple_map_get_datastream_results(AbstractObject $object, $datastream, $xpaths) {
   $results = array();
-  if (isset($object['MODS'])) {
-    $mods = $object['MODS']->content;
+  if (isset($object[$datastream])) {
+    $mods = $object[$datastream]->content;
     $xpaths = preg_split('/$\R?^/m', trim($xpaths));
     $mods_doc = new DOMDocument();
     if ($mods_doc->loadXML($mods)) {
