@@ -202,13 +202,18 @@ function _islandora_simple_map_get_coordinates_solr(AbstractObject $object) {
  * @param \AbstractObject $object
  *   The Islandora object.
  *
+ * @param string $datastream
+ *   The datastream - e.g. 'MODS' or 'DDI'.
+ *
+ * @param string $xpaths
+ *   Text containing xpath selectors, one per line.
+ *
  * @return array
  *   The unaltered node values.
  */
-function islandora_simple_map_get_mods_results(AbstractObject $object, $xpaths = NULL) {
+function islandora_simple_map_get_datastream_results(AbstractObject $object, $datastream, $xpaths) {
   $results = array();
   if (isset($object['MODS'])) {
-    $xpaths = $xpaths ?: variable_get('islandora_simple_map_xpath', ISLANDORA_SIMPLE_MAP_XPATHS);
     $mods = $object['MODS']->content;
     $xpaths = preg_split('/$\R?^/m', trim($xpaths));
     $mods_doc = new DOMDocument();
@@ -232,6 +237,23 @@ function islandora_simple_map_get_mods_results(AbstractObject $object, $xpaths =
     }
   }
   return $results;
+}
+
+/**
+ * Utility function to return the node values of the provided MODS.
+ *
+ * @param \AbstractObject $object
+ *   The Islandora object.
+ *
+ * @param string $xpaths
+ *   Text containing xpath selectors, one per line.
+
+ * @return array
+ *   The unaltered node values.
+ */
+function islandora_simple_map_get_mods_results(AbstractObject $object, $xpaths = NULL) {
+  $xpaths = $xpaths ?: variable_get('islandora_simple_map_xpath', ISLANDORA_SIMPLE_MAP_XPATHS);
+  return islandora_simple_map_get_datastream_results($object, 'MODS', $xpaths);
 }
 
 /**
