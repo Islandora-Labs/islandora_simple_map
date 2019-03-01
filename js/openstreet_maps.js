@@ -37,13 +37,11 @@
           map.initialZoom = true;
 
           if (config.map_geojson && config.map_geojson.features.length) {
-            config.map_geojson.features.forEach(function (feature) {
-              L.geoJSON(feature, {
-                onEachFeature: function (feature) {
-                    Drupal.islandora_simple_map.makePoint(map, bounds, pid, feature.geometry.coordinates.reverse().join(','));
-                }
-              }).addTo(map);
-            });
+            L.geoJSON(config.map_geojson, {
+              onEachFeature: function (feature) {
+                Drupal.islandora_simple_map.makePoint(map, bounds, pid, feature.geometry.coordinates.reverse().join(','));
+              }
+            }).addTo(map);
           }
 
           if (multiple_objects) {
