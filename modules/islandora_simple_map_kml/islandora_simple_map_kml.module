@@ -115,5 +115,8 @@ function islandora_simple_map_kml_islandora_simple_map_kml_get_kml(AbstractObjec
   module_load_include('inc', 'islandora_simple_map_kml', 'includes/utilities');
   $kml = array_merge($kml, _islandora_simple_map_kml_mods_get_kml($object));
 
+  // Get KML from DDI data.
+  $kml = array_merge($kml, _islandora_simple_map_kml_ddi_get_kml($object));
+
   return $kml;
 }

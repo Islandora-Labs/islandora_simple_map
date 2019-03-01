@@ -60,3 +60,22 @@ function _islandora_simple_map_kml_mods_get_kml(AbstractObject $object) {
   }
   return $kml;
 }
+
+
+/**
+ * Helper to get KML from DDI data.
+ */
+function _islandora_simple_map_kml_ddi_get_kml(AbstractObject $object) {
+  $xpaths = variable_get('islandora_simple_map_kml_ddi_xpaths', ISLANDORA_SIMPLE_MAP_KML_DDI_XPATHS);
+
+  $get_value = function (DOMNode $node, $pos) use ($object) {
+    return url("islandora/object/{$object->id}/datastream/DDI/islandora_simple_map_kml_ddi/$pos/loc.kml", array(
+      'absolute' => TRUE,
+    ));
+  };
+  $kml = array();
+  foreach (islandora_simple_map_get_datastream_results($object, 'DDI', $xpaths) as $pos => $node) {
+    $kml[] = $get_value($node, $pos);
+  }
+  return $kml;
+}
