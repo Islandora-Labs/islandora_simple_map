@@ -24,7 +24,7 @@ function islandora_simple_map_kml_menu() {
     'weight' => 10,
   );
 
-  $items['islandora/object/%islandora_object/datastream/%islandora_datastream/islandora_simple_map_scrape_mods_kml'] = array(
+  $items['islandora/object/%islandora_object/datastream/%islandora_datastream/islandora_simple_map_kml_mods'] = array(
     'title' => 'Scrape MODS KML',
     'page callback' => '_islandora_simple_map_kml_mods',
     'page arguments' => array(2, 4),

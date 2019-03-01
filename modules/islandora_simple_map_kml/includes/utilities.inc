@@ -11,7 +11,13 @@
 function _islandora_simple_map_kml_mods(AbstractDatastream $datastream, $position) {
   $xpaths = variable_get('islandora_simple_map_kml_mods_xpaths', ISLANDORA_SIMPLE_MAP_KML_MODS_XPATHS);
   $elements = islandora_simple_map_get_mods_results($datastream->parent, $xpaths);
+  _islandora_simple_map_deliver_kml($elements, $position);
+}
 
+/**
+ * Helper to deliver KML data from elements.
+ */
+function _islandora_simple_map_deliver_kml($elements, $position) {
   if (!isset($elements[$position])) {
     drupal_not_found();
     return;
@@ -35,7 +41,7 @@ function _islandora_simple_map_kml_mods_get_kml(AbstractObject $object) {
   $xpaths = variable_get('islandora_simple_map_kml_mods_xpaths', ISLANDORA_SIMPLE_MAP_KML_MODS_XPATHS);
 
   $get_value = function (DOMNode $node, $pos) use ($object) {
-    return url("islandora/object/{$object->id}/datastream/MODS/islandora_simple_map_scrape_mods_kml/$pos/loc.kml", array(
+    return url("islandora/object/{$object->id}/datastream/MODS/islandora_simple_map_kml_mods/$pos/loc.kml", array(
       'absolute' => TRUE,
     ));
   };
