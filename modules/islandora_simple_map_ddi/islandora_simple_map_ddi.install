@@ -1,0 +1,19 @@
+<?php
+/**
+ * @file
+ * (Un)installation hooks.
+ */
+
+/**
+ * Implements hook_uninstall().
+ */
+function islandora_simple_map_ddi_uninstall() {
+  $variables = array(
+    'islandora_simple_map_ddi_lat_xpaths',
+    'islandora_simple_map_ddi_lon_xpaths',
+    'islandora_simple_map_ddi_kml_xpaths',
+    'islandora_simple_map_ddi_attempt_cleanup',
+    'islandora_simple_map_ddi_fallback_to_search',
+  );
+  array_map('variable_del', $variables);
+}

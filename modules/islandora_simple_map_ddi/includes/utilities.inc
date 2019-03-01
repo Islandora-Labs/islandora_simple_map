@@ -14,7 +14,7 @@
  * @return string[]
  *   An array of XPaths, as strings.
  */
-function _islandora_simple_map_scrape_ddi_parse_paths($paths) {
+function _islandora_simple_map_ddi_parse_paths($paths) {
   return array_filter(array_map('trim', explode("\r\n", $paths)));
 }
 
@@ -29,7 +29,7 @@ function _islandora_simple_map_scrape_ddi_parse_paths($paths) {
  * @return DOMNode[]
  *   An array of DOMNode instances resulting from the XPath queries.
  */
-function _islandora_simple_map_scrape_ddi_scrape(AbstractObject $object, array $xpaths) {
+function _islandora_simple_map_ddi_scrape(AbstractObject $object, array $xpaths) {
   if (!isset($object['DDI'])) {
     return array();
   }
@@ -50,7 +50,7 @@ function _islandora_simple_map_scrape_ddi_scrape(AbstractObject $object, array $
  * @return DOMNode[]
  *   An array of DOMNode instances, scraped from the datastream.
  */
-function _islandora_simple_map_scrape_ddi_get_kml_elements(AbstractDatastream $datastream) {
-  $xpaths = _islandora_simple_map_scrape_ddi_parse_paths(variable_get('islandora_simple_map_scrape_ddi_kml_xpaths', SCRAPE_DDI_KML_XPATHS));
-  return _islandora_simple_map_scrape_ddi_scrape($datastream->parent, $xpaths);
+function _islandora_simple_map_ddi_get_kml_elements(AbstractDatastream $datastream) {
+  $xpaths = _islandora_simple_map_ddi_parse_paths(variable_get('islandora_simple_map_ddi_kml_xpaths', ISLANDORA_SIMPLE_MAP_DDI_KML_XPATHS));
+  return _islandora_simple_map_ddi_scrape($datastream->parent, $xpaths);
 }

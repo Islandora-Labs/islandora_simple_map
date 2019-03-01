@@ -1,0 +1,126 @@
+<?php
+/**
+ * @file
+ * General hooks.
+ */
+
+const ISLANDORA_SIMPLE_MAP_DDI_LAT_XPATHS = "//codeBook:stdyInfo/codeBook:sumDscr/codeBook:boundPoly/codeBook:polygon/codeBook:point/codeBook:gringLat";
+const ISLANDORA_SIMPLE_MAP_DDI_LON_XPATHS = "//codeBook:stdyInfo/codeBook:sumDscr/codeBook:boundPoly/codeBook:polygon/codeBook:point/codeBook:gringLon";
+const ISLANDORA_SIMPLE_MAP_DDI_KML_XPATHS = "//codeBook:stdyInfo/codeBook:sumDscr/codeBook:geogCover/*[local-name() = 'kml']";
+const ISLANDORA_SIMPLE_MAP_DDI_COORDS_REGEX = '/^[+\-]?\d+\.\d+?/';
+
+/**
+ * Implements hook_menu().
+ */
+function islandora_simple_map_ddi_menu() {
+  $items = array();
+
+  $items['admin/islandora/tools/islandora_simple_map/scrape_ddi'] = array(
+    'title' => 'DDI scraping',
+    'description' => 'Configure the DDI scraping settings.',
+    'page callback' => 'drupal_get_form',
+    'access arguments' => array('administer site configuration'),
+    'page arguments' => array('islandora_simple_map_ddi_admin_settings_form'),
+    'type' => MENU_LOCAL_TASK,
+    'file' => 'includes/admin_form.inc',
+    'weight' => 10,
+  );
+
+  $items['islandora/object/%islandora_object/datastream/%islandora_datastream/islandora_simple_map_ddi_kml'] = array(
+    'title' => 'Scrape DDI KML',
+    'page callback' => '_islandora_simple_map_ddi_kml',
+    'page arguments' => array(4, 6),
+    'access callback' => '_islandora_simple_map_ddi_kml_access_callback',
+    'access arguments' => array(4),
+    'type' => MENU_CALLBACK,
+    'file' => 'includes/scrape_kml.inc',
+  );
+
+  return $items;
+}
+
+/**
+ * Access callback for the KML scrape callback.
+ */
+function _islandora_simple_map_ddi_kml_access_callback($datastream) {
+  return $datastream->id == 'DDI' && islandora_datastream_access(ISLANDORA_VIEW_OBJECTS, $datastream);
+}
+
+/**
+ * Implements hook_islandora_simple_map_get_geojson().
+ */
+function islandora_simple_map_ddi_islandora_simple_map_get_geojson(AbstractObject $object) {
+  module_load_include('inc', 'islandora_simple_map_ddi', 'includes/utilities');
+  $lat_xpaths = _islandora_simple_map_ddi_parse_paths(variable_get('islandora_simple_map_ddi_lat_xpaths', ISLANDORA_SIMPLE_MAP_DDI_LAT_XPATHS));
+  $lon_xpaths = _islandora_simple_map_ddi_parse_paths(variable_get('islandora_simple_map_ddi_lon_xpaths', ISLANDORA_SIMPLE_MAP_DDI_LON_XPATHS));
+
+  $get_value = function (DOMNode $node) {
+    return trim($node->nodeValue);
+  };
+  $lat = array_map($get_value, _islandora_simple_map_ddi_scrape($object, $lat_xpaths));
+  $lon = array_map($get_value, _islandora_simple_map_ddi_scrape($object, $lon_xpaths));
+  $lat = array_filter($lat);
+  $lon = array_filter($lon);
+
+  // Match two optionally-signed comma-separated floating-point numbers.
+  $good_lat = preg_grep(ISLANDORA_SIMPLE_MAP_DDI_COORDS_REGEX, $lat);
+  $good_lon = preg_grep(ISLANDORA_SIMPLE_MAP_DDI_COORDS_REGEX, $lon);
+  $cleanup = variable_get('islandora_simple_map_ddi_attempt_cleanup', FALSE);
+  $search = variable_get('islandora_simple_map_ddi_fallback_to_search', FALSE);
+
+  $bad_lat = ($cleanup || $search) ?
+    drupal_map_assoc(array_diff($lat, $good_lat)) :
+    FALSE;
+  $bad_lon = ($cleanup || $search) ?
+    drupal_map_assoc(array_diff($lon, $good_lon)) :
+    FALSE;
+
+  if ($bad_lat && $bad_lon && $cleanup) {
+    $now_good_lat = preg_grep(ISLANDORA_SIMPLE_MAP_DDI_COORDS_REGEX, $bad_lat);
+    $now_good_lon = preg_grep(ISLANDORA_SIMPLE_MAP_DDI_COORDS_REGEX, $bad_lon);
+    $bad_lat = array_diff_key($bad_lat, $now_good_lat);
+    $bad_lon = array_diff_key($bad_lon, $now_good_lon);
+    $good_lat = array_merge($good_lat, $now_good_lat);
+    $good_lon = array_merge($good_lon, $now_good_lon);
+  }
+
+  $to_return = array_map(function ($lat, $lon) {
+    return array(
+      'type' => 'Feature',
+      'geometry' => array(
+        'type' => 'Point',
+        'coordinates' => array(floatval($lon), floatval($lat)),
+      ),
+    );
+  }, $good_lat, $good_lon);
+
+  if ($bad_lat && $bad_lon && $search) {
+    module_load_include('inc', 'islandora_simple_map_ddi', 'includes/places');
+    $bad_coords = array($bad_lat, $bad_lon);
+    $searched = _islandora_simple_map_ddi_search_fallback($bad_coords);
+    if ($searched) {
+      $to_return = array_merge($to_return, array_values($searched));
+    }
+  }
+
+  return $to_return;
+}
+
+/**
+ * Implements hook_islandora_simple_map_kml_get_kml().
+ */
+function islandora_simple_map_ddi_islandora_simple_map_kml_get_kml(AbstractObject $object) {
+  module_load_include('inc', 'islandora_simple_map_ddi', 'includes/utilities');
+  $xpaths = _islandora_simple_map_ddi_parse_paths(variable_get('islandora_simple_map_ddi_kml_xpaths', ISLANDORA_SIMPLE_MAP_DDI_KML_XPATHS));
+
+  $get_value = function (DOMNode $node, $pos) use ($object) {
+    return url("islandora/object/{$object->id}/datastream/DDI/islandora_simple_map_ddi_kml/$pos/loc.kml", array(
+      'absolute' => TRUE,
+    ));
+  };
+  $kml = array();
+  foreach (_islandora_simple_map_ddi_scrape($object, $xpaths) as $pos => $node) {
+    $kml[] = $get_value($node, $pos);
+  }
+  return $kml;
+}

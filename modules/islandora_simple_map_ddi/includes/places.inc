@@ -13,8 +13,8 @@
  * @return array
  *   An array of GeoJSON "Feature" objects.
  */
-function _islandora_simple_map_scrape_ddi_search_fallback(array $bad_coords) {
-  return call_user_func_array('array_merge', array_map('_islandora_simple_map_scrape_ddi_lookup', $bad_coords));
+function _islandora_simple_map_ddi_search_fallback(array $bad_coords) {
+  return call_user_func_array('array_merge', array_map('_islandora_simple_map_ddi_lookup', $bad_coords));
 }
 
 /**
@@ -26,7 +26,7 @@ function _islandora_simple_map_scrape_ddi_search_fallback(array $bad_coords) {
  * @return array
  *   An array of GeoJSON "Feature" objects.
  */
-function _islandora_simple_map_scrape_ddi_lookup($coord) {
+function _islandora_simple_map_ddi_lookup($coord) {
   $response = drupal_http_request(url('https://maps.googleapis.com/maps/api/place/textsearch/json', array(
     'query' => array(
       'key' => variable_get('islandora_simple_map_google_maps_api_key'),
