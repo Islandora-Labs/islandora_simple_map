@@ -4,8 +4,6 @@
  * General hooks.
  */
 
-const ISLANDORA_SIMPLE_MAP_DDI_LAT_XPATHS = "//codeBook:stdyInfo/codeBook:sumDscr/codeBook:boundPoly/codeBook:polygon/codeBook:point/codeBook:gringLat";
-const ISLANDORA_SIMPLE_MAP_DDI_LON_XPATHS = "//codeBook:stdyInfo/codeBook:sumDscr/codeBook:boundPoly/codeBook:polygon/codeBook:point/codeBook:gringLon";
 const ISLANDORA_SIMPLE_MAP_DDI_COORDS_REGEX = '/^[+\-]?\d+\.\d+?/';
 
 /**

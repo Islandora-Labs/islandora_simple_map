@@ -221,6 +221,25 @@ function islandora_simple_map_admin_settings_form($form, &$form_state) {
     '#default_value' => variable_get('islandora_simple_map_xpath', ISLANDORA_SIMPLE_MAP_XPATHS),
     '#description' => t("Enter one XPath expression per line, in preferred order with the most preferred first. The first data found in the object's MODS datastream by this list of XPath expressions will be used to populate the map."),
   );
+  $form['ddi'] = array(
+    '#title' => t('DDI settings'),
+    '#type' => 'fieldset',
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+    '#tree' => FALSE,
+  );
+  $form['ddi']['islandora_simple_map_ddi_lat_xpaths'] = array(
+    '#title' => t('XPath expressions to DDI elements containing latitude data'),
+    '#type' => 'textarea',
+    '#default_value' => variable_get('islandora_simple_map_ddi_lat_xpaths', ISLANDORA_SIMPLE_MAP_DDI_LAT_XPATHS),
+    '#description' => t("Enter one XPath expression per line, in preferred order with the most preferred first. The first data found in the object's DDI datastream by this list of XPath expressions will be used to populate the map."),
+  );
+  $form['ddi']['islandora_simple_map_ddi_lon_xpaths'] = array(
+    '#title' => t('XPath expressions to DDI elements containing longitude data'),
+    '#type' => 'textarea',
+    '#default_value' => variable_get('islandora_simple_map_ddi_lon_xpaths', ISLANDORA_SIMPLE_MAP_DDI_LON_XPATHS),
+    '#description' => t("Enter one XPath expression per line, in preferred order with the most preferred first. The first data found in the object's DDI datastream by this list of XPath expressions will be used to populate the map."),
+  );
   $form['islandora_simple_map_output'] = array(
     '#title' => t('Output to use to pass co-ordinates to maps'),
     '#type' => 'select',
@@ -371,6 +390,8 @@ function islandora_simple_map_admin_settings_form_submit(array $form, array &$fo
   // Assorted options.
   variable_set('islandora_simple_map_coordinate_delimiter', $values['islandora_simple_map_coordinate_delimiter']);
   variable_set('islandora_simple_map_xpath', $values['islandora_simple_map_xpath']);
+  variable_set('islandora_simple_map_ddi_lat_xpaths', $values['islandora_simple_map_ddi_lat_xpaths']);
+  variable_set('islandora_simple_map_ddi_lon_xpaths', $values['islandora_simple_map_ddi_lon_xpaths']);
   variable_set('islandora_simple_map_output', $values['islandora_simple_map_output']);
   variable_set('islandora_simple_map_collapsed', $values['islandora_simple_map_collapsed']);
   variable_set('islandora_simple_map_iframe_width', $values['islandora_simple_map_iframe_width']);

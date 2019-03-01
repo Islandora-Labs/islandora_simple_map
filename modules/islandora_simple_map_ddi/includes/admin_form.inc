@@ -9,16 +9,6 @@
  * Admin settings form builder.
  */
 function islandora_simple_map_ddi_admin_settings_form($form, &$form_state) {
-  $form['islandora_simple_map_ddi_lat_xpaths'] = array(
-    '#type' => 'textarea',
-    '#title' => t('DDI latitude XPaths'),
-    '#default_value' => variable_get('islandora_simple_map_ddi_lat_xpaths', ISLANDORA_SIMPLE_MAP_DDI_LAT_XPATHS),
-  );
-  $form['islandora_simple_map_ddi_lon_xpaths'] = array(
-    '#type' => 'textarea',
-    '#title' => t('DDI longitude XPaths'),
-    '#default_value' => variable_get('islandora_simple_map_ddi_lon_xpaths', ISLANDORA_SIMPLE_MAP_DDI_LON_XPATHS),
-  );
   $form['islandora_simple_map_ddi_attempt_cleanup'] = array(
     '#type' => 'checkbox',
     '#title' => t('Attempt cleanup?'),

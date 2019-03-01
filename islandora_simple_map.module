@@ -14,6 +14,8 @@ define('ISLANDORA_SIMPLE_MAP_GOOGLE_MAPS', 'google_maps');
 define('ISLANDORA_SIMPLE_MAP_OPENSTREET_MAPS', 'openstreet_maps');
 define('ISLANDORA_SIMPLE_MAP_OUTPUT_COORDS', 'coordinates');
 define('ISLANDORA_SIMPLE_MAP_OUTPUT_GEOJSON', 'geojson');
+define('ISLANDORA_SIMPLE_MAP_DDI_LAT_XPATHS', "//codeBook:stdyInfo/codeBook:sumDscr/codeBook:boundPoly/codeBook:polygon/codeBook:point/codeBook:gringLat");
+define('ISLANDORA_SIMPLE_MAP_DDI_LON_XPATHS', "//codeBook:stdyInfo/codeBook:sumDscr/codeBook:boundPoly/codeBook:polygon/codeBook:point/codeBook:gringLon");
 
 // Includes blocks.
 require_once dirname(__FILE__) . '/includes/blocks.inc';

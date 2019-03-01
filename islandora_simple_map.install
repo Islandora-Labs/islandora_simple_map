@@ -11,6 +11,8 @@
 function islandora_simple_map_uninstall() {
   $variables = array(
     'islandora_simple_map_xpath',
+    'islandora_simple_map_ddi_lat_xpaths',
+    'islandora_simple_map_ddi_lon_xpaths',
     'islandora_simple_map_output',
     'islandora_simple_map_iframe_width',
     'islandora_simple_map_iframe_height',
