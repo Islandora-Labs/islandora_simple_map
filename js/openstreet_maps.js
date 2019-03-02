@@ -18,12 +18,12 @@
           var bounds = new L.LatLngBounds();
           var coords = [];
           var firstCenter = new L.LatLng(0, 0);
-          if (multiple_objects && !!config.map_markers[0] && !!config.map_markers[0].coordinates) {
+          if (multiple_objects && config.map_markers.length && config.map_markers[0].coordinates.length) {
             firstCenter = Drupal.islandora_simple_map.coordToPoint(config.map_markers[0].coordinates[0]);
-          } else if (!multiple_objects && !!config.map_markers.coordinates) {
+          } else if (!multiple_objects && config.map_markers.coordinates.length) {
             firstCenter = Drupal.islandora_simple_map.coordToPoint(config.map_markers.coordinates[0]);
           }
-          else if (!!config.map_geojson.features) {
+          else if (config.map_geojson.features.length) {
             var coordArray = config.map_geojson.features[0].geometry.coordinates;
             // NB GeoJSON coordinates are [ lng, lat ]. Array.reverse() alters the object so don't use it yet.
             firstCenter = Drupal.islandora_simple_map.coordToPoint(`${coordArray[1]},${coordArray[0]}`);
