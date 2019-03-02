@@ -807,8 +807,14 @@ function islandora_simple_map_get_geojson(AbstractObject $object) {
 
 /**
  * Helper to format coordinate pairs as geojson features.
+ *
+ * @param array $coordinates
+ *   Array of coordinate pairs (comma-separated strings).
+ *
+ * @return array
+ *   Array of GeoJSON features.
  */
-function _islandora_simple_map_coords_to_geojson($coordinates) {
+function _islandora_simple_map_coords_to_geojson_features($coordinates) {
   return array_map(function ($coord) {
     return array(
       'type' => 'Feature',
