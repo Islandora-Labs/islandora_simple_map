@@ -577,7 +577,7 @@ function _islandora_simple_map_generate_js_code(array $settings, $map_div_id) {
   if (variable_get('islandora_simple_map_output', ISLANDORA_SIMPLE_MAP_OUTPUT_COORDS) === ISLANDORA_SIMPLE_MAP_OUTPUT_GEOJSON) {
     // Ensure map_geojson element is non-empty.
     $temp_settings['map_geojson'] = $temp_settings['map_geojson'] ?: array(
-      'type' => 'FeaturesCollection',
+      'type' => 'FeatureCollection',
       'features' => array(),
     );
 
