@@ -80,12 +80,14 @@ class IslandoraSimpleMapHookTestCase extends IslandoraSimpleMapTestCase {
     $expected = array(
       'type' => 'FeatureCollection',
       'features' => array(
-        'type' => 'Feature',
-        'geometry' => array(
-          'type' => 'Point',
-          'coordinates' => array(
-            -63.1245071,
-            46.2350236,
+        array(
+          'type' => 'Feature',
+          'geometry' => array(
+            'type' => 'Point',
+            'coordinates' => array(
+              -63.1245071,
+              46.2350236,
+            ),
           ),
         ),
       ),
