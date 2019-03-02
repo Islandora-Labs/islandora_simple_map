@@ -573,6 +573,27 @@ function _islandora_simple_map_generate_js_code(array $settings, $map_div_id) {
   $temp_settings['map_zoom_level'] = (int) variable_get('islandora_simple_map_zoom', '10');
   $temp_settings['disable_scroll_zoom'] = (bool) variable_get('islandora_simple_map_disable_scroll', FALSE);
 
+  // If output variable is set to geojson, move the coordinate data to geojson.
+  if (variable_get('islandora_simple_map_output', ISLANDORA_SIMPLE_MAP_OUTPUT_COORDS) === ISLANDORA_SIMPLE_MAP_OUTPUT_GEOJSON) {
+    // Ensure map_geojson element is non-empty.
+    $temp_settings['map_geojson'] = $temp_settings['map_geojson'] ?: array(
+      'type' => 'FeaturesCollection',
+      'features' => array(),
+    );
+
+    // Flatten possible array of marker coordinates.
+    $coordinates = isset($temp_settings['map_markers']['coordinates'])
+      ? $temp_settings['map_markers']['coordinates']
+      : array_unique(call_user_func_array('array_merge', array_column($temp_settings['map_markers'], 'coordinates')));
+
+    // Add features from coordinate data.
+    $geojson_features = _islandora_simple_map_coords_to_geojson_features($coordinates);
+    $temp_settings['map_geojson']['features'] = array_merge($temp_settings['map_geojson']['features'], $geojson_features);
+
+    // Remove coordinate data.
+    $temp_settings['map_markers'] = array('coordinates' => array());
+  }
+
   // Google maps.
   if ($map_type == ISLANDORA_SIMPLE_MAP_GOOGLE_MAPS) {
     $code['js'][] = array(
