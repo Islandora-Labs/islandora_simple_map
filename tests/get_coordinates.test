@@ -58,6 +58,28 @@ class IslandoraSimpleMapGetCoordinatesTestCase extends IslandoraSimpleMapTestCas
   }
 
   /**
+   * Test pulling a single coordinate from a DDI.
+   */
+  public function testSingleCoordDdi() {
+    $expected = array('49.279154,-123.139102');
+    $object = $this->admin->repository->constructObject('test:simpleMapSingleCoord');
+    $this->admin->repository->ingestObject($object);
+    $mods = $object->constructDatastream('DDI');
+    $object->ingestDatastream($mods);
+
+    $object['MODS']->content = file_get_contents("{$this->resourcePath}/ddi_single_coordinate.xml");
+    $object['MODS']->mimetype = 'application/xml';
+
+    $this->setJavascriptApi(FALSE);
+    $coords = islandora_simple_map_get_coordinates($object);
+    $this->assertEqual($expected, $coords, "Got wrong coordinates from single element with Embed API.");
+    $this->setJavascriptApi(TRUE);
+    $coords = islandora_simple_map_get_coordinates($object);
+    $this->assertEqual($expected, $coords, "Got wrong coordinates from single element with Javascript API.");
+
+  }
+
+  /**
    * Test pulling multiple coordinates and split on delimiter.
    */
   public function testMultipleCoordsInSingleElement() {
