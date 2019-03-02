@@ -17,6 +17,7 @@ class IslandoraSimpleMapHookTestCase extends IslandoraSimpleMapTestCase {
    */
   protected $testObjects = array(
     'test:simpleMapDecimalObject',
+    'test:simpleMapGeojson',
   );
 
   /**
