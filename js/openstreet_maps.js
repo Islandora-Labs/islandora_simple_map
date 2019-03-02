@@ -23,7 +23,7 @@
           } else if (!multiple_objects && config.map_markers.coordinates.length) {
             firstCenter = Drupal.islandora_simple_map.coordToPoint(config.map_markers.coordinates[0]);
           }
-          else if (config.map_geojson.features.length) {
+          else if (config.map_geojson && config.map_geojson.features.length) {
             var coordArray = config.map_geojson.features[0].geometry.coordinates;
             // NB GeoJSON coordinates are [ lng, lat ]. Array.reverse() alters the object so don't use it yet.
             firstCenter = Drupal.islandora_simple_map.coordToPoint(`${coordArray[1]},${coordArray[0]}`);

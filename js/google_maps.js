@@ -23,7 +23,7 @@
           map.defaultZoom = map.getZoom();
           map.initialZoom = true;
 
-          if (config.map_geojson) {
+          if (config.map_geojson && config.map_geojson.features.length) {
             // Add a listener to extend bounds whenever a geojson feature is added.
             map.data.addListener('addfeature', function(e) {
               Drupal.islandora_simple_map.processPoint(e.feature.getGeometry(), bounds);
@@ -33,7 +33,7 @@
             map.data.addGeoJson(config.map_geojson);
           }
 
-          if (config.map_kml) {
+          if (config.map_kml.length) {
             config.map_kml.forEach(function (url) {
               var layer = new google.maps.KmlLayer({
                 preserveViewport: true,
