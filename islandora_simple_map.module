@@ -303,6 +303,8 @@ function islandora_simple_map_islandora_basic_collection_build_manage_object(arr
  */
 function islandora_simple_map_collection_map_view(AbstractObject $object) {
   $coordinates = _islandora_simple_map_get_collection_points($object);
+  // @todo Also get geojson from the collection items?
+  // Get geojson & kml from the collection object.
   $found_geojson = islandora_simple_map_get_geojson($object);
   $found_kml = module_exists('islandora_simple_map_kml')
     ? islandora_simple_map_kml_get_kml($object)
