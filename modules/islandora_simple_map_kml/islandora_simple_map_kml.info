@@ -5,4 +5,4 @@ version = 7.x-dev
 core = 7.x
 configure = admin/islandora/tools/islandora_simple_map/kml
 dependencies[] = islandora_simple_map
-files[] = tests/scrape_kml.test
+files[] = tests/hooks.test
