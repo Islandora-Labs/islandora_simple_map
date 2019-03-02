@@ -10,13 +10,11 @@
  *
  * @param \AbstractObject $object
  *   The object being viewed.
- * @param bool $force
- *   Force getting coordinates regardless of admin variable islandora_simple_map_output.
  *
  * @return array
  *   An array of unique coordinates.
  */
-function islandora_simple_map_process_coordinates(AbstractObject $object, $force = FALSE) {
+function islandora_simple_map_process_coordinates(AbstractObject $object) {
   $coordinates = islandora_simple_map_get_coordinates($object);
   if (count($coordinates) > 0) {
     $orig_coordinates = $coordinates;
