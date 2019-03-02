@@ -29,11 +29,20 @@ function islandora_simple_map_block_view($delta = '') {
       if ($object) {
         $found_coords = islandora_simple_map_process_coordinates($object);
         $block = array();
-        if (count($found_coords['coordinates']) > 0) {
+        $found_geojson = islandora_simple_map_get_geojson($object);
+        $found_kml = module_exists('islandora_simple_map_kml')
+          ? islandora_simple_map_kml_get_kml($object)
+          : [];
+        if (count($found_coords['coordinates']) > 0
+          || !empty($found_geojson)
+          || !empty($found_kml)
+        ) {
           $map_div_id = drupal_html_id('islandora_simple_map_block');
           $settings = array();
           $settings['islandora_simple_map'][$map_div_id] = array(
             'map_markers' => $found_coords,
+            'map_geojson' => $found_geojson,
+            'map_kml' => $found_kml,
             'map_div_id' => $map_div_id,
           );
           $block = array(
