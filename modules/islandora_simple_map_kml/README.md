@@ -13,9 +13,12 @@ collections for display on a map.
 
 Install as usual, see [this](https://drupal.org/documentation/install/modules-themes/modules-7) for further information.
 
+KML data is currently only shown if the 'map type' option for Islandora Simple Map is set to 'Google Maps'.
+
 ## Configuration
 
 This module allows you to specify optional XPath selectors for extracting KML data from MODS or DDI datastreams.
+However, the functionality to display this data on the map is still in development.
 
 Admin settings are available at `admin/islandora/tools/islandora_simple_map/kml`.
 
@@ -23,7 +26,7 @@ Admin settings are available at `admin/islandora/tools/islandora_simple_map/kml`
 
 `hook_islandora_simple_map_kml_get_kml(AbstractObject $object)`
 
-Implementations of this hook should return an array of URLs to KML files.
+Implementations of this hook should return an array of publicly-available URLs to KML files.
 These are merged with all other implementations.
 
 `hook_islandora_simple_map_kml_get_kml_alter(array &$kml, AbstractObject $object)`
@@ -38,7 +41,9 @@ of KML files returned by all implementations.
 
 ## To do
 
-* Decide on approach for collections - extract KML from each object's datastreams in the collection, or just the
+* Use a KML parsing library to convert the KML data to GeoJSON and add it to maps, instead of using Google Maps' JS API
+  KmlLayer() method, which uses a hosted service and hence requires publicly-available URLs.
+* Decide on the approach for collections - extract KML from each object's datastreams in the collection, or just the
   collection's?
 
 ## Development and feedback
