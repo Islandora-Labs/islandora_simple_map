@@ -134,7 +134,7 @@ function islandora_simple_map_islandora_view_object_alter(&$object, &$rendered) 
   $found_kml = module_exists('islandora_simple_map_kml')
     ? islandora_simple_map_kml_get_kml($object)
     : [];
-  if ((isset($found_coords['coordinates']) && count($found_coords['coordinates']) > 0)
+  if (!empty($found_coords['coordinates'])
     || !empty($found_geojson)
     || !empty($found_kml)
   ) {
@@ -182,7 +182,9 @@ function islandora_simple_map_islandora_view_object_alter(&$object, &$rendered) 
       $collapsed = variable_get('islandora_simple_map_collapsed', 'collapsed');
       $markup = theme('islandora_simple_map', array(
         // We use the first set of coords if our XPaths found more than one.
-        'coords' => urlencode($found_coords['coordinates'][0]),
+        'coords' => !empty($found_coords['coordinates'])
+          ? urlencode($found_coords['coordinates'][0])
+          : NULL,
         'iframe_width' => $width,
         'iframe_height' => $height,
         'zoom' => $zoom,
