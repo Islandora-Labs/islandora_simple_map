@@ -90,7 +90,7 @@ function islandora_simple_map_kml_islandora_simple_map_kml_get_kml(AbstractObjec
   };
   $models = $_split_parse(variable_get('islandora_simple_map_kml_models', ''));
   if ($models && !array_intersect($object->models, $models)) {
-    return;
+    return array();
   }
   $mimetypes = $_split_parse(variable_get('islandora_simple_map_kml_mimetypes', ISLANDORA_SIMPLE_MAP_KML_DATASTREAM_DEFAULT_MIMETYPE));
   $dsids = $_split_parse(variable_get('islandora_simple_map_kml_dsids', ''));
