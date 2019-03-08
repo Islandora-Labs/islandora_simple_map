@@ -112,10 +112,10 @@
       Drupal.islandora_simple_map.markers.push(marker);
     },
     redraw: function(map, bounds) {
-      //map.fitBounds(bounds);
-      //map.invalidateSize();
-      //map.panTo(bounds.getCenter());
-      //map.flyToBounds(bounds);
+      map.fitBounds(bounds);
+      map.invalidateSize();
+      map.panTo(bounds.getCenter());
+      map.flyToBounds(bounds);
     },
     markerClick: function(map, marker) {
       var pid = marker.pid;
