@@ -133,7 +133,7 @@ function islandora_simple_map_islandora_view_object_alter(&$object, &$rendered) 
   $found_geojson = islandora_simple_map_get_geojson($object);
   $found_kml = module_exists('islandora_simple_map_kml')
     ? islandora_simple_map_kml_get_kml($object)
-    : [];
+    : array();
   if (!empty($found_coords['coordinates'])
     || !empty($found_geojson)
     || !empty($found_kml)
@@ -310,7 +310,7 @@ function islandora_simple_map_collection_map_view(AbstractObject $object) {
   $found_geojson = islandora_simple_map_get_geojson($object);
   $found_kml = module_exists('islandora_simple_map_kml')
     ? islandora_simple_map_kml_get_kml($object)
-    : [];
+    : array();
   if (count($coordinates) > 0
     || !empty($found_geojson)
     || !empty($found_kml)

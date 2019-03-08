@@ -32,7 +32,7 @@ function islandora_simple_map_block_view($delta = '') {
         $found_geojson = islandora_simple_map_get_geojson($object);
         $found_kml = module_exists('islandora_simple_map_kml')
           ? islandora_simple_map_kml_get_kml($object)
-          : [];
+          : array();
         if (count($found_coords['coordinates']) > 0
           || !empty($found_geojson)
           || !empty($found_kml)
