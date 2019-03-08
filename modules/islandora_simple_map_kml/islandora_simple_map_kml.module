@@ -74,7 +74,10 @@ function islandora_simple_map_kml_get_kml(AbstractObject $object) {
   $kml = array();
 
   // Since KML is Google Maps-specific, check the map type being used.
-  if (variable_get('islandora_simple_map_map_type', ISLANDORA_SIMPLE_MAP_GOOGLE_MAPS) === ISLANDORA_SIMPLE_MAP_GOOGLE_MAPS) {
+  if (variable_get('islandora_simple_map_map_type', ISLANDORA_SIMPLE_MAP_GOOGLE_MAPS) === ISLANDORA_SIMPLE_MAP_GOOGLE_MAPS
+    && variable_get('islandora_simple_map_use_gmaps_api', FALSE)
+    && _islandora_simple_map_get_api_key(ISLANDORA_SIMPLE_MAP_GOOGLE_MAPS)
+  ) {
     $kml = module_invoke_all('islandora_simple_map_kml_get_kml', $object);
     drupal_alter('islandora_simple_map_kml_get_kml', $kml, $object);
   }
