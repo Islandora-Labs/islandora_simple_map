@@ -1,0 +1,57 @@
+<?php
+
+/**
+ * @file
+ * Hooks tests.
+ */
+
+/**
+ * Class IslandoraSimpleMapKmlHookTestCase.
+ */
+class IslandoraSimpleMapKmlHookTestCase extends IslandoraSimpleMapTestCase {
+
+  /**
+   * Test objects to be removed after the test.
+   *
+   * @var array
+   */
+  protected $testObjects = array(
+    'test:simpleMapKml',
+  );
+
+  /**
+   * Gets info to display to describe this test.
+   *
+   * @see IslandoraUnitTestCase::getInfo()
+   */
+  public static function getInfo() {
+    return array(
+      'name' => 'Islandora Simple Map Kml - Hooks',
+      'description' => 'Ensure that the hook for KML retrieval is called.',
+      'group' => 'Islandora Simple Map Kml',
+    );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setUp() {
+    parent::setUp();
+    module_load_include('inc', 'islandora_simple_map_kml', 'includes/utilities');
+  }
+
+  /**
+   * Test hook_islandora_simple_map_kml_get_kml().
+   */
+  public function testGetKmlHook() {
+    module_enable(array('islandora_simple_map_hooks_test'));
+    $object = $this->admin->repository->constructObject('test:simpleMapKml');
+
+    $expected = array(
+      'http://googlemaps.github.io/kml-samples/kml/Placemark/placemark.kml',
+    );
+
+    $kml = islandora_simple_map_kml_get_kml($object);
+    $this->assertEqual($expected, $kml, "Hook get kml did not return expected results.");
+  }
+}

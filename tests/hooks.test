@@ -17,6 +17,7 @@ class IslandoraSimpleMapHookTestCase extends IslandoraSimpleMapTestCase {
    */
   protected $testObjects = array(
     'test:simpleMapDecimalObject',
+    'test:simpleMapGeojson',
   );
 
   /**
@@ -67,6 +68,33 @@ class IslandoraSimpleMapHookTestCase extends IslandoraSimpleMapTestCase {
 
     $coords = islandora_simple_map_get_coordinates($object);
     $this->assertEqual($expected, $coords, "Hook get coordinates did not return expected results.");
+  }
+
+  /**
+   * Test hook_islandora_simple_map_get_geojson().
+   */
+  public function testGetGeojsonHook() {
+    module_enable(array('islandora_simple_map_hooks_test'));
+    $object = $this->admin->repository->constructObject('test:simpleMapGeojson');
+
+    $expected = array(
+      'type' => 'FeatureCollection',
+      'features' => array(
+        array(
+          'type' => 'Feature',
+          'geometry' => array(
+            'type' => 'Point',
+            'coordinates' => array(
+              -63.1245071,
+              46.2350236,
+            ),
+          ),
+        ),
+      ),
+    );
+
+    $geojson = islandora_simple_map_get_geojson($object);
+    $this->assertEqual($expected, $geojson, "Hook get geojson did not return expected results.");
   }
 
   /**

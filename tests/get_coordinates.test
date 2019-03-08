@@ -17,6 +17,7 @@ class IslandoraSimpleMapGetCoordinatesTestCase extends IslandoraSimpleMapTestCas
    */
   protected $testObjects = array(
     'test:simpleMapSingleCoord',
+    'test:simpleMapSingleCoordDdi',
     'test:simpleMapMultipleInSingle',
     'test:simpleMapMultipleInMulti',
     'test:simpleMapSFUData',
@@ -47,6 +48,28 @@ class IslandoraSimpleMapGetCoordinatesTestCase extends IslandoraSimpleMapTestCas
 
     $object['MODS']->content = file_get_contents("{$this->resourcePath}/mods_single_coordinate.xml");
     $object['MODS']->mimetype = 'application/xml';
+
+    $this->setJavascriptApi(FALSE);
+    $coords = islandora_simple_map_get_coordinates($object);
+    $this->assertEqual($expected, $coords, "Got wrong coordinates from single element with Embed API.");
+    $this->setJavascriptApi(TRUE);
+    $coords = islandora_simple_map_get_coordinates($object);
+    $this->assertEqual($expected, $coords, "Got wrong coordinates from single element with Javascript API.");
+
+  }
+
+  /**
+   * Test pulling a single coordinate from a DDI.
+   */
+  public function testSingleCoordDdi() {
+    $expected = array('49.279154,-123.139102');
+    $object = $this->admin->repository->constructObject('test:simpleMapSingleCoordDdi');
+    $this->admin->repository->ingestObject($object);
+    $ddi = $object->constructDatastream('DDI');
+    $object->ingestDatastream($ddi);
+
+    $object['DDI']->content = file_get_contents("{$this->resourcePath}/ddi_single_coordinate.xml");
+    $object['DDI']->mimetype = 'application/xml';
 
     $this->setJavascriptApi(FALSE);
     $coords = islandora_simple_map_get_coordinates($object);

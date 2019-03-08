@@ -17,16 +17,22 @@
 function islandora_simple_map_process_coordinates(AbstractObject $object) {
   $coordinates = islandora_simple_map_get_coordinates($object);
   if (count($coordinates) > 0) {
+    $orig_coordinates = $coordinates;
     $coordinates = islandora_simple_map_parse_coordinates($coordinates);
     if (variable_get('islandora_simple_map_attempt_cleanup', TRUE)) {
       array_walk($coordinates, 'islandora_simple_map_clean_coordinates');
+    }
+    if (variable_get('islandora_simple_map_fallback_search', FALSE)) {
+      $search_coordinates = array_diff($orig_coordinates, array_filter($orig_coordinates, 'islandora_simple_map_is_valid_coordinates'));
+      $search_coordinates = array_map('islandora_simple_map_search_google_places', $search_coordinates);
+      $coordinates = array_merge($coordinates, array_filter($search_coordinates));
     }
     if (_islandora_simple_map_multiple_coord_support()) {
       // Only filter and standardize coordinates if we are using Javascript API.
       $coordinates = array_filter($coordinates, 'islandora_simple_map_is_valid_coordinates');
       array_walk($coordinates, 'islandora_simple_map_standardize_format');
     }
-    $coordinates = array_unique($coordinates);
+    $coordinates = array_values(array_unique($coordinates));
   }
   return array('pid' => $object->id, 'coordinates' => $coordinates);
 }
@@ -113,6 +119,7 @@ function islandora_simple_map_islandora_simple_map_get_coordinates(AbstractObjec
   }
   else {
     $found_coords = _islandora_simple_map_get_coordinates_parse_mods($object);
+    $found_coords = array_merge($found_coords, _islandora_simple_map_get_coordinates_parse_ddi($object));
   }
   return $found_coords;
 }
@@ -141,6 +148,30 @@ function _islandora_simple_map_get_coordinates_parse_mods(AbstractObject $object
     }
   }
   return $found_coords;
+}
+
+/**
+ * Parse a DDI record looking for coordinates.
+ *
+ * @param AbstractObject $object
+ *   Object to find coordinates for.
+ *
+ * @return array
+ *   Array of raw coordinates.
+ */
+function _islandora_simple_map_get_coordinates_parse_ddi(AbstractObject $object) {
+  $lat_xpaths = variable_get('islandora_simple_map_ddi_lat_xpaths', ISLANDORA_SIMPLE_MAP_DDI_LAT_XPATHS);
+  $lon_xpaths = variable_get('islandora_simple_map_ddi_lon_xpaths', ISLANDORA_SIMPLE_MAP_DDI_LON_XPATHS);
+
+  $lats = islandora_simple_map_get_datastream_results($object, 'DDI', $lat_xpaths);
+  $lons = islandora_simple_map_get_datastream_results($object, 'DDI', $lon_xpaths);
+
+  // Return values as comma-separated pairs.
+  $to_return = array_map(function ($lat, $lon) {
+    return "$lat,$lon";
+  }, $lats, $lons);
+
+  return $to_return;
 }
 
 /**
@@ -191,14 +222,20 @@ function _islandora_simple_map_get_coordinates_solr(AbstractObject $object) {
  * @param \AbstractObject $object
  *   The Islandora object.
  *
+ * @param string $datastream
+ *   The datastream - e.g. 'MODS' or 'DDI'.
+ *
+ * @param string $xpaths
+ *   Text containing xpath selectors, one per line.
+ *
  * @return array
  *   The unaltered node values.
  */
-function islandora_simple_map_get_mods_results(AbstractObject $object) {
+function islandora_simple_map_get_datastream_results(AbstractObject $object, $datastream, $xpaths) {
   $results = array();
-  if (isset($object['MODS'])) {
-    $mods = $object['MODS']->content;
-    $xpaths = preg_split('/$\R?^/m', trim(variable_get('islandora_simple_map_xpath', ISLANDORA_SIMPLE_MAP_XPATHS)));
+  if (isset($object[$datastream])) {
+    $mods = $object[$datastream]->content;
+    $xpaths = preg_split('/$\R?^/m', trim($xpaths));
     $mods_doc = new DOMDocument();
     if ($mods_doc->loadXML($mods)) {
       $mods_xpath = new DOMXPath($mods_doc);
@@ -223,6 +260,23 @@ function islandora_simple_map_get_mods_results(AbstractObject $object) {
 }
 
 /**
+ * Utility function to return the node values of the provided MODS.
+ *
+ * @param \AbstractObject $object
+ *   The Islandora object.
+ *
+ * @param string $xpaths
+ *   Text containing xpath selectors, one per line.
+
+ * @return array
+ *   The unaltered node values.
+ */
+function islandora_simple_map_get_mods_results(AbstractObject $object, $xpaths = NULL) {
+  $xpaths = $xpaths ?: variable_get('islandora_simple_map_xpath', ISLANDORA_SIMPLE_MAP_XPATHS);
+  return islandora_simple_map_get_datastream_results($object, 'MODS', $xpaths);
+}
+
+/**
  * Applies some cleanup on data to make it more reliable for Google Maps.
  *
  * @param string $data
@@ -243,6 +297,42 @@ function islandora_simple_map_clean_coordinates(&$data) {
  */
 function islandora_simple_map_is_valid_coordinates($coordinates) {
   return ((bool) preg_match('/^[+\-]?\d+(\.\d+)?\s*,\s*[+\-]?\d+(\.\d+)?$/', $coordinates));
+}
+
+/**
+ * Use Google Places search to find coordinates by text search.
+ *
+ * @param string $keywords
+ *   Keywords to search by.
+ *
+ * @return array|NULL
+ *   Coordinates if found, else NULL.
+ */
+function islandora_simple_map_search_google_places($keywords) {
+  if ($api_key = _islandora_simple_map_get_api_key(ISLANDORA_SIMPLE_MAP_GOOGLE_MAPS)) {
+    $response = drupal_http_request(url('https://maps.googleapis.com/maps/api/place/textsearch/json', array(
+      'query' => array(
+        'key' => $api_key,
+        'query' => $keywords,
+      ),
+      'external' => TRUE,
+    )));
+
+    if (isset($response->data)) {
+      $response_data = drupal_json_decode($response->data);
+      $map_to_coordinates = function ($result) {
+        return isset($result['geometry'], $result['geometry']['location'])
+          ? implode(',', $result['geometry']['location'])
+          : NULL;
+      };
+
+      $coordinates = array_map($map_to_coordinates, $response_data['results']);
+
+      return reset($coordinates);
+    }
+  }
+
+  return NULL;
 }
 
 /**
@@ -425,9 +515,15 @@ function _islandora_simple_map_get_collection_points_solr(AbstractObject $object
       else {
         $coordinates = array($member['solr_doc'][$coord_field]);
       }
+      $orig_coordinates = $coordinates;
       $coordinates = islandora_simple_map_parse_coordinates($coordinates);
       if (variable_get('islandora_simple_map_attempt_cleanup', TRUE)) {
         array_walk($coordinates, 'islandora_simple_map_clean_coordinates');
+      }
+      if (variable_get('islandora_simple_map_fallback_search', FALSE)) {
+        $search_coordinates = array_diff($orig_coordinates, array_filter($orig_coordinates, 'islandora_simple_map_is_valid_coordinates'));
+        array_walk($search_coordinates, 'islandora_simple_map_search_google_places');
+        $coordinates = array_merge($coordinates, array_filter($search_coordinates));
       }
       if (variable_get('islandora_simple_map_use_gmaps_api', FALSE)) {
         // Only filter/standardize coordinates if we are using Javascript API.
@@ -437,7 +533,7 @@ function _islandora_simple_map_get_collection_points_solr(AbstractObject $object
 
       $points[] = array(
         'pid' => $member['PID'],
-        'coordinates' => $coordinates,
+        'coordinates' => array_values($coordinates),
       );
     }
   }
@@ -476,6 +572,27 @@ function _islandora_simple_map_generate_js_code(array $settings, $map_div_id) {
   $temp_settings = &$settings['islandora_simple_map'][$map_div_id];
   $temp_settings['map_zoom_level'] = (int) variable_get('islandora_simple_map_zoom', '10');
   $temp_settings['disable_scroll_zoom'] = (bool) variable_get('islandora_simple_map_disable_scroll', FALSE);
+
+  // If output variable is set to geojson, move the coordinate data to geojson.
+  if (variable_get('islandora_simple_map_output', ISLANDORA_SIMPLE_MAP_OUTPUT_COORDS) === ISLANDORA_SIMPLE_MAP_OUTPUT_GEOJSON) {
+    // Ensure map_geojson element is non-empty.
+    $temp_settings['map_geojson'] = $temp_settings['map_geojson'] ?: array(
+      'type' => 'FeatureCollection',
+      'features' => array(),
+    );
+
+    // Flatten possible array of marker coordinates.
+    $coordinates = isset($temp_settings['map_markers']['coordinates'])
+      ? $temp_settings['map_markers']['coordinates']
+      : array_unique(call_user_func_array('array_merge', array_column($temp_settings['map_markers'], 'coordinates')));
+
+    // Add features from coordinate data.
+    $geojson_features = _islandora_simple_map_coords_to_geojson_features($coordinates);
+    $temp_settings['map_geojson']['features'] = array_merge($temp_settings['map_geojson']['features'], $geojson_features);
+
+    // Remove coordinate data.
+    $temp_settings['map_markers'] = array('coordinates' => array());
+  }
 
   // Google maps.
   if ($map_type == ISLANDORA_SIMPLE_MAP_GOOGLE_MAPS) {
@@ -685,4 +802,47 @@ function islandora_simple_map_openstreet_map_providers($provider_id = NULL, $fin
     }
   }
   return $p;
+}
+
+/**
+ * Helper to invoke hooks to gather GeoJSON info for a given object.
+ *
+ * @param AbstractObject $object
+ *   The object for which to gather GeoJSON features.
+ *
+ * @return array|NULL
+ *   If any features were returned, an associative array wrapping them up in a
+ *   "FeatureCollection"; otherwise, NULL.
+ */
+function islandora_simple_map_get_geojson(AbstractObject $object) {
+  $geojson = module_invoke_all('islandora_simple_map_get_geojson', $object);
+  drupal_alter('islandora_simple_map_get_geojson', $geojson, $object);
+
+  if ($geojson) {
+    return array(
+      'type' => 'FeatureCollection',
+      'features' => $geojson,
+    );
+  }
+}
+
+/**
+ * Helper to format coordinate pairs as geojson features.
+ *
+ * @param array $coordinates
+ *   Array of coordinate pairs (comma-separated strings).
+ *
+ * @return array
+ *   Array of GeoJSON features.
+ */
+function _islandora_simple_map_coords_to_geojson_features($coordinates) {
+  return array_map(function ($coord) {
+    return array(
+      'type' => 'Feature',
+      'geometry' => array(
+        'type' => 'Point',
+        'coordinates' => array_reverse(array_map('doubleval', array_map('trim', explode(',', $coord)))),
+      ),
+    );
+  }, $coordinates);
 }

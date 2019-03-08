@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<codeBook xmlns="ddi:codebook:2_5" xmlns:codeBook="ddi:codebook:2_5" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="ddi:codebook:2_5 http://www.ddialliance.org/Specification/DDI-Codebook/2.5/XMLSchema/codebook.xsd">
+<stdyDscr>
+  <citation>
+    <distStmt>
+      <contact>mvdroume@sfu.ca</contact>
+    </distStmt>
+    <prodStmt>
+      <copyright>Creative Commons with attribution, non-commercial</copyright>
+      <prodDate>1973-07-12</prodDate>
+    </prodStmt>
+    <rspStmt>
+      <AuthEnty>World Soundscape Project</AuthEnty>
+    </rspStmt>
+    <titlStmt>
+      <titl>Soundscape Another Potpourri, Musical Horns of the "Burnaco" 7'20" (Van116B3)</titl>
+    </titlStmt>
+  </citation>
+  <dataAccs>
+    <useStmt>
+      <confDec>None required for research not involving human subjects. Note: recordings in this collection are archival. Confidentiality does not apply as this was not a research project with human subjects. However, some recordings may contain human voices. Please use respectfully, and where needed obtain your own research ethics for secondary documentary research.</confDec>
+    </useStmt>
+  </dataAccs>
+  <method>
+    <dataColl>
+      <collMode>Soundscape recording on tape with stereo Nagra. Digitized.</collMode>
+      <collSitu>environmental ambience; specific venue; public; outdoor</collSitu>
+    </dataColl>
+    <notes>recordist is waiting on the beach for the boat to pass by with the music</notes>
+  </method>
+  <stdyInfo>
+    <abstract>The locations indicated on the map may be approximate, depending on log/archival data available. </abstract>
+    <notes>reverberation; depth of field; layers</notes>
+    <subject>
+      <keyword>Captain William Coxwell</keyword>
+      <keyword>Air chime horns</keyword>
+      <keyword>coastal freighter</keyword>
+      <keyword>Sunset Beach</keyword>
+      <keyword>signal</keyword>
+      <keyword>boat horns</keyword>
+      <keyword>beach</keyword>
+      <keyword>noise complaints</keyword>
+      <topcClass>Communication</topcClass>
+    </subject>
+    <sumDscr>
+      <boundPoly>
+        <polygon>
+          <point>
+            <gringLat>49.279154</gringLat>
+            <gringLon>-123.139102</gringLon>
+          </point>
+        </polygon>
+      </boundPoly>
+      <dataKind>Audio recording</dataKind>
+      <geogCover>Vancouver; Downtown; Sunset Beach; West End; </geogCover>
+      <geogUnit>neighbourhood</geogUnit>
+      <nation>Canada</nation>
+    </sumDscr>
+  </stdyInfo>
+</stdyDscr>
+</codeBook>

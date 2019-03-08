@@ -51,3 +51,44 @@ function hook_islandora_simple_map_parse_coordinates_callback() {
     ),
   );
 }
+
+/**
+ * Get GeoJSON Feature objects for rendering on a map for the given object.
+ *
+ * @param AbstractObject $object
+ *   The object for which to gather GeoJSON Features.
+ *
+ * @return array
+ *   An array of GeoJSON Features.
+ *
+ * @see http://geojson.org/geojson-spec.html#feature-objects
+ */
+function hook_islandora_simple_map_get_geojson(AbstractObject $object) {
+  $geojson = array();
+
+  $geojson[] = array(
+    'type' => 'Feature',
+    'geometry' => array(
+      'type' => 'Point',
+      'coordinates' => array(
+        -63.1245071,
+        46.2350236,
+      ),
+    ),
+  );
+
+  return $geojson;
+}
+
+/**
+ * Permit altering of GeoJSON hook values.
+ *
+ * @param array $geojson
+ *   A reference to the array of GeoJSON features gathered.
+ * @param AbstractObject $object
+ *   The object for which GeoJSON is being gathered.
+ *
+ * @see hook_islandora_gmap_get_geojson()
+ */
+function hook_islandora_simple_map_get_geojson_alter(array &$geojson, AbstractObject $object) {
+}

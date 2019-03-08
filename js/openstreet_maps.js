@@ -17,17 +17,33 @@
           var multiple_objects = (Object.prototype.toString.call(config.map_markers) === '[object Array]' ? true : false);
           var bounds = new L.LatLngBounds();
           var coords = [];
-          if (multiple_objects) {
-            var firstCenter = Drupal.islandora_simple_map.coordToPoint(config.map_markers[0].coordinates[0]);
-          } else {
-            var firstCenter = Drupal.islandora_simple_map.coordToPoint(config.map_markers.coordinates[0]);
+          var firstCenter = new L.LatLng(0, 0);
+          if (multiple_objects && config.map_markers.length && config.map_markers[0].coordinates.length) {
+            firstCenter = Drupal.islandora_simple_map.coordToPoint(config.map_markers[0].coordinates[0]);
+          } else if (!multiple_objects && config.map_markers.coordinates.length) {
+            firstCenter = Drupal.islandora_simple_map.coordToPoint(config.map_markers.coordinates[0]);
           }
+          else if (config.map_geojson && config.map_geojson.features.length) {
+            var coordArray = config.map_geojson.features[0].geometry.coordinates;
+            // NB GeoJSON coordinates are [ lng, lat ]. Array.reverse() alters the object so don't use it yet.
+            firstCenter = Drupal.islandora_simple_map.coordToPoint(`${coordArray[1]},${coordArray[0]}`);
+          }
+
           var defaultZoom = parseInt(config.map_zoom_level);
           var map = L.map(mapId).setView(firstCenter, defaultZoom);
           var default_config = config.provider_settings.tile_config;
           L.tileLayer(config.provider_settings.template, default_config).addTo(map);
           map.defaultZoom = defaultZoom;
           map.initialZoom = true;
+
+          if (config.map_geojson && config.map_geojson.features.length) {
+            L.geoJSON(config.map_geojson, {
+              onEachFeature: function (feature) {
+                Drupal.islandora_simple_map.makePoint(map, bounds, pid, feature.geometry.coordinates.reverse().join(','));
+              }
+            }).addTo(map);
+          }
+
           if (multiple_objects) {
             config.map_markers.forEach(function (objVal) {
               var pid = objVal.pid;
@@ -79,8 +95,10 @@
       }
     },
     coordToPoint: function (coordinate) {
-      var c = coordinate.split(',');
-      return new L.LatLng(parseFloat(c[0].trim()), parseFloat(c[1].trim()));
+      if (coordinate) {
+        var c = coordinate.split(',');
+        return new L.LatLng(parseFloat(c[0].trim()), parseFloat(c[1].trim()));
+      }
     },
     makePoint: function(map, bounds, pid, coordinate) {
       lPoint = Drupal.islandora_simple_map.coordToPoint(coordinate);
