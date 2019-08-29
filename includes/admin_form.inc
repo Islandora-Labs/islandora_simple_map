@@ -17,10 +17,9 @@ function islandora_simple_map_admin_settings_form($form, &$form_state) {
   foreach ($os_providers as $key => $data) {
     $os_options[$key] = $data['title'];
   }
-  // Now store all the API keys under one variable.
 
   // Simple get from array or return blank string.
-  $get_or_blank = function($key, $array) {
+  $get_or_blank = function ($key, $array) {
     return array_key_exists($key, $array) ?
       $array[$key] : '';
   };
@@ -486,8 +485,8 @@ function _islandora_simple_map_islandora_collection_delete_confirm(&$form_state)
   if ($to_disable) {
     array_walk($to_disable,
       function (&$item) {
-      $pid = $item;
-      $object = islandora_object_load($pid);
+        $pid = $item;
+        $object = islandora_object_load($pid);
         if ($object) {
           $item = $object->label;
         }

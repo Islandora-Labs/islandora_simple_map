@@ -6,7 +6,7 @@
  */
 
 /**
- * Class IslandoraSimpleMapCollectionTest
+ * Class IslandoraSimpleMapCollectionTest.
  */
 class IslandoraSimpleMapCollectionTest extends IslandoraSimpleMapTestCase {
 
