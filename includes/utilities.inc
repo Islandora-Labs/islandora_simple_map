@@ -581,19 +581,35 @@ function _islandora_simple_map_generate_js_code(array $settings, $map_div_id) {
       'features' => array(),
     );
 
-    // Flatten possible array of marker coordinates.
-    $coordinates = isset($temp_settings['map_markers']['coordinates'])
-      ? $temp_settings['map_markers']['coordinates']
-      : array_unique(call_user_func_array('array_merge', array_column($temp_settings['map_markers'], 'coordinates')));
-
     // Add features from coordinate data.
-    $geojson_features = _islandora_simple_map_coords_to_geojson_features($coordinates);
+    $geojson_features = array();
+    if (isset($temp_settings['map_markers']['pid'])) {
+      $geojson_features = _islandora_simple_map_coords_to_geojson_features(
+        $temp_settings['map_markers']['coordinates'],
+        $temp_settings['map_markers']['pid']
+      );
+    }
+    else {
+      foreach ($temp_settings['map_markers'] as $coords) {
+        $geojson_features = array_merge($geojson_features,
+          _islandora_simple_map_coords_to_geojson_features(
+            $coords['coordinates'],
+            $coords['pid']
+          )
+        );
+      }
+    }
+
     $temp_settings['map_geojson']['features'] = array_merge($temp_settings['map_geojson']['features'], $geojson_features);
 
     // Remove coordinate data.
     $temp_settings['map_markers'] = array('coordinates' => array());
   }
 
+  $code['js'][] = array(
+    'type' => 'file',
+    'data' => "{$module_path}/js/islandora_simple_map.js",
+  );
   // Google maps.
   if ($map_type == ISLANDORA_SIMPLE_MAP_GOOGLE_MAPS) {
     $code['js'][] = array(
@@ -835,10 +851,13 @@ function islandora_simple_map_get_geojson(AbstractObject $object) {
  * @return array
  *   Array of GeoJSON features.
  */
-function _islandora_simple_map_coords_to_geojson_features($coordinates) {
-  return array_map(function ($coord) {
+function _islandora_simple_map_coords_to_geojson_features($coordinates, $pid) {
+  return array_map(function ($coord) use ($pid) {
     return array(
       'type' => 'Feature',
+      'properties' => array(
+        'pid' => $pid,
+      ),
       'geometry' => array(
         'type' => 'Point',
         'coordinates' => array_reverse(array_map('doubleval', array_map('trim', explode(',', $coord)))),
