@@ -1,9 +1,9 @@
 <?php
+
 /**
  * @file
  * One of two modules for testing the parse ordering.
  */
-
 
 /**
  * Implements hook_islandora_simple_map_parse_coordinates_callback().
@@ -16,7 +16,6 @@ function islandora_simple_map_hooks_order_test_2_islandora_simple_map_parse_coor
     ),
   );
 }
-
 
 /**
  * Example function that replaces negative integers with the word "WINNING".

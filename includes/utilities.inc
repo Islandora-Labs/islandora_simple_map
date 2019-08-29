@@ -69,12 +69,12 @@ function islandora_simple_map_get_coordinates(AbstractObject $object) {
 function islandora_simple_map_parse_coordinates(array $coordinates) {
   $hooks = (array) module_invoke_all(ISLANDORA_SIMPLE_MAP_PARSE_HOOK);
   uasort($hooks, function ($a, $b) {
-                   if (!isset($a['weight'])) {
-                     $a['weight'] = 100;
-                   }
-                   if (!isset($b['weight'])) {
-                     $b['weight'] = 100;
-                   }
+    if (!isset($a['weight'])) {
+      $a['weight'] = 100;
+    }
+    if (!isset($b['weight'])) {
+      $b['weight'] = 100;
+    }
     return (abs($a['weight']) <= abs($b['weight']) ? -1 : 1);
   });
 
@@ -221,10 +221,8 @@ function _islandora_simple_map_get_coordinates_solr(AbstractObject $object) {
  *
  * @param \AbstractObject $object
  *   The Islandora object.
- *
  * @param string $datastream
  *   The datastream - e.g. 'MODS' or 'DDI'.
- *
  * @param string $xpaths
  *   Text containing xpath selectors, one per line.
  *
@@ -264,10 +262,9 @@ function islandora_simple_map_get_datastream_results(AbstractObject $object, $da
  *
  * @param \AbstractObject $object
  *   The Islandora object.
- *
  * @param string $xpaths
  *   Text containing xpath selectors, one per line.
-
+ *
  * @return array
  *   The unaltered node values.
  */
@@ -305,7 +302,7 @@ function islandora_simple_map_is_valid_coordinates($coordinates) {
  * @param string $keywords
  *   Keywords to search by.
  *
- * @return array|NULL
+ * @return array|null
  *   Coordinates if found, else NULL.
  */
 function islandora_simple_map_search_google_places($keywords) {
@@ -537,7 +534,7 @@ function _islandora_simple_map_get_collection_points_solr(AbstractObject $object
       );
     }
   }
-  $points = array_filter($points, function($o) {
+  $points = array_filter($points, function ($o) {
     return count($o['coordinates'] > 0);
   });
   return $points;
@@ -664,7 +661,7 @@ function _islandora_simple_map_generate_js_code(array $settings, $map_div_id) {
  * Remove search alters that stop us from getting any data from Solr.
  *
  * @param array $params
- *   The islandoraSolrQueryProcessor params
+ *   The islandoraSolrQueryProcessor params.
  */
 function _islandora_simple_map_remove_search_restrictions(array &$params) {
   if (module_exists('islandora_compound_object') &&
@@ -826,7 +823,7 @@ function islandora_simple_map_openstreet_map_providers($provider_id = NULL, $fin
  * @param AbstractObject $object
  *   The object for which to gather GeoJSON features.
  *
- * @return array|NULL
+ * @return array|null
  *   If any features were returned, an associative array wrapping them up in a
  *   "FeatureCollection"; otherwise, NULL.
  */
@@ -851,7 +848,7 @@ function islandora_simple_map_get_geojson(AbstractObject $object) {
  * @return array
  *   Array of GeoJSON features.
  */
-function _islandora_simple_map_coords_to_geojson_features($coordinates, $pid) {
+function _islandora_simple_map_coords_to_geojson_features(array $coordinates, $pid) {
   return array_map(function ($coord) use ($pid) {
     return array(
       'type' => 'Feature',

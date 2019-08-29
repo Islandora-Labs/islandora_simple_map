@@ -144,4 +144,5 @@ class IslandoraSimpleMapTestCase extends IslandoraWebTestCase {
       return $this->fail($message);
     }
   }
+
 }

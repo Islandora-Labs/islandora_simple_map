@@ -61,7 +61,6 @@ function _islandora_simple_map_kml_mods_get_kml(AbstractObject $object) {
   return $kml;
 }
 
-
 /**
  * Helper to get KML from DDI data.
  */
