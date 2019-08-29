@@ -69,12 +69,12 @@ function islandora_simple_map_get_coordinates(AbstractObject $object) {
 function islandora_simple_map_parse_coordinates(array $coordinates) {
   $hooks = (array) module_invoke_all(ISLANDORA_SIMPLE_MAP_PARSE_HOOK);
   uasort($hooks, function ($a, $b) {
-                   if (!isset($a['weight'])) {
-                     $a['weight'] = 100;
-                   }
-                   if (!isset($b['weight'])) {
-                     $b['weight'] = 100;
-                   }
+    if (!isset($a['weight'])) {
+      $a['weight'] = 100;
+    }
+    if (!isset($b['weight'])) {
+      $b['weight'] = 100;
+    }
     return (abs($a['weight']) <= abs($b['weight']) ? -1 : 1);
   });
 
@@ -221,10 +221,8 @@ function _islandora_simple_map_get_coordinates_solr(AbstractObject $object) {
  *
  * @param \AbstractObject $object
  *   The Islandora object.
- *
  * @param string $datastream
  *   The datastream - e.g. 'MODS' or 'DDI'.
- *
  * @param string $xpaths
  *   Text containing xpath selectors, one per line.
  *
@@ -264,10 +262,9 @@ function islandora_simple_map_get_datastream_results(AbstractObject $object, $da
  *
  * @param \AbstractObject $object
  *   The Islandora object.
- *
  * @param string $xpaths
  *   Text containing xpath selectors, one per line.
-
+ *
  * @return array
  *   The unaltered node values.
  */
@@ -305,7 +302,7 @@ function islandora_simple_map_is_valid_coordinates($coordinates) {
  * @param string $keywords
  *   Keywords to search by.
  *
- * @return array|NULL
+ * @return array|null
  *   Coordinates if found, else NULL.
  */
 function islandora_simple_map_search_google_places($keywords) {
@@ -537,7 +534,7 @@ function _islandora_simple_map_get_collection_points_solr(AbstractObject $object
       );
     }
   }
-  $points = array_filter($points, function($o) {
+  $points = array_filter($points, function ($o) {
     return count($o['coordinates'] > 0);
   });
   return $points;
@@ -581,19 +578,35 @@ function _islandora_simple_map_generate_js_code(array $settings, $map_div_id) {
       'features' => array(),
     );
 
-    // Flatten possible array of marker coordinates.
-    $coordinates = isset($temp_settings['map_markers']['coordinates'])
-      ? $temp_settings['map_markers']['coordinates']
-      : array_unique(call_user_func_array('array_merge', array_column($temp_settings['map_markers'], 'coordinates')));
-
     // Add features from coordinate data.
-    $geojson_features = _islandora_simple_map_coords_to_geojson_features($coordinates);
+    $geojson_features = array();
+    if (isset($temp_settings['map_markers']['pid'])) {
+      $geojson_features = _islandora_simple_map_coords_to_geojson_features(
+        $temp_settings['map_markers']['coordinates'],
+        $temp_settings['map_markers']['pid']
+      );
+    }
+    else {
+      foreach ($temp_settings['map_markers'] as $coords) {
+        $geojson_features = array_merge($geojson_features,
+          _islandora_simple_map_coords_to_geojson_features(
+            $coords['coordinates'],
+            $coords['pid']
+          )
+        );
+      }
+    }
+
     $temp_settings['map_geojson']['features'] = array_merge($temp_settings['map_geojson']['features'], $geojson_features);
 
     // Remove coordinate data.
     $temp_settings['map_markers'] = array('coordinates' => array());
   }
 
+  $code['js'][] = array(
+    'type' => 'file',
+    'data' => "{$module_path}/js/islandora_simple_map.js",
+  );
   // Google maps.
   if ($map_type == ISLANDORA_SIMPLE_MAP_GOOGLE_MAPS) {
     $code['js'][] = array(
@@ -648,7 +661,7 @@ function _islandora_simple_map_generate_js_code(array $settings, $map_div_id) {
  * Remove search alters that stop us from getting any data from Solr.
  *
  * @param array $params
- *   The islandoraSolrQueryProcessor params
+ *   The islandoraSolrQueryProcessor params.
  */
 function _islandora_simple_map_remove_search_restrictions(array &$params) {
   if (module_exists('islandora_compound_object') &&
@@ -810,7 +823,7 @@ function islandora_simple_map_openstreet_map_providers($provider_id = NULL, $fin
  * @param AbstractObject $object
  *   The object for which to gather GeoJSON features.
  *
- * @return array|NULL
+ * @return array|null
  *   If any features were returned, an associative array wrapping them up in a
  *   "FeatureCollection"; otherwise, NULL.
  */
@@ -835,10 +848,13 @@ function islandora_simple_map_get_geojson(AbstractObject $object) {
  * @return array
  *   Array of GeoJSON features.
  */
-function _islandora_simple_map_coords_to_geojson_features($coordinates) {
-  return array_map(function ($coord) {
+function _islandora_simple_map_coords_to_geojson_features(array $coordinates, $pid) {
+  return array_map(function ($coord) use ($pid) {
     return array(
       'type' => 'Feature',
+      'properties' => array(
+        'pid' => $pid,
+      ),
       'geometry' => array(
         'type' => 'Point',
         'coordinates' => array_reverse(array_map('doubleval', array_map('trim', explode(',', $coord)))),

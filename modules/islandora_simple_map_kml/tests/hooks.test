@@ -54,4 +54,5 @@ class IslandoraSimpleMapKmlHookTestCase extends IslandoraSimpleMapTestCase {
     $kml = islandora_simple_map_kml_get_kml($object);
     $this->assertEqual($expected, $kml, "Hook get kml did not return expected results.");
   }
+
 }

@@ -30,12 +30,10 @@ function hook_islandora_simple_map_get_coordinates(AbstractObject $object) {
  * Register a function to parse a type of coordinate.
  *
  * @return array
- *   Associative array with the format below.
- *   array(
- *     'function_name' => 'name of function to call',
- *     'file' => 'path to file to include for accessing above function.',
- *     'weight' => 'positive integer for setting an order',
- *   );
+ *   Associative array with the below keys.
+ *   - function_name => name of function to call
+ *   - file => path to file to include for accessing above function.
+ *   - weight => positive integer for setting an order
  *
  *   The callable 'function_name' takes an array of coordinates and returns an
  *   associative array where the key is the original coordinate and the value is

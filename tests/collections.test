@@ -1,9 +1,13 @@
 <?php
+
 /**
  * @file
  * Collection map tests.
  */
 
+/**
+ * Class IslandoraSimpleMapCollectionTest.
+ */
 class IslandoraSimpleMapCollectionTest extends IslandoraSimpleMapTestCase {
 
   /**
@@ -83,4 +87,5 @@ class IslandoraSimpleMapCollectionTest extends IslandoraSimpleMapTestCase {
 
     $this->assertFalse(_islandora_simple_map_display_collection_map($pid), "Should not be displaying collection map yet.");
   }
+
 }
